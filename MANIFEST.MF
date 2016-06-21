@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Created-By: 1.7.0_01 (Sun Microsystems Inc.)
+Implementation-Title: Class Builder API
+Implementation-Version: 1.0.0
+Implementation-Vendor: 
+Bundle-Name: Class Builder API
+Bundle-SymbolicName: org.classbuilder
+Bundle-Description: Java Class Builder
+Bundle-ManifestVersion: 2
+Bundle-Version: 1.0.0
+Export-Package: org.classbuilder,
+ org.classbuilder.handler,
+ org.classbuilder.util
+Bundle-Vendor: 

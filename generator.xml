@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Beispiel zur Generierung von Klassen während des Builds -->
+<project name="clasbuilder" default="gendemo" basedir=".">
+	
+	<!-- Zielverzeichnis für java-Dateien -->
+	<property name="src" location="gen/src" />
+	
+	<!-- Zielverzeichnis für class-Dateien -->
+	<property name="bin" location="gen/bin" />
+	
+	<!-- Beispiel Target, das neue Klassen generiert -->
+	<target name="gendemo">
+		<!-- Class-Path, der das classbuilder.jar und Super-Klassen mit Handler Annotationen enthält -->
+		<path id="gen.class.path">
+			<pathelement path="classbuilder.jar" />
+		</path>
+		
+		<!-- Generierung der Klassen -->
+		<genclasses src="${src}" bin="${bin}" filter="org.classbuilder.**.*Service" classpath="gen.class.path" />
+	</target>
+	
+	<!-- generisches Makro für die Generierung von Klassen -->
+	<macrodef name="genclasses">
+		<!-- Zielverzeichnis für java-Dateien -->
+		<attribute name="src" />
+		<!-- Zielverzeichnis für class-Dateien -->
+		<attribute name="bin" />
+		<!-- Filter-Ausdruck um bestimmte Klassen auszuwählen (Beispiel: org.classbuilder.**.*Service) -->
+		<attribute name="filter" default="**.*" />
+		<!-- Class-Path, der das classbuilder.jar und Super-Klassen mit Handler Annotationen enthält -->
+		<attribute name="classpath" />
+		<sequential>
+			<!-- Aufruf der main-Methode in der Klasse org.classbuilder.handler.Generator im classbuilder.jar -->
+			<java classname="org.classbuilder.handler.Generator" failonerror="true">
+				<arg value="-s"/><arg value="@{src}" />
+				<arg value="-d"/><arg value="@{bin}" />
+				<arg value="-f"/><arg value="@{filter}" />
+				<classpath refid="@{classpath}"/>
+			</java>
+		</sequential>
+	</macrodef>
+	
+</project>

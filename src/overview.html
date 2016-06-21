@@ -1,0 +1,396 @@
+<html>
+<body>
+Class-Builder API.
+
+<h1>1 Class-Builder API</h1>
+
+<p>The class builder API can be used fpr generating new classes at runtime. 
+But this is no byte code engeneering library for byte code manipulation of existing classes.  
+You can use inheritance to extends existing classes.</p>
+
+<p>Features:</p>
+<ul>
+ <li>debug support</li>
+ <li>source generation</li>
+ <li>no file system access required</li>
+ <li>fail fast</li>
+ <li>fluent API for expresseion</li>
+ <li>handler API for aspect oriented programming</li>
+ <li>compatible with future java versions</li>
+</ul>
+
+<p>Usage:</p>
+<ul>
+ <li>replacement of reflaction</li>
+ <li>replacement of interpreters/parsers</li>
+</ul>
+
+<h2>1.1 Create new classes</h2>
+
+<p>You can use the ClassFactory to create new classes. 
+The ClassFactory has different properties:</p>
+<table>
+ <tr>
+  <th>parameter</th>
+  <th>description</th>
+ </tr>
+ <tr>
+  <td>CLASS_PATH</td>
+  <td>Path to the destination directory for the .class-files (optional).</td>
+ </tr>
+ <tr>
+  <td>SOURCE_PATH</td>
+  <td>Path to the destination directory for the .class-files (optional). This property must set for debuggung.</td>
+ </tr>
+ <tr>
+  <td>CLASS_LOADER</td>
+  <td>The class loader, which is used for loading generated classes (optional). Default value: current thread class loader.</td>
+ </tr>
+</table>
+
+<p>New classes can be created with the ObjectFactory.createClass method.</p>
+<p>Possible class members:</p>
+<ul>
+ <li>methods</li>
+ <li>constructors</li>
+ <li>fields</li>
+ <li>annotations</li>
+</ul>
+
+<p>Example:</p>
+<pre><code>
+// create a new ClassFactory
+ClassFactory classFactory = new ClassFactory();
+
+// create a new class
+IClass cls = classFactory.addClass(PUBLIC, "pkg", "Test", Object.class);
+
+// create a new method, which prints 'hello'
+IMethod method = cls.addMethod(PUBLIC, "foo");
+	method.$(System.class).get("out").invoke("println", "hello");
+method.End();
+
+// build the class
+Class&lt;?&gt; newClass = cls.build();
+</code></pre>
+
+<h2>1.2 Create expressions</h2>
+
+<p>Expressions are right-values (r-values). 
+R-values are constants, variables, fields, method invocations with a return value or by operators connected values.  
+You can use the IMethod.$() method, to convert constants to r-values. 
+Many methods have parameters of type Object, which coverts constants implicit.</p>
+
+<pre><code>
+IMethod m = cls.addMethod(PUBLIC, "foo");
+
+// create a new variable
+Variable i = m.addVar(int.class); // int i;
+Variable j = m.addVar(int.class); // int j
+
+// write and read a variable
+i.set(5); // i = 5;
+j.set(i); // j = i;
+
+// use operators
+i.set(i.add(j)); // i = i + j;
+
+// type cast
+Variable l = m.addVar(long.class); // int l;
+l.set(5); // l = 5;
+i.set(l.cast(int.class)); i = (int)l;
+
+// create new objects
+Variable i = m.addVariable(Integer.class); // Integer i;
+i.set(m.New(Integer.class, 5)); // i = new Integer(5);
+
+// invoke methods
+list.invoke("add", "test"); // list.add("test");
+
+// this reference
+m.This().get("field").set(1); // this.field = 1;
+
+// super reference
+m.Super().invoke("foo"); // super.foo();
+
+// return values
+m.Return(0); // return 0;
+
+// throw an exception
+m.Throw(m.New(Exception.class, "error")); // throw new Exception("error");
+
+// read/write fields
+Variable out m.addVariable(PrintStream.class); // PrintStream out;
+out = $(System.class).get("out"); // out = System.out;
+$(System.class).get("out").set(out); // System.out = out;
+
+// use arrays
+Variable strings = m.addVaraiable(String[].class); // String[] strings;
+strings.set(m.New(String[].class, 5)); // strings = new Strings[3];
+strings.get(0).set("hello"); // strings[0] = "hello";
+m.$(System.class).get("out").invoke("println", strings.get(0)); // System.out.println(strings[0]);
+m.$(System.class).get("out").invoke("println", strings.length()); // System.out.println(strings.length);
+</code></pre>
+
+<p>Operators</p>
+<table>
+ <tr>
+  <th>operator</th>
+  <th>method</th>
+  <th>description</th>
+ </tr>
+ <tr>
+  <td>~/!</td>
+  <td>not</td>
+  <td>logical negation</td>
+ </tr>
+ <tr>
+  <td>&amp;/&amp;&amp;</td>
+  <td>and</td>
+  <td>logical and</td>
+ </tr>
+ <tr>
+  <td>|/||</td>
+  <td>or</td>
+  <td>logical or</td>
+ </tr>
+ <tr>
+  <td>^</td>
+  <td>xor</td>
+  <td>logical exclusive or</td>
+ </tr>
+ <tr>
+  <td>&lt;&lt;</td>
+  <td>shl</td>
+  <td>shift left</td>
+ </tr>
+ <tr>
+  <td>&gt;&gt;</td>
+  <td>shr</td>
+  <td>shift arithmetic right</td>
+ </tr>
+ <tr>
+  <td>&gt;&gt;&gt;</td>
+  <td>ushr</td>
+  <td>schift right</td>
+ </tr>
+ <tr>
+  <td>-</td>
+  <td>neg</td>
+  <td>arithmetical negation</td>
+ </tr>
+ <tr>
+  <td>+</td>
+  <td>add</td>
+  <td>add</td>
+ </tr>
+ <tr>
+  <td>-</td>
+  <td>sub</td>
+  <td>substract</td>
+ </tr>
+ <tr>
+  <td>*</td>
+  <td>mul</td>
+  <td>multiply</td>
+ </tr>
+ <tr>
+  <td>/</td>
+  <td>div</td>
+  <td>divide</td>
+ </tr>
+ <tr>
+  <td>%</td>
+  <td>mod</td>
+  <td>remainder</td>
+ </tr>
+ <tr>
+  <td>==</td>
+  <td>equal</td>
+  <td>equal</td>
+ </tr>
+ <tr>
+  <td>!=</td>
+  <td>notEqual</td>
+  <td>not equal</td>
+ </tr>
+ <tr>
+  <td>&lt;</td>
+  <td>less</td>
+  <td>less</td>
+ </tr>
+ <tr>
+  <td>&gt;</td>
+  <td>greater</td>
+  <td>greater</td>
+ </tr>
+ <tr>
+  <td>&lt;=</td>
+  <td>lessEqual</td>
+  <td>less or equal</td>
+ </tr>
+ <tr>
+  <td>&gt;=</td>
+  <td>greaterEqual</td>
+  <td>greater or equal</td>
+ </tr>
+ <tr>
+  <td>(&lt;type&gt;)</td>
+  <td>cast</td>
+  <td>type cast</td>
+ </tr>
+ <tr>
+  <td>instanceof</td>
+  <td>instanceOf</td>
+  <td>check type</td>
+ </tr>
+</table>
+
+<h2>1.3 Structures</h2>
+<p>Methods were implemented by the IMethod interfaces, which can be uesed to create diffent structures and complex expressen by a fluent api.
+There exists to kinds of values:</p>
+<ul>
+ <li>right-values (r-values): r-values are constants, l-values and by operators connected values. R-values cen be assigned to r-values.</li>
+ <li>left-values (l-values): this values are writable like variables, method arguments, fields or array elements.</li>
+</ul>
+
+<p><b>Read method parameters:</b></p>
+<code>IMethod.getParameter(int index)</code>
+
+<p><b>Create new variables:</b></p>
+<code>IMethod.addVar(Class&lt;?&gt; type)</code>
+
+<p><b>if-else block:</b></p>
+<pre><code>// if (true) {
+m.If(true);
+    ...
+// } else if (false) {
+m.ElseIf(false);
+    ...
+// } else {
+m.Else();
+    ...
+// }
+m.End();
+</code></pre>
+
+<p><b>while loop:</b></p>
+<pre><code>// while (true) {
+m.While();
+    ...
+// }
+m.End();
+</code></pre>
+
+<p><b>for-each loop:</b></p>
+<pre><code>// for (Object e : list) {
+Variable e = m.ForEach(list);
+    ...
+// }
+m.End();
+</code></pre>
+
+<p><b>try-catch block:</b></p>
+<pre><code>// try {
+m.Try()
+    ...
+// } catch (Exception e) {
+Variable e = m.Catch(Exception.class)
+    ...
+// }
+m.End()
+</code></pre>
+
+<h1>2 Handler API</h1>
+
+<p>The handler api is for aspect oriented programming. 
+The ObjectFactory creates new classes and objects by handling annotations.</p>
+
+<p>Different handler types:</p>
+<ul>
+ <li>class handler: implements different class members</li>
+ <li>constructor handler: implements constructors</li>
+ <li>method handler: implements methods</li>
+ <li>proxy handler: implements method wrappers</li>
+</ul>
+
+<h2>2.1 The ObjectFactory</h2>
+
+<p>The ObjectFactory creates sub classes by handling annotations at super classes and interfaces. 
+This annotations are user-defined and triggers the different handlers, which are associated with the annotations.</p>
+
+<p>Example:</p>
+<pre><code>@Handler(MyHandler.class)
+public @interface MyHandlerAnnotation {
+
+}
+</code></pre>
+
+<p>This annotations are annotated with the associated handler and can used at types (super class or interfaces), constructors, methods and fields.</p>
+
+<p>Example for a super class (primary type):</p>
+<pre><code>public abstract class MyType {
+	{@literal @}MyHandlerAnnotation
+	public abstract void foo();
+}
+</code></pre>
+
+<p>Instantiation:</p>
+<pre><code>// create a new ObjectFactory
+ObjectFactory factory = new ObjectFactory();
+
+// create a new object of the extended MyType class
+MyType obj = factory.create(MyType.class);
+</code></pre>
+
+<h2>2.2 Class handlers</h2>
+
+<p>Class handler can used to add constructors, methods, fields and annotations. 
+Each class handler will be executed only one times.</p>
+
+<h2>2.3 Constructor handlers</h2>
+
+<p>Constructor handlers implements constructors. 
+They can be annotated ad super constructors or must implement the MethodSelector interface.
+If there is no constructor handler present, an empty constructor is implemented implicit.</p>
+
+<h2>2.4 Method handlers</h2>
+
+<p>Method handlers implements methods. 
+If a method is annotated, then this method is implemented. 
+If the super class or an interface is annotated, then all abstracted methods were implemented. 
+Alternatively, you can implement the MethodSelector interface. 
+There is only one method handler per method possible.</p>
+
+<p>Example:</p>
+<pre><code>public class MyMethodHandler extends AbstractMethodHandler {
+	{@literal @}Override
+	public void handle(HandlerContext context) throws BuilderException, HandlerException {
+		// print out hello
+		$(System.class).get("out").invoke("println", "hello");
+	}
+}</code></pre>
+
+<h2>2.5 Proxy handlers</h2>
+
+<p>Proxy handlers implements method wrappers. 
+If a method is annotated, then this method is wrapped. 
+If the super class or an interface is annotated, then all abstracted methods were wrapped. 
+Alternatively, you can implement the MethodSelector interface. 
+There is multible proxy handlers per method possible.</p>
+
+<p>Example:</p>
+<pre><code>public class MyProxyHandler extends AbstractProxyHandler {
+	{@literal @}Override
+	public void handle(HandlerContext context) throws BuilderException, HandlerException {
+		...
+		// invoke the next proxy handler or the method handler or the super method
+		Variable result = invoke((Object[])getParameters());
+		...
+		// return a value or null
+		Return(result);
+	}
+}</code></pre>
+
+</body>
+</html>
