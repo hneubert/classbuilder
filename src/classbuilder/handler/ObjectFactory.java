@@ -173,57 +173,57 @@ public class ObjectFactory {
 				if (c == null || c.getPriority() <= ctx.getPriority()) {
 					classHandlers.put(ctx, ctx);
 				}
-			} else {
-				Collection<MethodId> methods = null;
-				if (MethodSelector.class.isAssignableFrom(handlerType)) {
-					try {
-						methods = ((MethodSelector)handlerType.newInstance()).getMethods(ctx);
-					} catch (InstantiationException e) {
-						throw new HandlerException("method selector instanziation faild: ", e);
-					} catch (IllegalAccessException e) {
-						throw new HandlerException("method selector instanziation faild: ", e);
+			}
+			
+			Collection<MethodId> methods = null;
+			if (MethodSelector.class.isAssignableFrom(handlerType)) {
+				try {
+					methods = ((MethodSelector)handlerType.newInstance()).getMethods(ctx);
+				} catch (InstantiationException e) {
+					throw new HandlerException("method selector instanziation faild: ", e);
+				} catch (IllegalAccessException e) {
+					throw new HandlerException("method selector instanziation faild: ", e);
+				}
+			}
+			
+			if (ConstructorHandler.class.isAssignableFrom(handlerType)) {
+				if (methods == null) {
+					methods = MethodId.getMethods(ctx);
+				}
+				for (MethodId method : methods) {
+					if (ignoreMethod(method, handlerAnnotation)) continue;
+					HandlerContext c = constructorHandlers.get(method);
+					if (c == null || c.getPriority() <= ctx.getPriority()) {
+						constructorHandlers.put(method, ctx);
 					}
 				}
-				
-				if (ConstructorHandler.class.isAssignableFrom(handlerType)) {
-					if (methods == null) {
-						methods = MethodId.getMethods(ctx);
+			} else if (MethodHandler.class.isAssignableFrom(handlerType)) {
+				if (methods == null) {
+					methods = MethodId.getMethods(ctx);
+				}
+				for (MethodId method : methods) {
+					if (ignoreMethod(method, handlerAnnotation)) continue;
+					MethodInvocationHelper helper = methodHandlers.get(method);
+					if (helper == null) {
+						helper = new MethodInvocationHelper();
+						helper.setTarget(method);
+						methodHandlers.put(method, helper);
 					}
-					for (MethodId method : methods) {
-						if (ignoreMethod(method, handlerAnnotation)) continue;
-						HandlerContext c = constructorHandlers.get(method);
-						if (c == null || c.getPriority() <= ctx.getPriority()) {
-							constructorHandlers.put(method, ctx);
-						}
+					helper.setMethodHandler(ctx);
+				}
+			} else if (ProxyHandler.class.isAssignableFrom(handlerType)) {
+				if (methods == null) {
+					methods = MethodId.getMethods(ctx);
+				}
+				for (MethodId method : methods) {
+					if (ignoreMethod(method, handlerAnnotation)) continue;
+					MethodInvocationHelper helper = methodHandlers.get(method);
+					if (helper == null) {
+						helper = new MethodInvocationHelper();
+						helper.setTarget(method);
+						methodHandlers.put(method, helper);
 					}
-				} else if (MethodHandler.class.isAssignableFrom(handlerType)) {
-					if (methods == null) {
-						methods = MethodId.getMethods(ctx);
-					}
-					for (MethodId method : methods) {
-						if (ignoreMethod(method, handlerAnnotation)) continue;
-						MethodInvocationHelper helper = methodHandlers.get(method);
-						if (helper == null) {
-							helper = new MethodInvocationHelper();
-							helper.setTarget(method);
-							methodHandlers.put(method, helper);
-						}
-						helper.setMethodHandler(ctx);
-					}
-				} else if (ProxyHandler.class.isAssignableFrom(handlerType)) {
-					if (methods == null) {
-						methods = MethodId.getMethods(ctx);
-					}
-					for (MethodId method : methods) {
-						if (ignoreMethod(method, handlerAnnotation)) continue;
-						MethodInvocationHelper helper = methodHandlers.get(method);
-						if (helper == null) {
-							helper = new MethodInvocationHelper();
-							helper.setTarget(method);
-							methodHandlers.put(method, helper);
-						}
-						helper.addProxyHandler(ctx);
-					}
+					helper.addProxyHandler(ctx);
 				}
 			}
 		}
