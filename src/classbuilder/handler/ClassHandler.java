@@ -30,15 +30,15 @@ import classbuilder.IClass;
 
 /**
  * The ClassHandler interface allows adding methods, constructors, fields and annotations to a class.
- * 
- * Example:
+ * <br>
+ * Example:<pre><code>
  * 	public static class ClassHandler extends AbstractClassHandler {
  * 		{@literal @}Override
  * 		public void handle(HandlerContext context) throws BuilderException, HandlerException {
  * 			addAnnotation(AnyAnnotation.class);
  * 			...
  * 		}
- * 	}
+ * 	}</code></pre>
  * 
  * @see MethodHandler
  * @see ConstructorHandler

@@ -34,8 +34,8 @@ import classbuilder.IMethod;
 /**
  * The MethodHandler interface allows implementing methods.<br>
  * A method handler can optinally implement the MethodSelector interface.
- * 
- * Example:
+ * <br>
+ * Example:<pre><code>
  * 	public static class GetterHandler extends AbstractMethodHandler {
  * 		{@literal @}Override
  * 		public void handle(HandlerContext context) throws BuilderException, HandlerException {
@@ -44,7 +44,7 @@ import classbuilder.IMethod;
  * 			
  * 			Return(get(fieldName));
  * 		}
- * 	}
+ * 	}</code></pre>
  * 
  * @see MethodSelector
  * @see AbstractMethodHandler

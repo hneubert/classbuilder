@@ -34,8 +34,8 @@ import classbuilder.IMethod;
 /**
  * The ProxyHandler interface allows implementing method wrappers.<br>
  * A method handler can optinally implement the MethodSelector interface.
- * 
- * Example:
+ * <br>
+ * Example:<pre><code>
  * 	public static class ProxyHandler extends AbstractProxyHandler {
  * 		{@literal @}Override
  * 		public void handle(HandlerContext context) throws BuilderException, HandlerException {
@@ -43,7 +43,7 @@ import classbuilder.IMethod;
  * 			invoke((Object[])getParameters());
  * 			...
  * 		}
- * 	}
+ * 	}</code></pre>
  * 
  * @see MethodReference
  * @see MethodSelector

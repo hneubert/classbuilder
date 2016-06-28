@@ -511,7 +511,6 @@ public class DefaultLValue implements LValue {
 	public void setNext(DefaultLValue next, boolean setUsed) throws BuilderSyntaxException {
 		if (this.next != null) throw new BuilderSyntaxException(fragment, BuilderSyntaxException.EXPRESSION_ALREADY_IN_USE);
 		if (this.root.used) throw new BuilderSyntaxException(fragment, BuilderSyntaxException.EXPRESSION_ALREADY_WRITTEN);
-		//next = next.getRoot(); <- Rekursion: da in next root bereits gesetzt sein kann: cast()
 		this.next = next;
 		if (setUsed) next.used = true;
 		if (next != null) next.removed = true;
@@ -529,7 +528,6 @@ public class DefaultLValue implements LValue {
 		used = true;
 		switch (type) {
 		case AGET :
-			//level = getLevelPrimitive(parent.varType.getComponentType());
 			level = getLevelPrimitive(varType);
 			((DefaultLValue)value).build(this, out, constantPool, true);
 			if (level > 0 && level < 3) out.write(VMConst.BALOAD);
@@ -541,7 +539,7 @@ public class DefaultLValue implements LValue {
 			if (level == 8) out.write(VMConst.DALOAD);
 			if (level == -1) out.write(VMConst.AALOAD);
 			if (next != null) {
-				doNext(this, out, constantPool, isValue);//next.build(this, out, constantPool, isValue);
+				doNext(this, out, constantPool, isValue);
 			} else if (!root.isRemoved()) {
 				throw new BuilderSyntaxException(fragment, BuilderSyntaxException.FREESTANDING_EXPRESSION);
 			}
@@ -555,23 +553,23 @@ public class DefaultLValue implements LValue {
 			if (level == 8) out.write(VMConst.DLOAD, (byte)var.getIndex());
 			if (level == -1) out.write(VMConst.ALOAD, (byte)var.getIndex());
 			if (next != null) {
-				doNext(this, out, constantPool, isValue);//next.build(this, out, constantPool, isValue);
+				doNext(this, out, constantPool, isValue);
 			} else if (!root.isRemoved()) {
 				throw new BuilderSyntaxException(fragment, BuilderSyntaxException.FREESTANDING_EXPRESSION);
 			}
 			break;
 		case FGET :
-			out.write(VMConst.GETFIELD, constantPool.add(id)); // id ist null?
+			out.write(VMConst.GETFIELD, constantPool.add(id));
 			if (next != null) {
-				doNext(this, out, constantPool, isValue);//next.build(this, out, constantPool, isValue);
+				doNext(this, out, constantPool, isValue);
 			} else if (!root.isRemoved()) {
 				throw new BuilderSyntaxException(fragment, BuilderSyntaxException.FREESTANDING_EXPRESSION);
 			}
 			break;
 		case SGET :
-			index = constantPool.add(id); // id ist null?
+			index = constantPool.add(id);
 			out.write(VMConst.GETSTATIC, index);
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case ASET :
 			level = getLevelPrimitive(varType);
@@ -629,7 +627,7 @@ public class DefaultLValue implements LValue {
 				}
 			}
 			if (next != null) {
-				doNext(this, out, constantPool, isValue);//next.build(this, out, constantPool, isValue);
+				doNext(this, out, constantPool, isValue);
 			} else if (!root.removed && varType != null && varType != void.class && 
 					(id instanceof Method || (id instanceof IMethod && !((IMethod)id).isConstructor()))) {
 				if (varType == long.class || varType == double.class) {
@@ -642,7 +640,7 @@ public class DefaultLValue implements LValue {
 		case CLASS :
 		case DECLARING_CLASS :
 			if (next != null) {
-				doNext(this, out, constantPool, isValue);//next.build(this, out, constantPool, isValue);
+				doNext(this, out, constantPool, isValue);
 			} else {
 				out.write(VMConst.LDC_W, constantPool.add(value));
 			}
@@ -650,7 +648,7 @@ public class DefaultLValue implements LValue {
 		case SUPER :
 		case THIS :
 			out.write(VMConst.ALOAD_0);
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case CONST :
 			if (value instanceof Boolean) {
@@ -706,14 +704,13 @@ public class DefaultLValue implements LValue {
 					out.write(VMConst.LDC_W, constantPool.add(value));
 				}
 			}
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case NULL :
 			out.write(VMConst.ACONST_NULL);
 			doNext(this, out, constantPool, isValue);
 			break;
 		case CAST :
-			//((DefaultLValue)value).build(null, out, constantPool);
 			if (id != null) {
 				if ((Byte)id == VMConst.CHECKCAST) {
 					out.write((Byte)id, constantPool.add(varType));
@@ -721,10 +718,10 @@ public class DefaultLValue implements LValue {
 					out.write((Byte)id);
 				}
 			}
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case NOT :
-			byte op = (Byte)id;//getOp(type, VMConst.getLevel(varType));
+			byte op = (Byte)id;
 			if (op == VMConst.IXOR) {
 				level = VMConst.getLevel(varType);
 				if (level == 1) out.write(VMConst.ICONST_1);
@@ -735,12 +732,11 @@ public class DefaultLValue implements LValue {
 			}
 			if (op == VMConst.LXOR) out.write(VMConst.LDC2_W, constantPool.add(-1L));
 			out.write(op);
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case NEG :
-			//((DefaultLValue)value).build(null, out, constantPool);
-			out.write((Byte)id/*getOp(type, VMConst.getLevel(varType))*/);
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			out.write((Byte)id);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case AND :
 		case OR :
@@ -754,8 +750,8 @@ public class DefaultLValue implements LValue {
 		case DIV :
 		case MOD :
 			((DefaultLValue)value).getRoot().build(null, out, constantPool, true);
-			out.write((Byte)id/*getOp(type, VMConst.getLevel(varType))*/);
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			out.write((Byte)id);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case EQUAL :
 		case UNEQUAL :
@@ -768,12 +764,12 @@ public class DefaultLValue implements LValue {
 			if (level == 6) out.write(VMConst.LCMP);
 			if (level == 7) out.write(VMConst.FCMPL);
 			if (level == 8) out.write(VMConst.DCMPL);
-			out.write((Byte)id/*getCmp(type, level)*/, (short)7);
+			out.write((Byte)id, (short)7);
 			out.write(VMConst.ICONST_0);
 			out.write(VMConst.GOTO, (short)4);
 			out.write(VMConst.ICONST_1); // <- [pc: 11, same_locals_1_stack_item, stack: {int}]
 			// next <- same
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case IS_NULL :
 		case IS_NOT_NULL :
@@ -781,7 +777,7 @@ public class DefaultLValue implements LValue {
 			out.write(VMConst.ICONST_0);
 			out.write(VMConst.GOTO, (short)4);
 			out.write(VMConst.ICONST_1); // <- [pc: 11, same_locals_1_stack_item, stack: {int}]
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case RETURN :
 			if (varType == null) {
@@ -798,7 +794,7 @@ public class DefaultLValue implements LValue {
 			break;
 		case INSTANCEOF :
 			out.write(VMConst.INSTANCEOF, constantPool.add(value));
-			doNext(this, out, constantPool, isValue);//if (next != null) next.build(this, out, constantPool, isValue);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case NEW:
 			if (varType.isArray()) {
@@ -808,22 +804,20 @@ public class DefaultLValue implements LValue {
 				} else {
 					out.write(VMConst.ANEWARRAY, constantPool.add(varType.getComponentType()));
 				}
-				doNext(null, out, constantPool, isValue);//if (next != null) next.build(null, out, constantPool, isValue);
+				doNext(null, out, constantPool, isValue);
 			} else {
 				out.write(VMConst.NEW, constantPool.add(varType));
-				//if (!varType.isArray() && !varType.isPrimitive()) {
-					out.write(VMConst.DUP);
-					doNext(this, out, constantPool, isValue);//next.build(this, out, constantPool, isValue);
-				//}
+				out.write(VMConst.DUP);
+				doNext(this, out, constantPool, isValue);
 			}
 			break;
 		case THROW :
-			doNext(null, out, constantPool, isValue);//next.build(null, out, constantPool, true);
+			doNext(null, out, constantPool, isValue);
 			out.write(VMConst.ATHROW);
 			break;
 		case LENGTH :
 			out.write(VMConst.ARRAYLENGTH);
-			doNext(null, out, constantPool, isValue);//if (next != null) next.build(null, out, constantPool, isValue);
+			doNext(null, out, constantPool, isValue);
 			break;
 		default:
 			break;
@@ -841,7 +835,6 @@ public class DefaultLValue implements LValue {
 		int i, j;
 		
 		if (a == null || b == null) throw new BuilderTypeException(fragment, "<null>");
-		//if (a == b) return a;
 		
 		i = VMConst.getLevel(a);
 		j = VMConst.getLevel(b);
@@ -875,7 +868,6 @@ public class DefaultLValue implements LValue {
 		return (byte)10;
 	}
 	
-	// private?
 	public static int getLevelPrimitive(Class<?> cls) {
 		if (cls == null || !cls.isPrimitive()) return VMConst.OBJECT;
 		return VMConst.getLevel(cls);
@@ -921,7 +913,6 @@ public class DefaultLValue implements LValue {
 			throw new BuilderSyntaxException(fragment, e.getMessage(), e);
 		}
 		
-		//throw new BuilderException(fragment, 0);
 		return value;
 	}
 	
@@ -1027,10 +1018,6 @@ public class DefaultLValue implements LValue {
 		if (source.getVarType() == dest) return source;
 		if (dest.isAssignableFrom(source.getVarType())) return source;
 		
-//		if (dest == Object.class && source.getVarType().isPrimitive()) {
-//			source = wrap(source);
-//		}
-		
 		if (dest.isPrimitive() && source.getVarType() == Object.class) {
 			source = cast(source, VMConst.getWrapperType(dest));
 		}
@@ -1071,7 +1058,6 @@ public class DefaultLValue implements LValue {
 				if (destLevel == VMConst.BYTE)	lv = new DefaultLValue(fragment, source.getRoot(), NodeType.CAST, VMConst.I2B, null, byte.class);
 				if (destLevel == VMConst.SHORT)	lv = new DefaultLValue(fragment, source.getRoot(), NodeType.CAST, VMConst.I2S, null, short.class);
 				if (destLevel == VMConst.CHAR)	lv = new DefaultLValue(fragment, source.getRoot(), NodeType.CAST, VMConst.I2C, null, char.class);
-				//if (level > 1 && level < 5)	source.varType = dest;
 				if (level > 1 && level < 5)	{
 					lv = new DefaultLValue(fragment, source.getRoot(), NodeType.CAST, null, null, dest);
 				}
@@ -1080,7 +1066,7 @@ public class DefaultLValue implements LValue {
 			lv = new DefaultLValue(fragment, source.getRoot(), NodeType.CAST, VMConst.CHECKCAST, null, dest);
 		}
 		if (lv != null) {
-			source.setNext(lv, false); // getRoot nicht erforderlich
+			source.setNext(lv, false);
 			source = lv;
 		}
 		return source;
@@ -1251,15 +1237,6 @@ public class DefaultLValue implements LValue {
 				s += "[" + ((DefaultLValue)value).toString(this, "") + "]";
 			} else if (!varType.isPrimitive()) {
 				s = source + "new " + VMConst.getTypeName(varType);
-//				s += "(";
-//				args = (DefaultLValue[])value;
-//				if (args != null) {
-//					for (i = 0; i < args.length; i++) {
-//						if (i > 0) s += ", ";
-//						s += args[i].toString(null);
-//					}
-//				}
-//				s += ")";
 			}
 			if (next != null) s += next.toString(this, "");
 			break;
@@ -1352,14 +1329,12 @@ public class DefaultLValue implements LValue {
 
 	@Override
 	public RValue instanceOf(Class<?> a) throws BuilderSyntaxException, BuilderTypeException {
-		//return getResultType(NodeType.INSTANCEOF, a);
 		// a -> lv -> getRoot
 		if (varType == null || varType == void.class || varType.isPrimitive()) throw new BuilderTypeException(fragment, BuilderTypeException.OBJECT_REQUIRED);
 		if (a == null || a == void.class) throw new BuilderTypeException(fragment, BuilderTypeException.CLASS_REQUIRED);
 		DefaultLValue v = new DefaultLValue(fragment, root, NodeType.INSTANCEOF, null, VMConst.getWrapperType(a), boolean.class);
 		setNext(v, false);
 		return v;
-		//return getResultType(NodeType.INSTANCEOF, a);
 	}
 
 	@Override
@@ -1402,20 +1377,16 @@ public class DefaultLValue implements LValue {
 		return getResultType(NodeType.IS_NOT_NULL, null);
 	}
 	
-	// right testen
 	private DefaultLValue getResultType(NodeType nodeType, Object right) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		DefaultLValue r = (DefaultLValue)fragment.$(right), l;
 		check(r);
 		Class<?> resultType;
 		l = unwrap(this);
-		// ist das immer richtig?
 		this.root.remove();
 		if (right != null) {
 			r = unwrap((DefaultLValue)r);
 			r.getRoot().removed = true;
 		}
-		
-		// instanceof: any / Class/CLASS
 		
 		switch (nodeType) {
 		case NOT :
@@ -1500,13 +1471,12 @@ public class DefaultLValue implements LValue {
 			v = new DefaultLValue(fragment, root, nodeType, getOp(nodeType, VMConst.getLevel(resultType)), r, resultType);
 		}
 		
-		l.setNext(v, false); // getRoot nicht erforderlich
+		l.setNext(v, false);
 		
 		return v;
 	}
 	
 	private boolean testVarType(Class<?> type, int from, int to) {
-		//if (type == null) return false;
 		int level = VMConst.getLevel(type);
 		if (level >= from && level <= to) return true;
 		return false;

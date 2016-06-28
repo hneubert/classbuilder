@@ -75,6 +75,9 @@ public interface IClass {
 	 */
 	public final static short NATIVE = 0x0100;
 	
+	/** 
+	 * Modifier for interfaces.
+	 */
 	public final static short INTERFACE = 0x0200;
 	
 	/** 

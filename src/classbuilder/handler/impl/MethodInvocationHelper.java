@@ -104,10 +104,6 @@ public class MethodInvocationHelper implements MethodReference {
 		return target.getName();
 	}
 	
-//	public MethodId getMethod() {
-//		return target;
-//	}
-	
 	private Variable[] getParameters() {
 		if (parameters == null) {
 			parameters = new Variable[method.getParameters().length];
@@ -127,7 +123,6 @@ public class MethodInvocationHelper implements MethodReference {
 		}
 		methodWrapper = new MethodWrapper(method, result);
 		invoke((Object[])getParameters());
-		//methodWrapper.writeOffsets();
 		if (result != null) {
 			if (!result.isInitialized()) {
 				throw new HandlerException(HandlerException.RESULT_VALUE_NEVER_SET, method.getName());

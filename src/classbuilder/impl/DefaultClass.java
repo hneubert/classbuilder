@@ -540,20 +540,12 @@ public class DefaultClass implements IClass {
 		}
 		
 		int attr = 0;
-//		if (attributes != null) attr += attributes.length;
 		if (annotations.size() > 0) {
 			classFile.writeShort(attr + 1);//attributes_count;
 			DefaultAnnotation.writeAnnotations(classFile, constantPool, annotations);
 		} else {
 			classFile.writeShort(attr);//attributes_count;
 		}
-//		if (attributes != null) {
-//			for (DefaultAttribute a : attributes) {
-//				classFile.writeShort(a.getTag());
-//				classFile.writeInt(a.getData().length);
-//				classFile.write(a.getData());
-//			}
-//		}
 		
 		classFile.close();
 		

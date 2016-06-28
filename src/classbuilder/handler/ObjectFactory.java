@@ -275,8 +275,7 @@ public class ObjectFactory {
 	}
 	
 	/**
-	 * Gibt alle Referenzen auf generierte Klassen und Singleton-Objekte frei.
-	 * Die ObjectFactory sollte nach diesen Aufruf nicht mehr verwendet werden.
+	 * Releases all references to all generated sub class.
 	 */
 	public void release() {
 		typeMap.clear();

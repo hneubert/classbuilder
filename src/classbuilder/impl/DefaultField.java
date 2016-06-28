@@ -120,7 +120,6 @@ public class DefaultField implements IField {
 		boolean constantValue = (getModifiers() & IClass.STATIC) != 0 && getValue() != null;
 		int attr = getDefaultAnnotations().size();
 		if (constantValue) attr++;
-//		if (attributes != null) attr += attributes.length;
 		classFile.writeShort(getModifiers());//access_flags;
 		classFile.writeShort(constantPool.addString(getName()));//name_index;
 		classFile.writeShort(constantPool.addString(VMConst.getClassName(getType())));//descriptor_index;
@@ -133,13 +132,6 @@ public class DefaultField implements IField {
 			classFile.writeInt(2);//u4 attribute_length;
 			classFile.writeShort(constantPool.add(getValue()));//u2 constantvalue_index;
 		}
-//		if (attributes != null) {
-//			for (DefaultAttribute a : attributes) {
-//				classFile.writeShort(a.getTag());
-//				classFile.writeInt(a.getData().length);
-//				classFile.write(a.getData());
-//			}
-//		}
 		return lineNumber;
 	}
 	

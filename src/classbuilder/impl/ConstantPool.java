@@ -104,7 +104,6 @@ public class ConstantPool {
 	}
 	
 	public ConstantPool(ClassLoader classLoader) {
-//		this.classLoader = classLoader;
 		constantPool = new LinkedHashMap<Const, Const>();
 		entryList = new ArrayList<Const>();
 		poolIndex = 1;

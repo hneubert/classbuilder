@@ -284,7 +284,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		if (varType == long.class || varType == double.class) localIndex++;
 		vars.add(var);
 		if ((flags & VMConst.DEBUG) != 0 && !hidden) {
-			//debug.addLine(var.getType().getName() + " " + var.getName() + ";");
 			debug.addLine(var.toString());
 		}
 		return var;
@@ -341,7 +340,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			if (value.getType() == NodeType.NULL || (!int.class.isAssignableFrom(value.getVarType()) && !Integer.class.isAssignableFrom(value.getVarType()))) {
 				throw new BuilderTypeException(this, BuilderTypeException.ARRAY_LENGTH_REQUIRED);
 			}
-			//value.getRoot().setRemoved(true);
 			return new DefaultLValue(this, null, NodeType.NEW, null, value, type);
 		} else {
 			if (type.isInterface() || (type.getModifiers() & VMConst.ABSTRACT) != 0) throw new BuilderTypeException(this, type);
@@ -359,7 +357,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		if (lv.getType() == NodeType.NULL) throw new BuilderTypeException(this, null);
 		if (!Throwable.class.isAssignableFrom(lv.getVarType())) throw new BuilderTypeException(this, lv.getVarType(), Throwable.class);
 		
-		//lv.getRoot().setRemoved(true);
 		value = new DefaultLValue(this, null, NodeType.THROW, null, null, lv.getVarType());
 		value.setNext(lv.getRoot(), true);
 		instructions.add(value);
@@ -376,7 +373,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			throw new BuilderTypeException(this, lv.getVarType(), boolean.class);
 		}
 		
-		//instructions.remove(((DefaultLValue)condition).getRoot());
 		((DefaultLValue)condition).remove();
 		build();
 		
@@ -432,7 +428,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		build();
 		fragment.setType(FragmentType.ELSE);
 		
-		//if (fragment.closeState == 0) out.write(VMConst.GOTO, InstructionWriter.PUSH_SWAP);
 		if (fragment.closeState == 0) {
 			fragment.End(out.getPos());
 			out.write(VMConst.GOTO, (short)0);
@@ -461,9 +456,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		if (!(Iterable.class.isAssignableFrom(((DefaultLValue)iterable).getVarType()) || array)) {
 			throw new BuilderTypeException(this, ((DefaultLValue)iterable).getVarType(), Object[].class, Iterable.class);
 		}
-		//if (!array) {
-		//	instructions.remove(((DefaultLValue)iterable).getRoot());
-		//}
 		((DefaultLValue)iterable).remove();
 		build();
 		if (array) ((DefaultLValue)iterable).getRoot().build(null, out, constantPool, true);
@@ -528,7 +520,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 				((DefaultLValue)iterable).getRoot().build(null, out, constantPool, true);
 				
 				out.push();
-				//out.write(VMConst.ALOAD, (byte)it.getIndex());
 				out.write(VMConst.DUP);				// it.hasNext();
 				out.write(VMConst.INVOKEINTERFACE, constantPool.add(Iterator.class.getMethod("hasNext")));
 				out.write((byte)1, (byte)0);
@@ -563,7 +554,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			throw new BuilderTypeException(this, ((DefaultLValue)condition).getVarType(), boolean.class);
 		}
 		
-		//instructions.remove(((DefaultLValue)condition).getRoot());
 		((DefaultLValue)condition).remove();
 		build();
 		
@@ -732,19 +722,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			Variable var = (Variable)value;
 			node = new DefaultLValue(this, (DefaultLValue)null, NodeType.LGET, value, null, var.getType());
 			instructions.add(node);
-//		} else if (value instanceof IField) {
-//			IField field = (IField)value;
-//			DefaultLValue next;
-//			if ((field.getModifiers() & IClass.STATIC) != 0) {
-//				node = new DefaultLValue(this, null, NodeType.THIS, null, component, component.getSuperclass());
-//				next = new DefaultLValue(this, node, NodeType.SGET, field, null, field.getType());
-//			} else {
-//				node = new DefaultLValue(this, null, NodeType.DECLARING_CLASS, null, component, component.getSuperclass());
-//				next = new DefaultLValue(this, node, NodeType.FGET, field, null, field.getType());
-//			}
-//			node.setNext(next, false);
-//			instructions.add(node);
-//			return next;
 		} else if (value instanceof RValue) {
 			return (RValue)value;
 		} else if (value instanceof Class) {
@@ -810,7 +787,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		
 		for (i = 0; i < args.length; i++) {
 			DefaultLValue lv = (DefaultLValue)$(args[i]);
-			//check(lv);
 			ac[i] = lv.varType;
 			newArgs[i] = lv;
 		}
@@ -826,8 +802,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 				throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, method);
 			}
 		}
-//		VMConst.testFucntion(source, dest)
-//		return This_().invoke(method, args);
 	}
 	
 	@Override
@@ -872,7 +846,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			out.pop();
 		case ELSE :
 		case ELSE_IF :
-			//if (fragment.closeMark == 0) out.pop();
 			writeEnd(fragment.getBreakList(), out.getPos());
 			break;
 		case WHILE :
@@ -941,9 +914,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 					if (offset == 0) {
 						if (node.getType() != NodeType.SUPER && node.getNext() != null) {
 							DefaultLValue next = node.getNext();
-//							if (next.getType() != NodeType.INVOKE && next.getId() instanceof Constructor) {
-//								throw new BuilderSyntaxException(BuilderSyntaxException.NO_SUPER_CONSTRUCTOR_ALLOWED);
-//							} else {
 							if (next.getType() != NodeType.INVOKE || !(next.getId() instanceof Constructor)) {
 								DefaultLValue spr = new DefaultLValue(null, null, NodeType.SUPER, null, null, component.getSuperclass());
 								try {
