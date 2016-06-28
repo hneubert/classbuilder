@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Beispiel zur Generierung von Klassen während des Builds -->
+<!-- example of compile-time generation -->
 <project name="clasbuilder" default="gendemo" basedir=".">
 	
-	<!-- Zielverzeichnis für java-Dateien -->
+	<!-- destination directory for generated java-files -->
 	<property name="src" location="gen/src" />
 	
-	<!-- Zielverzeichnis für class-Dateien -->
+	<!-- destination directory for generated class-files -->
 	<property name="bin" location="gen/bin" />
 	
-	<!-- Beispiel Target, das neue Klassen generiert -->
+	<!-- example target -->
 	<target name="gendemo">
-		<!-- Class-Path, der das classbuilder.jar und Super-Klassen mit Handler Annotationen enthält -->
+		<!-- classpath, which contains classbuilder.jar and all super-classes with @Handler annotations -->
 		<path id="gen.class.path">
+			<pathelement path="bin" />
 			<pathelement path="classbuilder.jar" />
 		</path>
-		
-		<!-- Generierung der Klassen -->
-		<genclasses src="${src}" bin="${bin}" filter="org.classbuilder.**.*Service" classpath="gen.class.path" />
+		<!-- generating classes -->
+		<genclasses src="${src}" bin="${bin}" filter="classbuilder.demo.handler.**.Test*" classpath="gen.class.path" />
 	</target>
 	
-	<!-- generisches Makro für die Generierung von Klassen -->
+	<!-- makro for class generation -->
 	<macrodef name="genclasses">
-		<!-- Zielverzeichnis für java-Dateien -->
+		<!-- destination directory for generated java-files -->
 		<attribute name="src" />
-		<!-- Zielverzeichnis für class-Dateien -->
+		<!-- destination directory for generated class-files -->
 		<attribute name="bin" />
-		<!-- Filter-Ausdruck um bestimmte Klassen auszuwählen (Beispiel: org.classbuilder.**.*Service) -->
+		<!-- filter expression, which selects all super-classes with @Handler annotations -->
 		<attribute name="filter" default="**.*" />
-		<!-- Class-Path, der das classbuilder.jar und Super-Klassen mit Handler Annotationen enthält -->
+		<!-- classpath, which contains classbuilder.jar and all super-classes with @Handler annotations -->
 		<attribute name="classpath" />
 		<sequential>
-			<!-- Aufruf der main-Methode in der Klasse org.classbuilder.handler.Generator im classbuilder.jar -->
-			<java classname="org.classbuilder.handler.Generator" failonerror="true">
+			<!-- runs main-method of classbuilder.handler.Generator -->
+			<java classname="classbuilder.handler.Generator" failonerror="true" fork="true">
 				<arg value="-s"/><arg value="@{src}" />
 				<arg value="-d"/><arg value="@{bin}" />
 				<arg value="-f"/><arg value="@{filter}" />
