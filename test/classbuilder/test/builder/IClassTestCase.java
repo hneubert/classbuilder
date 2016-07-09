@@ -862,6 +862,32 @@ public class IClassTestCase {
 	}
 	
 	@Test
+	public void addInterfaceTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException {
+		IClass cls = classFactory.createClass(PUBLIC, "package", "AddInterfaceTest", Object.class);
+		try {
+			cls.addInterface(null);
+			Assert.fail("<null>");
+		} catch (BuilderTypeException e) {
+			
+		}
+		try {
+			cls.addInterface(int.class);
+			Assert.fail("primitive type");
+		} catch (BuilderTypeException e) {
+			
+		}
+		try {
+			cls.addInterface(Integer.class);
+			Assert.fail("class type");
+		} catch (BuilderTypeException e) {
+			
+		}
+		cls.addInterface(Serializable.class);
+		Class<?> c = cls.build();
+		Assert.assertTrue(c.newInstance() instanceof Serializable);
+	}
+	
+	@Test
 	public void getInterfaces_test() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "Class", Object.class, Serializable.class);
 		Assert.assertEquals(1, cls.getInterfaces().size());

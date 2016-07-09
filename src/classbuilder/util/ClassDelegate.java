@@ -166,6 +166,11 @@ public class ClassDelegate implements IClass {
 	}
 
 	@Override
+	public void addInterface(Class<?> intf) throws BuilderTypeException {
+		cls.addInterface(intf);
+	}
+	
+	@Override
 	public Collection<Class<?>> getInterfaces() {
 		return cls.getInterfaces();
 	}

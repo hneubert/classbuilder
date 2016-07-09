@@ -280,6 +280,13 @@ public interface IClass {
 	public Collection<IAnnotation> getAnnotations();
 	
 	/**
+	 * Adds an interface.
+	 * @param intf interface
+	 * @throws BuilderTypeException no interface type
+	 */
+	public void addInterface(Class<?> intf) throws BuilderTypeException;
+	
+	/**
 	 * Returns all declared interfaces.
 	 * @return all declared interfaces
 	 */

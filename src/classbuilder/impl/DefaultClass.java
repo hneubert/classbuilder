@@ -695,6 +695,15 @@ public class DefaultClass implements IClass {
 		return pkg;
 	}
 	
+	@Override
+	public void addInterface(Class<?> intf) throws BuilderTypeException {
+		if (intf == null || !intf.isInterface()) throw new BuilderTypeException(this, intf);
+		for (Class<?> i : interfaces) {
+			if (i == intf) return;
+		}
+		interfaces.add(intf);
+	}
+	
 	public Collection<Class<?>> getInterfaces() {
 		return interfaces;
 	}
