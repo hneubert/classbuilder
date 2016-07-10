@@ -348,6 +348,13 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		}
 	}
 	
+	public RValue NewDeclaringClass(Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
+		testClosed();
+		DefaultLValue value;
+		value = new DefaultLValue(this, null, NodeType.NEW_DECLARING_CLASS, null, null, component.getSuperclass());
+		return value.invoke("<init>", args);
+	}
+	
 	@Override
 	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException {
 		testClosed();

@@ -184,7 +184,11 @@ public class ConstantPool {
 					for (Variable var : method.getParameters()) {
 						sig += VMConst.getClassName(var.getType());
 					}
-					sig += ")" + VMConst.getClassName(method.getReturnType());
+					if (method.isConstructor()) {
+						sig += ")" + VMConst.getClassName(void.class);
+					} else {
+						sig += ")" + VMConst.getClassName(method.getReturnType());
+					}
 				}
 				r1 = addConstant(CONSTANT_Utf8, poolIndex, name, 0, 0);
 				r2 = addConstant(CONSTANT_Utf8, poolIndex, sig, 0, 0);

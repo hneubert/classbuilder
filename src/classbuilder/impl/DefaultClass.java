@@ -43,10 +43,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import classbuilder.BuilderAccessException;
 import classbuilder.BuilderCompilerException;
 import classbuilder.BuilderException;
 import classbuilder.BuilderModifierException;
 import classbuilder.BuilderNameException;
+import classbuilder.BuilderSyntaxException;
 import classbuilder.BuilderTypeException;
 import classbuilder.ClassFactory;
 import classbuilder.IAnnotation;
@@ -66,6 +68,7 @@ public class DefaultClass implements IClass {
 	protected List<DefaultMethod> functions;
 	protected List<DefaultMethod> constructors;
 	protected List<DefaultAnnotation> annotations;
+	protected int enumFieldCounter;
 	
 	protected Class<?> superClass;
 	protected int flags;
@@ -96,14 +99,16 @@ public class DefaultClass implements IClass {
 		this.superClass = superClass;
 		this.classFactory = classFactory;
 		
-		/*if ((flags & ENUM) != 0) {
-			flags |= FINAL;
-		} else*/ if ((flags & INTERFACE) != 0) {
+		if ((flags & ENUM) != 0) {
+			this.flags |= FINAL;
+			superClass = Enum.class;
+			this.superClass = Enum.class;
+		} else if ((flags & INTERFACE) != 0) {
 			this.flags |= ABSTRACT;
 			superClass = Object.class;
 			this.superClass = Object.class;
 		} else {
-			flags |= SUPER;
+			this.flags |= SUPER;
 			if (superClass == null || superClass.isInterface()) throw new BuilderTypeException(this, superClass);
 		}
 		
@@ -119,8 +124,9 @@ public class DefaultClass implements IClass {
 		constructors = new ArrayList<DefaultMethod>();
 		annotations = new ArrayList<DefaultAnnotation>();
 		constantPool = new ConstantPool(classFactory.getClassLoader());
+		enumFieldCounter = 0;
 		
-		validate((this.flags & ~(VMConst.DEBUG | SUPER)), PUBLIC | ABSTRACT | FINAL | INTERFACE);
+		validate((this.flags & ~(VMConst.DEBUG | SUPER)), PUBLIC | ABSTRACT | FINAL | INTERFACE | ENUM);
 		validateName(name);
 		validatePackageName(pkg);
 		
@@ -128,6 +134,16 @@ public class DefaultClass implements IClass {
 			for (Class<?> i : intf) {
 				if (i == null || !i.isInterface()) throw new BuilderTypeException(this, i);
 				interfaces.add(i);
+			}
+		}
+		
+		if ((flags & ENUM) != 0) {
+			try {
+				IMethod c = addConstructor(PROTECTED, String.class, int.class);
+					c.Super().invoke("<init>", c.getParameter(0), c.getParameter(1));
+				c.End();
+			} catch (BuilderException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -274,13 +290,21 @@ public class DefaultClass implements IClass {
 		return field;
 	}
 	
-//	public IField addEnumField(String name, Object args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
-//		DefaultField field = new DefaultField(this, ENUM | FINAL | PUBLIC | STATIC, name, Enum.class, null, constantPool);
-//		IMethod s = Static();
-//		s.get(field).set(s.New(Enum.class, args));
-//		fields.add(field);
-//		return field;
-//	}
+	public IField addEnumConstant(String name) throws BuilderNameException, BuilderSyntaxException {
+		if ((flags & ENUM) == 0) throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_NOT_ALLOWED);
+		validateName(name);
+		DefaultField field = new DefaultField(this, ENUM | FINAL | PUBLIC | STATIC, name, Enum.class, null, constantPool);
+		IMethod s = Static();
+		fields.add(field);
+		try {
+			s.get(field).set(((DefaultMethod)s).NewDeclaringClass(name, enumFieldCounter++));
+		} catch (BuilderTypeException e) {
+			throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_CREATION_FAILD, e);
+		} catch (BuilderAccessException e) {
+			throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_CREATION_FAILD, e);
+		}
+		return field;
+	}
 	
 	@Override
 	public IConstructor addConstructor(int flags, Class<?> ...params) throws BuilderModifierException, BuilderTypeException, BuilderNameException {
@@ -349,7 +373,7 @@ public class DefaultClass implements IClass {
 		}
 		
 		try {
-			if (constructors.isEmpty() && (flags & INTERFACE) == 0) {
+			if (constructors.isEmpty() && (flags & (INTERFACE | ENUM)) == 0) {
 				IMethod c = addConstructor(PUBLIC);
 					c.Super().invoke("<init>");
 				c.End();
@@ -395,6 +419,44 @@ public class DefaultClass implements IClass {
 //				}
 //			staticInitializer.prepend(staticOut);
 //		}
+		
+		if (staticInitializer != null && !staticInitializer.isClosed()) {
+			try {
+				staticInitializer.End();
+			} catch (BuilderSyntaxException e) {
+				throw new BuilderCompilerException(this, BuilderCompilerException.STATIC_INITIALIZER_CLOSE_FAILD, e);
+			}
+		}
+		
+		if ((flags & ENUM) != 0) {
+			IMethod m;
+			try {
+				m = addMethod(PUBLIC | STATIC, Enum[].class, "values");
+					Variable v = m.addVar(Enum[].class);
+					int i = 0;
+					for (IField field : fields) {
+						if ((field.getModifiers() & ENUM) != 0) i++;
+					}
+					v.set(m.New(Enum[].class, i));
+					i = 0;
+					for (IField field : fields) {
+						v.get(i).set(m.get(field));
+						i++;
+					}
+					m.Return(v);
+				m.End();
+			} catch (BuilderModifierException e) {
+				throw new BuilderCompilerException(this, BuilderCompilerException.ENUM_VALUES_IMPLEMENTATION_FAILD, e);
+			} catch (BuilderNameException e) {
+				throw new BuilderCompilerException(this, BuilderCompilerException.ENUM_VALUES_IMPLEMENTATION_FAILD, e);
+			} catch (BuilderTypeException e) {
+				throw new BuilderCompilerException(this, BuilderCompilerException.ENUM_VALUES_IMPLEMENTATION_FAILD, e);
+			} catch (BuilderSyntaxException e) {
+				throw new BuilderCompilerException(this, BuilderCompilerException.ENUM_VALUES_IMPLEMENTATION_FAILD, e);
+			} catch (BuilderAccessException e) {
+				throw new BuilderCompilerException(this, BuilderCompilerException.ENUM_VALUES_IMPLEMENTATION_FAILD, e);
+			}
+		}
 		
 		testAnnotations(annotations);
 		for (DefaultField field : fields) {
@@ -662,14 +724,14 @@ public class DefaultClass implements IClass {
 	}
 	
 	private void validate(int modifier, int allowed) throws BuilderModifierException {
-		if ((modifier & 0xFFFFE000) != 0) throw new BuilderModifierException(this, "<unknown modifier>");
+		if ((modifier & 0xFFFFA000) != 0) throw new BuilderModifierException(this, "<unknown modifier>");
 		
 		if ((modifier & PUBLIC)				!= 0 && ((allowed & PUBLIC) == 0 || (modifier & (PRIVATE | PROTECTED)) != 0)) throw new BuilderModifierException(this, "public");
 		if ((modifier & PRIVATE)			!= 0 && ((allowed & PRIVATE) == 0 || (modifier & (PUBLIC | PROTECTED)) != 0)) throw new BuilderModifierException(this, "private");
 		if ((modifier & PROTECTED)			!= 0 && ((allowed & PROTECTED) == 0 || (modifier & (PRIVATE | PUBLIC)) != 0)) throw new BuilderModifierException(this, "protected");
 		
 		if ((modifier & STATIC)				!= 0 && ((allowed & STATIC) == 0 || (modifier & ABSTRACT) != 0)) throw new BuilderModifierException(this, "static");
-		if ((modifier & ABSTRACT)			!= 0 && ((allowed & ABSTRACT) == 0 || (modifier & (STATIC | FINAL)) != 0)) throw new BuilderModifierException(this, "abstract");
+		if ((modifier & ABSTRACT)			!= 0 && ((allowed & ABSTRACT) == 0 || (modifier & (STATIC | FINAL | ENUM)) != 0)) throw new BuilderModifierException(this, "abstract");
 		
 		if ((modifier & FINAL)				!= 0 && (allowed & FINAL) == 0) throw new BuilderModifierException(this, "final");
 		if ((modifier & SUPER)				!= 0 && (allowed & SUPER) == 0) throw new BuilderModifierException(this, "super");
@@ -679,6 +741,8 @@ public class DefaultClass implements IClass {
 		if ((modifier & INTERFACE)			!= 0 && ((allowed & INTERFACE) == 0 || (modifier & ABSTRACT) == 0)) throw new BuilderModifierException(this, "interface");
 		if ((modifier & STRICT)				!= 0 && (allowed & STRICT) == 0) throw new BuilderModifierException(this, "strict");
 		if ((modifier & SYNCHRONIZED)		!= 0 && (allowed & SYNCHRONIZED) == 0) throw new BuilderModifierException(this, "synchronized");
+		
+		if ((modifier & ENUM)				!= 0 && (allowed & ENUM) == 0) throw new BuilderModifierException(this, "enum");
 	}
 	
 	@Override

@@ -27,6 +27,7 @@ package classbuilder.impl;
 
 public enum NodeType {
 	NEW,
+	NEW_DECLARING_CLASS,
 	THROW,
 	
 	ASET,

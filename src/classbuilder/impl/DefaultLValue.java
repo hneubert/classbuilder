@@ -32,11 +32,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 
 import classbuilder.BuilderAccessException;
 import classbuilder.BuilderSyntaxException;
 import classbuilder.BuilderTypeException;
 import classbuilder.IClass;
+import classbuilder.IConstructor;
 import classbuilder.IField;
 import classbuilder.IMethod;
 import classbuilder.LValue;
@@ -287,7 +289,7 @@ public class DefaultLValue implements LValue {
 				}
 				if (next == null) {
 					if (type == NodeType.SUPER && "<init>".equals(name)) {
-						ctor = getConstructor(varType, null, ac);
+						ctor = getConstructor(true, varType, null, ac);
 						if (!isAccessable(ctor, true)) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE);
 						types = ctor.getParameterTypes();
 						for (i = 0; i < types.length; i++) newArgs[i] = cast(newArgs[i], types[i]).getRoot();
@@ -301,11 +303,16 @@ public class DefaultLValue implements LValue {
 			} else if (type == NodeType.CLASS) {
 				next = addMethod(newArgs, getMethod(fragment, (Class<?>)value, fragment.getDeclaringClass().getPackage(), name, ac, false));
 			} else if (type == NodeType.NEW) {
-				ctor = getConstructor(varType, null, ac);
+				ctor = getConstructor(false, varType, null, ac);
 				if (!isAccessable(ctor, false)) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE);
 				types = ctor.getParameterTypes();
 				for (i = 0; i < types.length; i++) newArgs[i] = cast(newArgs[i], types[i]).getRoot();
 				next = new DefaultLValue(fragment, root, NodeType.INVOKE, ctor, newArgs, ctor.getDeclaringClass());
+			} else if (type == NodeType.NEW_DECLARING_CLASS) {
+				IConstructor ct = getConstructor(ac);
+				types = ct.getParameterTypes();
+				for (i = 0; i < types.length; i++) newArgs[i] = cast(newArgs[i], types[i]).getRoot();
+				next = new DefaultLValue(fragment, root, NodeType.INVOKE, ct, newArgs, ct.getDeclaringClass().getSuperclass());
 			} else if (varType.isArray() || varType.isPrimitive()) {
 				throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, name);
 			} else {
@@ -399,12 +406,31 @@ public class DefaultLValue implements LValue {
 		return field;
 	}
 	
-	private Constructor<?> getConstructor(Class<?> cls, String name, Class<?> ...args) throws NoSuchMethodException {
-		Constructor<?>[] methods = cls.getConstructors();
+	private Constructor<?> getConstructor(boolean protectedAccess, Class<?> cls, String name, Class<?> ...args) throws NoSuchMethodException {
+		Constructor<?>[] methods = cls.getDeclaredConstructors();
 		Constructor<?> method = null;
 		int best = 1000;
 		
+		int flags = PUBLIC;
+		if (protectedAccess) flags |= IClass.PROTECTED;
 		for (Constructor<?> m : methods) {
+			if ((m.getModifiers() & flags) == 0) continue;
+			int q = VMConst.testFucntion(args, m.getParameterTypes());
+			if (q != -1 && best > q) {
+				best = q;
+				method = m;
+			}
+		}
+		if (method != null) return method;
+		throw new NoSuchMethodException();
+	}
+	
+	private IConstructor getConstructor(Class<?> ...args) throws NoSuchMethodException {
+		Collection<IConstructor> methods = fragment.getDeclaringClass().getConstructors();
+		IConstructor method = null;
+		int best = 1000;
+		
+		for (IConstructor m : methods) {
 			int q = VMConst.testFucntion(args, m.getParameterTypes());
 			if (q != -1 && best > q) {
 				best = q;
@@ -441,7 +467,7 @@ public class DefaultLValue implements LValue {
 		lv = cast(lv, varType);
 		
 		if (id instanceof Field) if ((((Field)id).getModifiers() & IClass.FINAL) != 0) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE);
-		if (id instanceof IField) if ((((IField)id).getModifiers() & IClass.FINAL) != 0) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE);
+		if (id instanceof IField) if ((((IField)id).getModifiers() & IClass.FINAL) != 0 && (((IField)id).getModifiers() & IClass.ENUM) == 0) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE);
 		
 		if (type == NodeType.FGET) {
 			type = NodeType.FSET;
@@ -615,7 +641,7 @@ public class DefaultLValue implements LValue {
 			if ((id instanceof Method && (((Method)id).getModifiers() & Modifier.STATIC) != 0) ||
 				(id instanceof IMethod && (((IMethod)id).getModifiers() & Modifier.STATIC) != 0)) {
 				out.write(VMConst.INVOKESTATIC, index);
-			} else if (parent.getType() == NodeType.SUPER || id instanceof Constructor<?>) {
+			} else if (parent.getType() == NodeType.SUPER || id instanceof Constructor<?> || id instanceof IConstructor) {
 				out.write(VMConst.INVOKESPECIAL, index);
 			} else {
 				if (parent.varType.isInterface()) {
@@ -810,6 +836,11 @@ public class DefaultLValue implements LValue {
 				out.write(VMConst.DUP);
 				doNext(this, out, constantPool, isValue);
 			}
+			break;
+		case NEW_DECLARING_CLASS :
+			out.write(VMConst.NEW, constantPool.add(fragment.getDeclaringClass()));
+			out.write(VMConst.DUP);
+			doNext(this, out, constantPool, isValue);
 			break;
 		case THROW :
 			doNext(null, out, constantPool, isValue);
@@ -1238,6 +1269,10 @@ public class DefaultLValue implements LValue {
 			} else if (!varType.isPrimitive()) {
 				s = source + "new " + VMConst.getTypeName(varType);
 			}
+			if (next != null) s += next.toString(this, "");
+			break;
+		case NEW_DECLARING_CLASS :
+			s = source + "new " + fragment.getDeclaringClass().getName();
 			if (next != null) s += next.toString(this, "");
 			break;
 		case THROW :

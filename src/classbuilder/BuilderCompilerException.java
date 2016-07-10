@@ -31,8 +31,10 @@ package classbuilder;
 public class BuilderCompilerException extends BuilderException {
 	private static final long serialVersionUID = 1L;
 	
-	public static final int ANNOTATION_VALUE_REQUIRED = 200;
-	public static final int METHOD_NOT_CLOSED =			201;
+	public static final int ANNOTATION_VALUE_REQUIRED = 		200;
+	public static final int METHOD_NOT_CLOSED =					201;
+	public static final int STATIC_INITIALIZER_CLOSE_FAILD =	202;
+	public static final int ENUM_VALUES_IMPLEMENTATION_FAILD =	203;
 	
 	private int error;
 	
@@ -53,6 +55,17 @@ public class BuilderCompilerException extends BuilderException {
 	 */
 	public BuilderCompilerException(Object source, int error) {
 		super(source, buildMessage(error, ""));
+		this.error = error;
+	}
+	
+	/**
+	 * Creates a new BuilderCompilerException.
+	 * @param source error source object
+	 * @param error specific error id
+	 * @param exception root cause
+	 */
+	public BuilderCompilerException(Object source, int error, Exception exception) {
+		super(source, buildMessage(error, ""), exception);
 		this.error = error;
 	}
 	
@@ -81,6 +94,10 @@ public class BuilderCompilerException extends BuilderException {
 			return "annotation value required: ";
 		case METHOD_NOT_CLOSED :
 			return "method not closed: " + value;
+		case STATIC_INITIALIZER_CLOSE_FAILD :
+			return "static initializer could not be closed: " + value;
+		case ENUM_VALUES_IMPLEMENTATION_FAILD :
+			return "enum method values() could not be implemented: " + value;
 		default:
 			return "unknown error";	
 		}

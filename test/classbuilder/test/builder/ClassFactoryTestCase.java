@@ -117,6 +117,7 @@ public class ClassFactoryTestCase {
 			if (i == IClass.INTERFACE) continue;
 			if (i == IClass.FINAL) continue;
 			if (i == IClass.SUPER) continue;
+			if (i == IClass.ENUM) continue;
 			if (i == 0x2000) continue;
 			try {
 				classFactory.createClass(i, "package", "Class", Object.class);

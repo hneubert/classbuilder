@@ -8,6 +8,7 @@ import classbuilder.BuilderCompilerException;
 import classbuilder.BuilderException;
 import classbuilder.BuilderModifierException;
 import classbuilder.BuilderNameException;
+import classbuilder.BuilderSyntaxException;
 import classbuilder.BuilderTypeException;
 import classbuilder.ClassFactory;
 import classbuilder.IAnnotation;
@@ -216,11 +217,17 @@ public class BasicTestCase {
 		cls.build();
 	}
 	
-//	public void enumTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderCompilerException {
-//		IClass cls = classFactory.createClass(IClass.ENUM, "basicTest", "EnumTest", null);
-//			cls.addField(PUBLIC, int.class, "A");
-//		Class<?> c = cls.build();
-//	}
+	@Test
+	public void enumTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderCompilerException, InstantiationException, IllegalAccessException, BuilderSyntaxException {
+		IClass cls = classFactory.createClass(PUBLIC | IClass.ENUM, "basicTest", "EnumTest", null);
+			cls.addEnumConstant("A");
+			cls.addEnumConstant("B");
+		Class<?> c = cls.build();
+		for (Object o : c.getEnumConstants()) {
+			Enum<?> e = (Enum<?>)o;
+			System.out.println(e.ordinal() + " " + e.name());
+		}
+	}
 	
 	private static int counter = 0;
 	private IClass addClass(Class<?> ...intf) throws BuilderModifierException, BuilderNameException, BuilderTypeException {

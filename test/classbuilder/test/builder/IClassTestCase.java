@@ -67,7 +67,7 @@ public class IClassTestCase {
 	@Test
 	public void getModifiers_test() throws BuilderModifierException, BuilderNameException, BuilderTypeException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "Class", Object.class);
-		Assert.assertEquals(PUBLIC, cls.getModifiers());
+		Assert.assertEquals(SUPER | PUBLIC, cls.getModifiers());
 	}
 	
 	@Test
@@ -899,5 +899,32 @@ public class IClassTestCase {
 	public void getClassFactoryTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "Class", Object.class, Serializable.class);
 		Assert.assertEquals(classFactory, cls.getClassFactory());
+	}
+	
+	@Test
+	public void addEnumFieldTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderCompilerException {
+		IClass cls = classFactory.createClass(PUBLIC | IClass.ENUM, "package", "AddEnumFieldTest", null);
+			try {
+				cls.addEnumConstant(null);
+				Assert.fail("<null>");
+			} catch (BuilderNameException e) {
+				
+			}
+			try {
+				cls.addEnumConstant("*");
+				Assert.fail("imvalid character");
+			} catch (BuilderNameException e) {
+				
+			}
+			cls.addEnumConstant("A");
+			cls.addEnumConstant("B");
+		Class<?> c = cls.build();
+		Object[] fields = c.getEnumConstants();
+		Enum<?> e = (Enum<?>)fields[0];
+		Assert.assertEquals(0, e.ordinal());
+		Assert.assertEquals("A", e.name());
+		e = (Enum<?>)fields[1];
+		Assert.assertEquals(1, e.ordinal());
+		Assert.assertEquals("B", e.name());
 	}
 }

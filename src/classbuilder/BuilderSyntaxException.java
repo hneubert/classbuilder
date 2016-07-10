@@ -51,6 +51,8 @@ public class BuilderSyntaxException extends BuilderException {
 	public static final int RETURN_VALUE_REQUIRED =		117;
 	public static final int FRAGMENT_IS_CLOSED =		118;
 	public static final int TOO_MANY_VARIABLES =		119;
+	public static final int ENUM_CONST_CREATION_FAILD =	120;
+	public static final int ENUM_CONST_NOT_ALLOWED =	121;
 	
 	private int error;
 	
@@ -145,6 +147,10 @@ public class BuilderSyntaxException extends BuilderException {
 			return "the current fragment is closed, End() expected";
 		case TOO_MANY_VARIABLES :
 			return "too many variables, only 64 variables are allowed";
+		case ENUM_CONST_CREATION_FAILD :
+			return "enum constant could not be created: " + value;
+		case ENUM_CONST_NOT_ALLOWED :
+			return "enum constant not allowed";
 		default:
 			return "unknown error";	
 		}

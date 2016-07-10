@@ -98,7 +98,7 @@ public interface IClass {
 	/**
 	 * Modifier for enums and enum fields.
 	 */
-//	public final static short ENUM = 0x4000;
+	public final static short ENUM = 0x4000;
 	
 	/**
 	 * Creates a new initalized field.
@@ -109,12 +109,21 @@ public interface IClass {
 	 * @param modifiers modifiers
 	 * @param name field name
 	 * @param value initial value
-	 * @return ein new initalized field
+	 * @return new initalized field
 	 * @throws BuilderTypeException invalid data type
 	 * @throws BuilderNameException invalid field name
 	 * @throws BuilderModifierException invalid modifier
 	 */
 	public IField addField(int modifiers, String name, Object value) throws BuilderModifierException, BuilderNameException, BuilderTypeException;
+	
+	/**
+	 * Creates a new enum constant.
+	 * @param name enum constant name
+	 * @return new enum constant
+	 * @throws BuilderNameException invalid field name
+	 * @throws BuilderSyntaxException enum field not allowed or creation faild
+	 */
+	public IField addEnumConstant(String name) throws BuilderNameException, BuilderSyntaxException;
 	
 	/**
 	 * Gnerates and loads this class.
