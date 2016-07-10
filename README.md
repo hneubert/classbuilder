@@ -112,23 +112,24 @@ m.$(System.class).get("out").invoke("println", strings.length()); // System.out.
 ```
 
 Operators:
+
 operator | method | description
 ---------|--------|------------
-~/! | not | logical negation
+~/\! | not | logical negation
 &amp;/&amp;&amp; | and | logical and
-\|\/\|\| | or | logical or
+\|/\|\| | or | logical or
 ^ | xor | logical exclusive or
 &lt;&lt; | shl | shift left
 &gt;&gt; | shr | shift arithmetic right
 &gt;&gt;&gt; | ushr | schift right
-- | neg | arithmetical negation
-+ | add | add
-- | sub | substract
-* | mul | multiply
+\- | neg | arithmetical negation
+\+ | add | add
+\- | sub | substract
+\* | mul | multiply
 / | div | divide
 % | mod | remainder
 == | equal | equal
-!= | notEqual | not equal
+\!= | notEqual | not equal
 &lt; | less | less
 &gt; | greater | greater
 &lt;= | lessEqual | less or equal
