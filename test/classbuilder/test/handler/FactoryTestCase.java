@@ -93,6 +93,10 @@ public class FactoryTestCase {
 		Class<?> subclass = factory.getSubclass(TestInterface.class, null, null);
 		Assert.assertNotNull(subclass);
 		Assert.assertTrue(TestInterface.class.isAssignableFrom(subclass));
+		
+		subclass = factory.getSubclass(TestInterface.class);
+		Assert.assertNotNull(subclass);
+		Assert.assertTrue(TestInterface.class.isAssignableFrom(subclass));
 	}
 	
 	@Test

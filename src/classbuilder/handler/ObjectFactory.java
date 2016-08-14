@@ -285,8 +285,8 @@ public class ObjectFactory {
 	/**
 	 * Creates an new sub class by a primary type, which can be a super class or interface.
 	 * @param primaryType super class or interface
-	 * @param interfaces additional interfaces
-	 * @param metadata additional meta-data
+	 * @param interfaces additional interfaces, overrides interfaces property of ObjectFactory
+	 * @param metadata additional meta-data, overrides metadata property of ObjectFactory
 	 * @return generierte generated sub class
 	 * @throws BuilderException implementation error
 	 * @throws HandlerException handler error
@@ -322,6 +322,17 @@ public class ObjectFactory {
 	}
 	
 	/**
+	 * Creates an new sub class by a primary type, which can be a super class or interface.
+	 * @param primaryType super class or interface
+	 * @return generierte generated sub class
+	 * @throws BuilderException implementation error
+	 * @throws HandlerException handler error
+	 */
+	public Class<?> getSubclass(Class<?> primaryType) throws BuilderException, HandlerException {
+		return getSubclass(primaryType, interfaces, metadata);
+	}
+	
+	/**
 	 * Creates a new instance of a sub class by a primary type.
 	 * @param <T> super class or interface
 	 * @param primaryType super class or interface
@@ -340,6 +351,26 @@ public class ObjectFactory {
 				if (obj == null) throw new HandlerException("no appropriate constructor");
 				return obj;
 			}
+			return (T)type.newInstance();
+		} catch (InstantiationException e) {
+			throw new HandlerException("instantiation faild: " + e.getMessage(), e);
+		} catch (IllegalAccessException e) {
+			throw new HandlerException("instantiation faild: " + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Creates a new instance of a sub class by a primary type.
+	 * @param <T> super class or interface
+	 * @param primaryType super class or interface
+	 * @return new sub class instance
+	 * @throws BuilderException implementation error
+	 * @throws HandlerException handler error
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T create(Class<T> primaryType) throws BuilderException, HandlerException {
+		try {
+			Class<?> type = getSubclass(primaryType, interfaces, metadata);
 			return (T)type.newInstance();
 		} catch (InstantiationException e) {
 			throw new HandlerException("instantiation faild: " + e.getMessage(), e);
