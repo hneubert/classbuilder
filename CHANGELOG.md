@@ -5,4 +5,4 @@
 * IClass.addInterface added
 * enum support added
 * ObjectFactory: object instantiation corrected (null values and primitive types)
-* ObkectFactory: additional methods added
+* ObjectFactory: additional methods added
