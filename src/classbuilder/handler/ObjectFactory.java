@@ -52,6 +52,7 @@ import classbuilder.handler.impl.DefaultConstructorHandler;
 import classbuilder.handler.impl.DefaultHandlerContext;
 import classbuilder.handler.impl.InstantiationHelper;
 import classbuilder.handler.impl.MethodInvocationHelper;
+import classbuilder.impl.VMConst;
 
 /**
  * The ObjectFactory creates sub classes by a primary types and additional interfaces, which are annotated with 
@@ -282,7 +283,7 @@ public class ObjectFactory {
 	}
 	
 	/**
-	 * Creates an new sub class by a primary type, which can be a super class or interface
+	 * Creates an new sub class by a primary type, which can be a super class or interface.
 	 * @param primaryType super class or interface
 	 * @param interfaces additional interfaces
 	 * @param metadata additional meta-data
@@ -488,11 +489,20 @@ public class ObjectFactory {
 			ctor.If(ctor.getParameter(0).length().equal(constructor.getParameterTypes().length));
 				RValue rv = null;
 				for (Class<?> type : constructor.getParameterTypes()) {
+					Class<?> wrapper = VMConst.getWrapperType(type);
 					if (rv == null) {
-						rv = ctor.getParameter(0).get(i++).instanceOf(type);
+						rv = ctor.getParameter(0).get(i).instanceOf(wrapper);
+						if (type == wrapper) {
+							rv = rv.or(ctor.getParameter(0).get(i).isNull());
+						}
 					} else {
-						rv.and(ctor.getParameter(0).get(i++).instanceOf(type));
+						if (type == wrapper) {
+							rv = rv.and(ctor.getParameter(0).get(i).instanceOf(wrapper).or(ctor.getParameter(0).get(i).isNull()));
+						} else {
+							rv = rv.and(ctor.getParameter(0).get(i).instanceOf(wrapper));
+						}
 					}
+					i++;
 				}
 				if (rv == null) {
 					ctor.Return(ctor.New(cls));

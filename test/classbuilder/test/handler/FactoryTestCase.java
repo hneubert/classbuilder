@@ -1,5 +1,6 @@
 package classbuilder.test.handler;
 
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -55,6 +56,14 @@ public class FactoryTestCase {
 			this.value = value;
 		}
 		
+		public ConstructorTest(String value, Integer i) {
+			this.value = value;
+		}
+		
+		public ConstructorTest(Integer i, String value) {
+			this.value = value;
+		}
+		
 		public Object getValue() {
 			return value;
 		}
@@ -62,25 +71,20 @@ public class FactoryTestCase {
 		public abstract void foo();
 	}
 	
-//	@Test
-//	public void interfacesTest() throws BuilderFactoryException {
-//		ObjectFactory factory = new ObjectFactory();
-//		
-//		factory.setProperty(ObjectFactory.INTERFACES, new Class<?>[] {Serializable.class, Closeable.class});
-//		Class<?>[] interfaces = (Class<?>[])factory.getProperty(ObjectFactory.INTERFACES);
-//		Assert.assertArrayEquals(new Class<?>[] {Serializable.class, Closeable.class}, interfaces);
-//	}
-//	
-//	@Test
-//	public void classFactoryTest() throws BuilderFactoryException {
-//		ObjectFactory factory = new ObjectFactory();
-//		
-//		ClassFactory classFactory = new ClassFactory();
-//		factory.setProperty(ObjectFactory.CLASS_FACTORY, classFactory);
-//		ClassFactory result = (ClassFactory)factory.getProperty(ObjectFactory.CLASS_FACTORY);
-//		
-//		Assert.assertEquals(classFactory, result);
-//	}
+	@Test
+	public void interfacesTest() throws BuilderException, HandlerException {
+		ObjectFactory factory = new ObjectFactory();
+		
+		factory.setInterfaces(new Class<?>[] {Serializable.class, Closeable.class});
+		Class<?>[] interfaces = (Class<?>[])factory.getInterfaces();
+		Assert.assertArrayEquals(new Class<?>[] {Serializable.class, Closeable.class}, interfaces);
+		
+		Object obj = factory.create(TestInterface.class);
+		Assert.assertNotNull(obj);
+		Assert.assertTrue(obj instanceof TestInterface);
+		Assert.assertTrue(obj instanceof Serializable);
+		Assert.assertTrue(obj instanceof Closeable);
+	}
 	
 	@Test
 	public void getSubclassTest() throws BuilderException, HandlerException {
@@ -89,8 +93,6 @@ public class FactoryTestCase {
 		Class<?> subclass = factory.getSubclass(TestInterface.class, null, null);
 		Assert.assertNotNull(subclass);
 		Assert.assertTrue(TestInterface.class.isAssignableFrom(subclass));
-//		Assert.assertTrue(Serializable.class.isAssignableFrom(subclass));
-//		Assert.assertTrue(Closeable.class.isAssignableFrom(subclass));
 	}
 	
 	@Test
@@ -100,8 +102,6 @@ public class FactoryTestCase {
 		TestInterface obj = factory.create(TestInterface.class);
 		Assert.assertNotNull(obj);
 		Assert.assertTrue(obj instanceof TestInterface);
-//		Assert.assertTrue(obj instanceof Serializable);
-//		Assert.assertTrue(obj instanceof Closeable);
 		
 		TestInterface obj2 = factory.create(TestInterface.class);
 		Assert.assertNotNull(obj2);
@@ -116,10 +116,22 @@ public class FactoryTestCase {
 		ConstructorTest obj = factory.create(ConstructorTest.class, "A");
 		Assert.assertNotNull(obj);
 		Assert.assertEquals("A", obj.getValue());
+
+		obj = factory.create(ConstructorTest.class, (Object)null);
+		Assert.assertNotNull(obj);
+		Assert.assertEquals(null, obj.getValue());
 		
 		ConstructorTest obj2 = factory.create(ConstructorTest.class, 1);
 		Assert.assertNotNull(obj2);
 		Assert.assertEquals(1, obj2.getValue());
+		
+		factory.create(ConstructorTest.class, 1, "A");
+		factory.create(ConstructorTest.class, 1, null);
+		factory.create(ConstructorTest.class, null, "A");
+		factory.create(ConstructorTest.class, "A", 1);
+		factory.create(ConstructorTest.class, "A", null);
+		factory.create(ConstructorTest.class, null, 1);
+		
 	}
 	
 	@Handler(TestHandler.class)
