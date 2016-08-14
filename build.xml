@@ -7,7 +7,7 @@
 	<property name="build" location="build" />
 	<property name="bin" location="${build}/bin" />
 	<property name="doc" location="${build}/doc" />
-	<property name="version" value="1.01" />
+	<property name="version" value="1.0.1" />
 	
 	<target name="all">
 		<antcall target="compile" />
