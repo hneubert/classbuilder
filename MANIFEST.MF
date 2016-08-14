@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Created-By: 1.8.0_65 (Sun Microsystems Inc.)
 Implementation-Title: Class Builder API
-Implementation-Version: 1.0.0
+Implementation-Version: 1.0.1
 Implementation-Vendor: Holger Neubert
 Bundle-Name: Class Builder API
 Bundle-SymbolicName: classbuilder
 Bundle-Description: runtime class generation
 Bundle-ManifestVersion: 2
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Export-Package: classbuilder,
  classbuilder.handler,
  classbuilder.util
