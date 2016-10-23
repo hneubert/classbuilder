@@ -82,20 +82,44 @@ public class DefaultField implements IField {
 	
 	@Override
 	public String toString() {
-		return declaringClass.getName() + "." + name;
+		if ((modifiers & IClass.ENUM) != 0) {
+			return name;
+		} else {
+			return declaringClass.getName() + "." + name;
+		}
 	}
 	
 	public String write() {
-		String text = VMConst.getModifier(modifiers);
-		text += VMConst.getTypeName(type) + " " + name;
-		if (value != null) {
-			if (value instanceof String) {
-				text += " = \"" + value + "\"";
-			} else {
-				text += " = " + value;
+		if ((modifiers & IClass.ENUM) != 0) {
+			String text = name;
+			Object[] args = (Object[])value;
+			if (args.length > 0) {
+				text += "(";
+				boolean first = true;
+				for (Object arg : args) {
+					if (!first) text += ", ";
+					if (arg instanceof String) {
+						text += "\"" + arg + "\"";
+					} else {
+						text += arg;
+					}
+					first = false;
+				}
+				text += ")";
 			}
+			return "\t" + text;
+		} else {
+			String text = VMConst.getModifier(modifiers);
+			text += VMConst.getTypeName(type) + " " + name;
+			if (value != null) {
+				if (value instanceof String) {
+					text += " = \"" + value + "\"";
+				} else {
+					text += " = " + value;
+				}
+			}
+			return "\t" + text + ";\n";
 		}
-		return "\t" + text + ";\n";
 	}
 	
 	@Override
@@ -117,7 +141,7 @@ public class DefaultField implements IField {
 	
 	public int write(DataOutputStream classFile, int lineNumber) throws IOException {
 		lineNumber += 1 + getAnnotations().size();
-		boolean constantValue = (getModifiers() & IClass.STATIC) != 0 && getValue() != null;
+		boolean constantValue = (getModifiers() & (IClass.STATIC | IClass.ENUM)) == IClass.STATIC && getValue() != null;
 		int attr = getDefaultAnnotations().size();
 		if (constantValue) attr++;
 		classFile.writeShort(getModifiers());//access_flags;

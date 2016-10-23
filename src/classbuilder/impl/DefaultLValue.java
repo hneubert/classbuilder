@@ -54,6 +54,7 @@ public class DefaultLValue implements LValue {
 	protected Class<?> varType;
 	protected boolean removed = false;
 	protected boolean used = false;
+	protected boolean visible = true;
 	protected IMethod fragment;
 	
 	public DefaultLValue(IMethod fragment, DefaultLValue root, NodeType type, Object id, Object value, Class<?> varType) {
@@ -532,6 +533,14 @@ public class DefaultLValue implements LValue {
 	
 	public boolean isRemoved() {
 		return removed;
+	}
+	
+	public boolean isVisible() {
+		return visible;
+	}
+	
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 	
 	public void setNext(DefaultLValue next, boolean setUsed) throws BuilderSyntaxException {
@@ -1168,6 +1177,10 @@ public class DefaultLValue implements LValue {
 			break;
 		case CLASS :
 			s = source + ((Class<?>)value).getName();
+			if (next != null) s = next.toString(this, s);
+			break;
+		case DECLARING_CLASS :
+			s = source + fragment.getDeclaringClass().getSimpleName();
 			if (next != null) s = next.toString(this, s);
 			break;
 		case SUPER :

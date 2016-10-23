@@ -100,11 +100,11 @@ public class DefaultClass implements IClass {
 		this.superClass = superClass;
 		this.classFactory = classFactory;
 		
-		if ((flags & ENUM) != 0) {
+		if (isEnum()) {
 			this.flags |= FINAL;
 			superClass = Enum.class;
 			this.superClass = Enum.class;
-		} else if ((flags & INTERFACE) != 0) {
+		} else if (isInterface()) {
 			this.flags |= ABSTRACT;
 			superClass = Object.class;
 			this.superClass = Object.class;
@@ -138,10 +138,9 @@ public class DefaultClass implements IClass {
 			}
 		}
 		
-		if ((flags & ENUM) != 0) {
+		if (isEnum()) {
 			try {
 				IMethod c = addConstructor(PROTECTED);
-					//c.Super().invoke("<init>", c.getParameter(0), c.getParameter(1));
 				c.End();
 			} catch (BuilderException e) {
 				e.printStackTrace();
@@ -171,6 +170,14 @@ public class DefaultClass implements IClass {
 	@Override
 	public int getModifiers() {
 		return flags;
+	}
+	
+	public boolean isEnum() {
+		return (flags & ENUM) != 0;
+	}
+	
+	public boolean isInterface() {
+		return (flags & INTERFACE) != 0;
 	}
 	
 	@Override
@@ -275,7 +282,7 @@ public class DefaultClass implements IClass {
 	@Override
 	public IField addField(int flags, String name, Object value) throws BuilderModifierException, BuilderNameException, BuilderTypeException {
 		flags |= STATIC;
-		if ((flags & INTERFACE) != 0) {
+		if (isInterface()) {
 			validate(flags, PUBLIC | STATIC | FINAL);
 			flags |= PUBLIC | STATIC | FINAL;
 		}
@@ -292,9 +299,9 @@ public class DefaultClass implements IClass {
 	}
 	
 	public IField addEnumConstant(String name, Object... args) throws BuilderNameException, BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
-		if ((flags & ENUM) == 0) throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_NOT_ALLOWED);
+		if (!isEnum()) throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_NOT_ALLOWED);
 		validateName(name);
-		DefaultField field = new DefaultField(this, ENUM | FINAL | PUBLIC | STATIC, name, Enum.class, null, constantPool);
+		DefaultField field = new DefaultField(this, ENUM | FINAL | PUBLIC | STATIC, name, Enum.class, args, constantPool);
 		IMethod s = Static();
 		Object[] newArgs = new Object[args.length + 2];
 		newArgs[0] = name;
@@ -306,13 +313,14 @@ public class DefaultClass implements IClass {
 		fields.add(field);
 		s.get(field).set(value);
 		enumFieldCounter++;
+		((DefaultMethod)s).hideLast();
 		return field;
 	}
 	
 	@Override
 	public IConstructor addConstructor(int flags, Class<?> ...params) throws BuilderModifierException, BuilderTypeException, BuilderNameException {
 //		if ((this.flags & INTERFACE) != 0) throw new BuilderSyntaxException(this, BuilderSyntaxException);
-		if ((this.flags & ENUM) != 0) {
+		if (isEnum()) {
 			Class<?>[] newParams = new Class<?>[params.length + 2];
 			newParams[0] = String.class;
 			newParams[1] = int.class;
@@ -328,9 +336,10 @@ public class DefaultClass implements IClass {
 		}
 		DefaultMethod function = new DefaultMethod(FragmentType.CONSTRUCTOR, flags | (this.flags & VMConst.DEBUG), "<init>", null, this, constantPool, params);
 		constructors.add(function);
-		if ((this.flags & ENUM) != 0) {
+		if (isEnum()) {
 			try {
 				function.Super().invoke("<init>", function.getParameter(-2), function.getParameter(-1));
+				function.hideLast();
 			} catch (BuilderSyntaxException e) {
 				throw new BuilderTypeException(function, e.getMessage(), e);
 			} catch (BuilderAccessException e) {
@@ -347,7 +356,7 @@ public class DefaultClass implements IClass {
 
 	@Override
 	public IMethod addMethod(int flags, Class<?> returnType, String name, Class<?> ...params) throws BuilderModifierException, BuilderNameException, BuilderTypeException {
-		if ((this.flags & INTERFACE) != 0) {
+		if (isInterface()) {
 			validate(flags, PUBLIC | ABSTRACT);
 			flags |= PUBLIC | ABSTRACT;
 		}
@@ -449,7 +458,7 @@ public class DefaultClass implements IClass {
 			}
 		}
 		
-		if ((flags & ENUM) != 0) {
+		if (isEnum()) {
 			IMethod m;
 			try {
 				m = addMethod(PUBLIC | STATIC, Enum[].class, "values");
@@ -676,9 +685,13 @@ public class DefaultClass implements IClass {
 		for (DefaultAnnotation annotation : annotations) {
 			writer.write(annotation.toString() + "\n");
 		}
-		s = VMConst.getModifier(flags) + "class " + name + " ";
+		if (isEnum()) {
+			s = VMConst.getModifier(flags) + "enum " + name;
+		} else {
+			s = VMConst.getModifier(flags) + "class " + name + " extends " + superClass.getCanonicalName();
+		}
 		for (Class<?> cls : interfaces) {
-			if (first) s += "implements ";
+			if (first) s += " implements ";
 			if (!first) s += ", ";
 			s += cls.getCanonicalName();
 			first = false;
@@ -686,8 +699,28 @@ public class DefaultClass implements IClass {
 		s += " {\n";
 		writer.write(s);
 		
+		if (isEnum()) {
+			DefaultField last = null;
+			for (DefaultField field : fields) {
+				if ((field.modifiers & ENUM) != 0) {
+					last = field;
+				}
+			}
+			for (DefaultField field : fields) {
+				if ((field.modifiers & ENUM) != 0) {
+					if (field == last) {
+						writer.write(field.write() + ";\n");
+					} else {
+						writer.write(field.write() + ",\n");
+					}
+				}
+			}
+		}
+		
 		for (DefaultField field : fields) {
-			writer.write(field.write());
+			if ((field.modifiers & ENUM) == 0) {
+				writer.write(field.write());
+			}
 		}
 		
 		writer.flush();
@@ -695,6 +728,7 @@ public class DefaultClass implements IClass {
 			function.writeSource(out);
 		}
 		for (DefaultMethod function : functions) {
+			if (isEnum() && "values".equals(function.getName()) && function.getParameters().length == 0) continue;
 			function.writeSource(out);
 		}
 		
@@ -771,7 +805,7 @@ public class DefaultClass implements IClass {
 	@Override
 	public IMethod Static() {
 		if (staticInitializer == null) {
-			staticInitializer = new DefaultMethod(FragmentType.FUNCTION, STATIC, "<clinit>", null, this, constantPool);
+			staticInitializer = new DefaultMethod(FragmentType.FUNCTION, STATIC | (this.flags & VMConst.DEBUG), "<clinit>", null, this, constantPool);
 			functions.add(staticInitializer);
 		}
 		return staticInitializer;

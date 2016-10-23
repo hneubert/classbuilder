@@ -86,6 +86,16 @@ public class ClassDelegate implements IClass {
 	public String getSimpleName() {
 		return cls.getSimpleName();
 	}
+	
+	@Override
+	public boolean isEnum() {
+		return cls.isEnum();
+	}
+	
+	@Override
+	public boolean isInterface() {
+		return cls.isInterface();
+	}
 
 	@Override
 	public int getModifiers() {

@@ -203,19 +203,25 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		if ((flags & VMConst.DEBUG) != 0) {
 			debug.addLine("");
 			
-			if (type == FragmentType.FUNCTION) {
-				s = VMConst.getModifier(flags) + VMConst.getTypeName(returnType) + " " + name + "(";
+			if ("<clinit>".equals(name)) {
+				s = "static {";
 			} else {
-				s = VMConst.getModifier(flags) + component.getSimpleName() + "(";
+				if (type == FragmentType.FUNCTION) {
+					s = VMConst.getModifier(flags) + VMConst.getTypeName(returnType) + " " + name + "(";
+				} else {
+					s = VMConst.getModifier(flags) + component.getSimpleName() + "(";
+				}
+				
+				first = true;
+				for (int i = 0; i < this.params.size(); i++) {
+					Variable var = this.params.get(i);
+					if (type == FragmentType.CONSTRUCTOR && component.isEnum() && i < 2) continue;
+					if (!first) s += ", ";
+					s += var.getType().getName() + " " + var.getName();
+					first = false;
+				}
+				s += ") {";
 			}
-			
-			first = true;
-			for (Variable var : this.params) {
-				if (!first) s += ", ";
-				s += var.getType().getName() + " " + var.getName();
-				first = false;
-			}
-			s += ") {";
 			debug.addLine(s);
 			debug.incrementLevel();
 		}
@@ -244,7 +250,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	@Override
 	public Variable[] getParameters() {
 		if (parameters == null || parameters.length != params.size()) {
-			if (this.isConstructor() && (component.getModifiers() & IClass.ENUM) != 0) {
+			if (this.isConstructor() && component.isEnum()) {
 				parameters = new Variable[params.size() - 2];
 				for (int i = 2; i < params.size(); i++) {
 					parameters[i - 2] = params.get(i);
@@ -274,7 +280,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	
 	public Variable getParameter(int index) {
 		if (index >= params.size()) throw new IndexOutOfBoundsException("invalid parameter index: " + index + " (paramter count: " + params.size() + ")");
-		if (this.isConstructor() && (component.getModifiers() & IClass.ENUM) != 0) {
+		if (this.isConstructor() && component.isEnum()) {
 			if (index < -2) throw new IndexOutOfBoundsException("no negative parameter index allowed: " + index);
 			return params.get(index + 2);
 		} else {
@@ -950,8 +956,8 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 				
 				node.build(null, out, constantPool, false);
 				
-				if ((flags & VMConst.DEBUG) != 0) {
-					debug.addLine(node.toString(null) + ";", offset);
+				if ((flags & VMConst.DEBUG) != 0 && node.isVisible()) {
+						debug.addLine(node.toString(null) + ";", offset);
 				}
 			}
 		}
@@ -1172,4 +1178,12 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		return fragment.varReadable.get(index);
 	}
 	
+	public void hideLast() {
+		for (int i = instructions.size() - 1; i >= 0; i--) {
+			if (!instructions.get(i).isRemoved()) {
+				instructions.get(i).setVisible(false);
+				break;
+			}
+		}
+	}
 }

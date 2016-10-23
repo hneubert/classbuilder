@@ -156,6 +156,18 @@ public interface IClass {
 	public String getSimpleName();
 	
 	/**
+	 * Returns true, if this class is an enum.
+	 * @return true, if this class is an enum
+	 */
+	public boolean isEnum();
+	
+	/**
+	 * Returns true, if this class is an interface.
+	 * @return true, if this class is an interface
+	 */
+	public boolean isInterface();
+	
+	/**
 	 * Returns the modifiers.
 	 * @return modifiers
 	 */
