@@ -902,8 +902,17 @@ public class IClassTestCase {
 	}
 	
 	@Test
-	public void addEnumFieldTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderCompilerException {
+	public void addEnumFieldTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderCompilerException, BuilderAccessException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		IClass cls = classFactory.createClass(PUBLIC | IClass.ENUM, "package", "AddEnumFieldTest", null);
+			IField field = cls.addField(PRIVATE, String.class, "value");
+			IConstructor ctor = cls.addConstructor(PUBLIC, String.class);
+				ctor.get(field).set(ctor.getParameter(0));
+			ctor.End();
+			
+			IMethod m = cls.addMethod(PUBLIC, String.class, "getValue");
+				m.Return(m.get(field));
+			m.End();
+			
 			try {
 				cls.addEnumConstant(null);
 				Assert.fail("<null>");
@@ -916,8 +925,16 @@ public class IClassTestCase {
 			} catch (BuilderNameException e) {
 				
 			}
+			try {
+				cls.addEnumConstant("A", 1);
+				Assert.fail("imvalid type");
+			} catch (BuilderAccessException e) {
+				
+			}
 			cls.addEnumConstant("A");
 			cls.addEnumConstant("B");
+			cls.addEnumConstant("C", "c");
+			cls.addEnumConstant("D", "d");
 		Class<?> c = cls.build();
 		Object[] fields = c.getEnumConstants();
 		Enum<?> e = (Enum<?>)fields[0];
@@ -926,5 +943,15 @@ public class IClassTestCase {
 		e = (Enum<?>)fields[1];
 		Assert.assertEquals(1, e.ordinal());
 		Assert.assertEquals("B", e.name());
+		
+		e = (Enum<?>)fields[2];
+		Assert.assertEquals(2, e.ordinal());
+		Assert.assertEquals("C", e.name());
+		Assert.assertEquals("c", e.getClass().getDeclaredMethod("getValue").invoke(e));
+		
+		e = (Enum<?>)fields[3];
+		Assert.assertEquals(3, e.ordinal());
+		Assert.assertEquals("D", e.name());
+		Assert.assertEquals("d", e.getClass().getDeclaredMethod("getValue").invoke(e));
 	}
 }

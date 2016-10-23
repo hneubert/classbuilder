@@ -56,6 +56,7 @@ import classbuilder.IClass;
 import classbuilder.IConstructor;
 import classbuilder.IField;
 import classbuilder.IMethod;
+import classbuilder.RValue;
 import classbuilder.Variable;
 import classbuilder.impl.DefaultMethod.FragmentType;
 
@@ -139,8 +140,8 @@ public class DefaultClass implements IClass {
 		
 		if ((flags & ENUM) != 0) {
 			try {
-				IMethod c = addConstructor(PROTECTED, String.class, int.class);
-					c.Super().invoke("<init>", c.getParameter(0), c.getParameter(1));
+				IMethod c = addConstructor(PROTECTED);
+					//c.Super().invoke("<init>", c.getParameter(0), c.getParameter(1));
 				c.End();
 			} catch (BuilderException e) {
 				e.printStackTrace();
@@ -290,25 +291,36 @@ public class DefaultClass implements IClass {
 		return field;
 	}
 	
-	public IField addEnumConstant(String name) throws BuilderNameException, BuilderSyntaxException {
+	public IField addEnumConstant(String name, Object... args) throws BuilderNameException, BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		if ((flags & ENUM) == 0) throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_NOT_ALLOWED);
 		validateName(name);
 		DefaultField field = new DefaultField(this, ENUM | FINAL | PUBLIC | STATIC, name, Enum.class, null, constantPool);
 		IMethod s = Static();
-		fields.add(field);
-		try {
-			s.get(field).set(((DefaultMethod)s).NewDeclaringClass(name, enumFieldCounter++));
-		} catch (BuilderTypeException e) {
-			throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_CREATION_FAILD, e);
-		} catch (BuilderAccessException e) {
-			throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_CREATION_FAILD, e);
+		Object[] newArgs = new Object[args.length + 2];
+		newArgs[0] = name;
+		newArgs[1] = enumFieldCounter;
+		for (int i = 0; i < args.length; i++) {
+			newArgs[i + 2] = args[i];
 		}
+		RValue value = (((DefaultMethod)s).NewDeclaringClass(newArgs));
+		fields.add(field);
+		s.get(field).set(value);
+		enumFieldCounter++;
 		return field;
 	}
 	
 	@Override
 	public IConstructor addConstructor(int flags, Class<?> ...params) throws BuilderModifierException, BuilderTypeException, BuilderNameException {
 //		if ((this.flags & INTERFACE) != 0) throw new BuilderSyntaxException(this, BuilderSyntaxException);
+		if ((this.flags & ENUM) != 0) {
+			Class<?>[] newParams = new Class<?>[params.length + 2];
+			newParams[0] = String.class;
+			newParams[1] = int.class;
+			for (int i = 0; i < params.length; i++) {
+				newParams[i + 2] = params[i];
+			}
+			params = newParams;
+		}
 		validate(flags, PUBLIC | PROTECTED | PRIVATE);
 		validateParams(params);
 		for (IConstructor constructor : constructors) {
@@ -316,6 +328,15 @@ public class DefaultClass implements IClass {
 		}
 		DefaultMethod function = new DefaultMethod(FragmentType.CONSTRUCTOR, flags | (this.flags & VMConst.DEBUG), "<init>", null, this, constantPool, params);
 		constructors.add(function);
+		if ((this.flags & ENUM) != 0) {
+			try {
+				function.Super().invoke("<init>", function.getParameter(-2), function.getParameter(-1));
+			} catch (BuilderSyntaxException e) {
+				throw new BuilderTypeException(function, e.getMessage(), e);
+			} catch (BuilderAccessException e) {
+				throw new BuilderTypeException(function, e.getMessage(), e);
+			}
+		}
 		return function;
 	}
 
@@ -440,8 +461,10 @@ public class DefaultClass implements IClass {
 					v.set(m.New(Enum[].class, i));
 					i = 0;
 					for (IField field : fields) {
-						v.get(i).set(m.get(field));
-						i++;
+						if ((field.getModifiers() & ENUM) != 0) {
+							v.get(i).set(m.get(field));
+							i++;
+						}
 					}
 					m.Return(v);
 				m.End();

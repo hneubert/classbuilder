@@ -4,6 +4,7 @@ import static classbuilder.IClass.PUBLIC;
 
 import org.junit.Test;
 
+import classbuilder.BuilderAccessException;
 import classbuilder.BuilderCompilerException;
 import classbuilder.BuilderException;
 import classbuilder.BuilderModifierException;
@@ -218,7 +219,7 @@ public class BasicTestCase {
 	}
 	
 	@Test
-	public void enumTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderCompilerException, InstantiationException, IllegalAccessException, BuilderSyntaxException {
+	public void enumTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderCompilerException, InstantiationException, IllegalAccessException, BuilderSyntaxException, BuilderAccessException {
 		IClass cls = classFactory.createClass(PUBLIC | IClass.ENUM, "basicTest", "EnumTest", null);
 			cls.addEnumConstant("A");
 			cls.addEnumConstant("B");

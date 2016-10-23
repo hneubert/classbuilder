@@ -181,6 +181,9 @@ public class ConstantPool {
 					name = method.getName();
 					
 					sig = "(";
+					if (method.isConstructor() && (method.getDeclaringClass().getModifiers() & IClass.ENUM) != 0) {
+						sig += "Ljava/lang/String;I";
+					}
 					for (Variable var : method.getParameters()) {
 						sig += VMConst.getClassName(var.getType());
 					}

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 
+import classbuilder.BuilderAccessException;
 import classbuilder.BuilderCompilerException;
 import classbuilder.BuilderModifierException;
 import classbuilder.BuilderNameException;
@@ -60,10 +61,10 @@ public class ClassDelegate implements IClass {
 	public IField addField(int modifiers, String name, Object value) throws BuilderModifierException, BuilderNameException, BuilderTypeException {
 		return cls.addField(modifiers, name, value);
 	}
-
+	
 	@Override
-	public IField addEnumConstant(String name) throws BuilderNameException, BuilderSyntaxException {
-		return cls.addEnumConstant(name);
+	public IField addEnumConstant(String name, Object... args) throws BuilderNameException, BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+		return cls.addEnumConstant(name, args);
 	}
 	
 	@Override

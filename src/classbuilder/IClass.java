@@ -119,11 +119,14 @@ public interface IClass {
 	/**
 	 * Creates a new enum constant.
 	 * @param name enum constant name
+	 * @param args constructor arguments
 	 * @return new enum constant
 	 * @throws BuilderNameException invalid field name
-	 * @throws BuilderSyntaxException enum field not allowed or creation faild
+	 * @throws BuilderSyntaxException enum field not allowed or creation failed
+	 * @throws BuilderAccessException variable not initialized or method not found or inaccessible
+	 * @throws BuilderTypeException invalid argument type
 	 */
-	public IField addEnumConstant(String name) throws BuilderNameException, BuilderSyntaxException;
+	public IField addEnumConstant(String name, Object... args) throws BuilderNameException, BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Gnerates and loads this class.

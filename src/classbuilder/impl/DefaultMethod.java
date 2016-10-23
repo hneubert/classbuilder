@@ -244,7 +244,14 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	@Override
 	public Variable[] getParameters() {
 		if (parameters == null || parameters.length != params.size()) {
-			parameters = params.toArray(new Variable[params.size()]);
+			if (this.isConstructor() && (component.getModifiers() & IClass.ENUM) != 0) {
+				parameters = new Variable[params.size() - 2];
+				for (int i = 2; i < params.size(); i++) {
+					parameters[i - 2] = params.get(i);
+				}
+			} else {
+				parameters = params.toArray(new Variable[params.size()]);
+			}
 		}
 		return parameters;
 	}
@@ -266,9 +273,14 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	public Variable getParameter(int index) {
-		if (index < 0) throw new IndexOutOfBoundsException("no negative parameter index allowed: " + index);
 		if (index >= params.size()) throw new IndexOutOfBoundsException("invalid parameter index: " + index + " (paramter count: " + params.size() + ")");
-		return params.get(index);
+		if (this.isConstructor() && (component.getModifiers() & IClass.ENUM) != 0) {
+			if (index < -2) throw new IndexOutOfBoundsException("no negative parameter index allowed: " + index);
+			return params.get(index + 2);
+		} else {
+			if (index < 0) throw new IndexOutOfBoundsException("no negative parameter index allowed: " + index);
+			return params.get(index);
+		}
 	}
 	
 	@Override
@@ -1022,7 +1034,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		
 		String sig = "(";
 		int locals = 0;
-		for (Variable var : getParameters()) {
+		for (Variable var : params) {
 			sig += VMConst.getClassName(var.getType());
 			locals++;
 			if (var.getType() == long.class || var.getType() == double.class) locals++;
@@ -1047,7 +1059,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			
 			DebugData debug = getDebugData();
 			
-			int localsSize = getParameters().length + getLocals().size() + 1;
+			int localsSize = params.size() + getLocals().size() + 1;
 			
 			classFile.writeShort(constantPool.addString("Code"));//attribute_name_index;
 			if ((flags & VMConst.DEBUG) != 0) {
@@ -1098,7 +1110,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 				classFile.writeShort(constantPool.addString("this")); //name_index;
 				classFile.writeShort(constantPool.addString("L" + getName().replace('.', '/') + ";")); //descriptor_index;
 				classFile.writeShort(0); //index;
-				for (Variable variable : getParameters()) {
+				for (Variable variable : params) {
 					DefaultVariable var = (DefaultVariable)variable;
 					classFile.writeShort(0); //start_pc;
 					classFile.writeShort(code.length); //length;
