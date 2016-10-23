@@ -294,27 +294,33 @@ public class ObjectFactory {
 	public Class<?> getSubclass(Class<?> primaryType, Class<?>[] interfaces, Map<String, Object> metadata) throws BuilderException, HandlerException {
 		Class<?> subclass = typeMap.get(primaryType);
 		if (subclass == null) {
-			if (interfaces == null) interfaces = noInterfaces;
-			if (metadata == null) metadata = this.metadata;
-			subclass = createSubclass(primaryType, interfaces, metadata);
-			typeMap.put(primaryType, subclass);
-			boolean defaultOnly = true;
-			if (subclass.getDeclaredConstructors().length > 1) {
-				defaultOnly = false;
-			} else {
-				try {
-					subclass.getConstructor();
-				} catch (Exception e) {
-					defaultOnly = false;
+			synchronized (this) {
+				subclass = typeMap.get(primaryType);
+				if (subclass != null) {
+					return subclass;
 				}
-			}
-			if (!defaultOnly) {
-				try {
-					helperMap.put(primaryType, (InstantiationHelper)createInstantiationHelper(subclass).newInstance());
-				} catch (InstantiationException e1) {
-					throw new HandlerException("instantiation faild", e1);
-				} catch (IllegalAccessException e1) {
-					throw new HandlerException("instantiation faild", e1);
+				if (interfaces == null) interfaces = noInterfaces;
+				if (metadata == null) metadata = this.metadata;
+				subclass = createSubclass(primaryType, interfaces, metadata);
+				typeMap.put(primaryType, subclass);
+				boolean defaultOnly = true;
+				if (subclass.getDeclaredConstructors().length > 1) {
+					defaultOnly = false;
+				} else {
+					try {
+						subclass.getConstructor();
+					} catch (Exception e) {
+						defaultOnly = false;
+					}
+				}
+				if (!defaultOnly) {
+					try {
+						helperMap.put(primaryType, (InstantiationHelper)createInstantiationHelper(subclass).newInstance());
+					} catch (InstantiationException e1) {
+						throw new HandlerException("instantiation faild", e1);
+					} catch (IllegalAccessException e1) {
+						throw new HandlerException("instantiation faild", e1);
+					}
 				}
 			}
 		}
