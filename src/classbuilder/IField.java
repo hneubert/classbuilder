@@ -57,6 +57,12 @@ public interface IField {
 	public int getModifiers();
 	
 	/**
+	 * Returns true, if this field is an enum constant.
+	 * @return true, if this field is an enum constant
+	 */
+	public boolean isEnumConstant();
+	
+	/**
 	 * Adds an annotation.
 	 * @param type annotation type
 	 * @return new annotation

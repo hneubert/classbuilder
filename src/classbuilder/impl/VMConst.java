@@ -107,6 +107,18 @@ public class VMConst {
 		return name + array;
 	}
 	
+	public static String getConst(Object value) {
+		String s = value.toString();
+		if (value instanceof String) {
+			s = "\"" + s + "\"";
+		} else if (value instanceof Long) {
+			s = s + "L";
+		} else if (value instanceof Float) {
+			s = s + "f";
+		}
+		return s;
+	}
+	
 	public static String getClassName(Class<?> type) {
 		Class<?> cls = (Class<?>)type;
 		if (cls.isPrimitive()) {

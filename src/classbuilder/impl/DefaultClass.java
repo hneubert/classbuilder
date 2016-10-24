@@ -307,7 +307,12 @@ public class DefaultClass implements IClass {
 		newArgs[0] = name;
 		newArgs[1] = enumFieldCounter;
 		for (int i = 0; i < args.length; i++) {
-			newArgs[i + 2] = args[i];
+			Object arg = args[i];
+			if (arg == null) throw new BuilderTypeException(this, "<null>");
+			Class<?> type = VMConst.getPrimitiveType(arg.getClass());
+			int level = VMConst.getLevel(type);
+			if (level == -1 && type != String.class) throw new BuilderTypeException(this, type);
+			newArgs[i + 2] = arg;
 		}
 		RValue value = (((DefaultMethod)s).NewDeclaringClass(newArgs));
 		fields.add(field);
@@ -702,12 +707,12 @@ public class DefaultClass implements IClass {
 		if (isEnum()) {
 			DefaultField last = null;
 			for (DefaultField field : fields) {
-				if ((field.modifiers & ENUM) != 0) {
+				if (field.isEnumConstant()) {
 					last = field;
 				}
 			}
 			for (DefaultField field : fields) {
-				if ((field.modifiers & ENUM) != 0) {
+				if (field.isEnumConstant()) {
 					if (field == last) {
 						writer.write(field.write() + ";\n");
 					} else {
@@ -718,7 +723,7 @@ public class DefaultClass implements IClass {
 		}
 		
 		for (DefaultField field : fields) {
-			if ((field.modifiers & ENUM) == 0) {
+			if (!field.isEnumConstant()) {
 				writer.write(field.write());
 			}
 		}

@@ -1192,15 +1192,7 @@ public class DefaultLValue implements LValue {
 			if (next != null) s = next.toString(this, s);
 			break;
 		case CONST :
-			s = value.toString();
-			if (value instanceof String) {
-				s = "\"" + s + "\"";
-			} else if (value instanceof Long) {
-				s = s + "L";
-			} else if (value instanceof Float) {
-				s = s + "f";
-			}
-			s = source + s;
+			s = source + VMConst.getConst(value);
 			if (next != null) s = source + next.toString(this, s);
 			break;
 		case NULL :

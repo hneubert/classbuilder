@@ -901,9 +901,13 @@ public class IClassTestCase {
 		Assert.assertEquals(classFactory, cls.getClassFactory());
 	}
 	
+	public interface IEnum {
+		public String getValue();
+	}
+	
 	@Test
 	public void addEnumFieldTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderCompilerException, BuilderAccessException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		IClass cls = classFactory.createClass(PUBLIC | IClass.ENUM, "package", "AddEnumFieldTest", null);
+		IClass cls = classFactory.createClass(PUBLIC | IClass.ENUM, "package", "AddEnumFieldTest", Enum.class, IEnum.class);
 			IField field = cls.addField(PRIVATE, String.class, "value");
 			IConstructor ctor = cls.addConstructor(PUBLIC, String.class);
 				ctor.get(field).set(ctor.getParameter(0));
@@ -947,11 +951,11 @@ public class IClassTestCase {
 		e = (Enum<?>)fields[2];
 		Assert.assertEquals(2, e.ordinal());
 		Assert.assertEquals("C", e.name());
-		Assert.assertEquals("c", e.getClass().getDeclaredMethod("getValue").invoke(e));
+		Assert.assertEquals("c", ((IEnum)e).getValue());
 		
 		e = (Enum<?>)fields[3];
 		Assert.assertEquals(3, e.ordinal());
 		Assert.assertEquals("D", e.name());
-		Assert.assertEquals("d", e.getClass().getDeclaredMethod("getValue").invoke(e));
+		Assert.assertEquals("d", ((IEnum)e).getValue());
 	}
 }

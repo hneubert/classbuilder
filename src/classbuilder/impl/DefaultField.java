@@ -76,13 +76,18 @@ public class DefaultField implements IField {
 		return modifiers;
 	}
 	
+	@Override
+	public boolean isEnumConstant() {
+		return (modifiers & IClass.ENUM) != 0;
+	}
+	
 	public Object getValue() {
 		return value;
 	}
 	
 	@Override
 	public String toString() {
-		if ((modifiers & IClass.ENUM) != 0) {
+		if (isEnumConstant()) {
 			return name;
 		} else {
 			return declaringClass.getName() + "." + name;
@@ -90,7 +95,7 @@ public class DefaultField implements IField {
 	}
 	
 	public String write() {
-		if ((modifiers & IClass.ENUM) != 0) {
+		if (isEnumConstant()) {
 			String text = name;
 			Object[] args = (Object[])value;
 			if (args.length > 0) {
@@ -98,11 +103,7 @@ public class DefaultField implements IField {
 				boolean first = true;
 				for (Object arg : args) {
 					if (!first) text += ", ";
-					if (arg instanceof String) {
-						text += "\"" + arg + "\"";
-					} else {
-						text += arg;
-					}
+					text += VMConst.getConst(arg);
 					first = false;
 				}
 				text += ")";
@@ -112,11 +113,7 @@ public class DefaultField implements IField {
 			String text = VMConst.getModifier(modifiers);
 			text += VMConst.getTypeName(type) + " " + name;
 			if (value != null) {
-				if (value instanceof String) {
-					text += " = \"" + value + "\"";
-				} else {
-					text += " = " + value;
-				}
+				text += " = " + VMConst.getConst(value);
 			}
 			return "\t" + text + ";\n";
 		}
