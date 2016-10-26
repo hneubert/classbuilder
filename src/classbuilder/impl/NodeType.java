@@ -27,7 +27,6 @@ package classbuilder.impl;
 
 public enum NodeType {
 	NEW,
-	NEW_DECLARING_CLASS,
 	THROW,
 	
 	ASET,
@@ -43,7 +42,6 @@ public enum NodeType {
 	SINVOKE,
 	
 	CLASS,
-	DECLARING_CLASS,
 	
 	CAST,
 	

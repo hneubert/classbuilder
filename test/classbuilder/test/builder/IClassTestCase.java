@@ -27,6 +27,7 @@ import classbuilder.IClass;
 import classbuilder.IConstructor;
 import classbuilder.IField;
 import classbuilder.IMethod;
+import classbuilder.Variable;
 
 public class IClassTestCase {
 	private ClassFactory classFactory = new ClassFactory();
@@ -907,6 +908,7 @@ public class IClassTestCase {
 	
 	@Test
 	public void addEnumFieldTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderCompilerException, BuilderAccessException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+//		classFactory.setClassPath("gen/bin");
 		IClass cls = classFactory.createClass(PUBLIC | IClass.ENUM, "package", "AddEnumFieldTest", Enum.class, IEnum.class);
 			IField field = cls.addField(PRIVATE, String.class, "value");
 			IConstructor ctor = cls.addConstructor(PUBLIC, String.class);
@@ -957,5 +959,37 @@ public class IClassTestCase {
 		Assert.assertEquals(3, e.ordinal());
 		Assert.assertEquals("D", e.name());
 		Assert.assertEquals("d", ((IEnum)e).getValue());
+	}
+	
+	public interface ICurrentClassTest {
+		public Object getInstance();
+	}
+	
+	@Test
+	public void currentClassTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderCompilerException, BuilderSyntaxException, BuilderAccessException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+//		classFactory.setClassPath("gen/bin");
+		IClass cls = classFactory.createClass(PUBLIC, "package", "CurrentClassTest", Object.class, ICurrentClassTest.class);
+			IField f = cls.addField(PUBLIC, int.class, "num");
+			f = cls.addField(PRIVATE | STATIC, IClass.CURRENT_CLASS_TYPE, "instance");
+			IMethod m = cls.addConstructor(PUBLIC);
+				
+			m.End();
+			m = cls.addMethod(PUBLIC, "init");
+				m.Return();
+			m.End();
+			m = cls.addMethod(PUBLIC | STATIC, IClass.CURRENT_CLASS_TYPE, "getInstance");
+				m.If(m.get(f).isNull());
+					Variable v = m.addVar(IClass.CURRENT_CLASS_TYPE);
+					v.set(m.New(IClass.CURRENT_CLASS_TYPE));
+//					Variable v = m.addVar(ICurrentClassTest.class);
+//					v.set(m.New(IClass.CURRENT_CLASS_TYPE));
+					v.invoke("init");
+					v.get("num").set(1);
+					m.get(f).set(v.cast(IClass.CURRENT_CLASS_TYPE));
+				m.End();
+				m.Return(m.get(f));
+			m.End();
+		Object obj = cls.build().getMethod("getInstance").invoke(null);
+		System.out.println(obj.getClass());
 	}
 }

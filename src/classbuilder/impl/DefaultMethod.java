@@ -331,7 +331,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	public RValue This() throws BuilderSyntaxException, BuilderAccessException {
 		testClosed();
 		testStatic();
-		DefaultLValue value = new DefaultLValue(this, (DefaultLValue)null, NodeType.THIS, null, component, component.getSuperclass());
+		DefaultLValue value = new DefaultLValue(this, (DefaultLValue)null, NodeType.THIS, null, component, IClass.CURRENT_CLASS_TYPE);
 		instructions.add(value);
 		return value;
 	}
@@ -360,17 +360,14 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			}
 			return new DefaultLValue(this, null, NodeType.NEW, null, value, type);
 		} else {
-			if (type.isInterface() || (type.getModifiers() & VMConst.ABSTRACT) != 0) throw new BuilderTypeException(this, type);
+			if (type == IClass.CURRENT_CLASS_TYPE) {
+				if (component.isInterface() || (component.getModifiers() & VMConst.ABSTRACT) != 0) throw new BuilderTypeException(this, component.getName());
+			} else {
+				if (type.isInterface() || (type.getModifiers() & VMConst.ABSTRACT) != 0) throw new BuilderTypeException(this, type);
+			}
 			value = new DefaultLValue(this, null, NodeType.NEW, null, null, type);
 			return value.invoke("<init>", args);
 		}
-	}
-	
-	public RValue NewDeclaringClass(Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
-		testClosed();
-		DefaultLValue value;
-		value = new DefaultLValue(this, null, NodeType.NEW_DECLARING_CLASS, null, null, component.getSuperclass());
-		return value.invoke("<init>", args);
 	}
 	
 	@Override
@@ -684,7 +681,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		if (returnType == null || returnType == void.class || returnType == Void.class) throw new BuilderTypeException(this, returnType);
 		DefaultLValue lv = new DefaultLValue(this, null, NodeType.RETURN, null, null, returnType);
 		DefaultLValue v = (DefaultLValue)$(value);
-		if (VMConst.isAssignable(v.getVarType(), returnType) == -1) throw new BuilderTypeException(this, returnType);
+		if (VMConst.isAssignable(component, v.getVarType(), returnType) == -1) throw new BuilderTypeException(this, returnType);
 		v = (DefaultLValue)v.cast(returnType);
 		lv.setNext(v.getRoot(), true);
 		instructions.add(lv);
@@ -710,15 +707,14 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	@Override
 	public LValue get(String field) throws BuilderSyntaxException, BuilderAccessException {
 		try {
-			IField f = component.getField(field);
-			return get(f);
-		} catch (NoSuchFieldException e) {
-			try {
-				Field f = DefaultLValue.getField(this, component.getSuperclass(), component.getPackage(), field, true);
-				return get(f);
-			} catch (NoSuchFieldException e1) {
-				throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_FOUND, field);
+			Object f = DefaultLValue.getField(this, IClass.CURRENT_CLASS_TYPE, field, false);
+			if (f instanceof IField) {
+				return get((IField)f);
+			} else {
+				return get((Field)f);
 			}
+		} catch (NoSuchFieldException e) {
+			throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_FOUND, field);
 		}
 	}
 	
@@ -750,10 +746,10 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		} else if (value instanceof RValue) {
 			return (RValue)value;
 		} else if (value instanceof Class) {
-			node = new DefaultLValue(this, (DefaultLValue)null, NodeType.CLASS, null, value, Class.class);
+			node = new DefaultLValue(this, null, NodeType.CLASS, null, value, Class.class);
 			instructions.add(node);
 		} else if (value == component) {
-			node = new DefaultLValue(this, null, NodeType.DECLARING_CLASS, null, component, component.getSuperclass());
+			node = new DefaultLValue(this, null, NodeType.CLASS, null, IClass.CURRENT_CLASS_TYPE, Class.class);
 			instructions.add(node);
 		} else {
 			if (value instanceof Boolean) {
@@ -821,7 +817,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			return invoke(m, (Object[])newArgs);
 		} catch (NoSuchMethodException e) {
 			try {
-				Method m = DefaultLValue.getMethod(this, component.getSuperclass(), component.getPackage(), method, ac, true);
+				Method m = (Method)DefaultLValue.getMethod(this, component.getSuperclass(), method, ac, false);
 				return invoke(m, (Object[])newArgs);
 			} catch (NoSuchMethodException e1) {
 				throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, method);

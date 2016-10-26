@@ -121,7 +121,7 @@ public class VMConst {
 	
 	public static String getClassName(Class<?> type) {
 		Class<?> cls = (Class<?>)type;
-		if (cls.isPrimitive()) {
+		if (cls == null || cls.isPrimitive()) {
 			if (cls == boolean.class) return "Z";
 			if (cls == byte.class) return "B";
 			if (cls == char.class) return "C";
@@ -153,7 +153,7 @@ public class VMConst {
 		}
 	}
 	
-	public static int isAssignable(Class<?> source, Class<?> dest) {
+	public static int isAssignable(IClass cls, Class<?> source, Class<?> dest) {
 		//if (source == null || dest == null) return -1;
 		if (dest == null) return -1;
 		if (source == null) {
@@ -170,7 +170,14 @@ public class VMConst {
 		if (dest.isPrimitive() && source.isPrimitive()) {
 			return ASSIGNABLE[src][dst];
 		}
-		if (dest.isAssignableFrom(source)) return 1;
+		if (source == IClass.CURRENT_CLASS_TYPE) {
+			if (dest.isAssignableFrom(cls.getSuperclass())) return 1;
+			for (Class<?> intf : cls.getInterfaces()) {
+				if (dest.isAssignableFrom(intf)) return 1;
+			}
+		} else {
+			if (dest.isAssignableFrom(source)) return 1;
+		}
 		return -1;
 	}
 	
@@ -210,12 +217,12 @@ public class VMConst {
 		return cls;
 	}
 	
-	public static int testFucntion(Class<?>[] source, Class<?>[] dest) {
+	public static int testFucntion(IClass cls, Class<?>[] source, Class<?>[] dest) {
 		if (source.length != dest.length) return -1;
 		int q = 0;
 		
 		for (int i = 0; i < source.length; i++) {
-			int level = isAssignable(source[i], dest[i]);
+			int level = isAssignable(cls, source[i], dest[i]);
 			if (level == -1) {
 				return -1;
 			}

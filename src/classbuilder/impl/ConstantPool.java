@@ -55,6 +55,7 @@ public class ConstantPool {
 	protected static final byte CONSTANT_NameAndType = 12;
 	protected static final byte CONSTANT_Utf8 = 1;
 	
+	protected IClass cls;
 	protected Map<Const, Const> constantPool;
 	protected short poolIndex;
 	protected List<Const> entryList;
@@ -103,7 +104,8 @@ public class ConstantPool {
 		}
 	}
 	
-	public ConstantPool(ClassLoader classLoader) {
+	public ConstantPool(IClass cls) {
+		this.cls = cls;
 		constantPool = new LinkedHashMap<Const, Const>();
 		entryList = new ArrayList<Const>();
 		poolIndex = 1;
@@ -130,7 +132,11 @@ public class ConstantPool {
 				break;
 			case CONSTANT_Class :
 				if (value instanceof Class) {
-					c.ref1 = addConstant(CONSTANT_Utf8, poolIndex, ((Class<?>)value).getName().replace('.', '/'), 0, 0);
+					if (value == IClass.CURRENT_CLASS_TYPE) {
+						c.ref1 = addConstant(CONSTANT_Utf8, poolIndex, this.cls.getName().replace('.', '/'), 0, 0);
+					} else {
+						c.ref1 = addConstant(CONSTANT_Utf8, poolIndex, ((Class<?>)value).getName().replace('.', '/'), 0, 0);
+					}
 				} else if (value instanceof IClass) {
 					c.ref1 = addConstant(CONSTANT_Utf8, poolIndex, ((IClass)value).getName().replace('.', '/'), 0, 0);
 				}

@@ -124,7 +124,7 @@ public class DefaultClass implements IClass {
 		functions = new ArrayList<DefaultMethod>();
 		constructors = new ArrayList<DefaultMethod>();
 		annotations = new ArrayList<DefaultAnnotation>();
-		constantPool = new ConstantPool(classFactory.getClassLoader());
+		constantPool = new ConstantPool(this);
 		enumFieldCounter = 0;
 		
 		validate((this.flags & ~(VMConst.DEBUG | SUPER)), PUBLIC | ABSTRACT | FINAL | INTERFACE | ENUM);
@@ -208,7 +208,7 @@ public class DefaultClass implements IClass {
 			int q = 0;
 			
 			for (int i = 0; i < types.length; i++) {
-				int level = VMConst.isAssignable(types[i], dest[i].getType());
+				int level = VMConst.isAssignable(this, types[i], dest[i].getType());
 				if (level == -1) {
 					q = -1;
 					break;
@@ -237,14 +237,14 @@ public class DefaultClass implements IClass {
 		IConstructor method = null;
 		int best = 1000;
 		
-		for (IConstructor m : constructors) {
+		for (DefaultMethod m : constructors) {
 			//if (!m.getName().equals(name)) break;
-			Variable[] dest = m.getParameters();
-			if (types.length != dest.length) break;
+			Class<?>[] dest = m.getParameterTypes();
+			if (types.length != dest.length) continue;
 			int q = 0;
 			
 			for (int i = 0; i < types.length; i++) {
-				int level = VMConst.isAssignable(types[i], dest[i].getType());
+				int level = VMConst.isAssignable(this, types[i], dest[i]);
 				if (level == -1) {
 					q = -1;
 					break;
@@ -301,7 +301,7 @@ public class DefaultClass implements IClass {
 	public IField addEnumConstant(String name, Object... args) throws BuilderNameException, BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		if (!isEnum()) throw new BuilderSyntaxException(this, BuilderSyntaxException.ENUM_CONST_NOT_ALLOWED);
 		validateName(name);
-		DefaultField field = new DefaultField(this, ENUM | FINAL | PUBLIC | STATIC, name, Enum.class, args, constantPool);
+		DefaultField field = new DefaultField(this, ENUM | FINAL | PUBLIC | STATIC, name, CURRENT_CLASS_TYPE, args, constantPool);
 		IMethod s = Static();
 		Object[] newArgs = new Object[args.length + 2];
 		newArgs[0] = name;
@@ -314,7 +314,7 @@ public class DefaultClass implements IClass {
 			if (level == -1 && type != String.class) throw new BuilderTypeException(this, type);
 			newArgs[i + 2] = arg;
 		}
-		RValue value = (((DefaultMethod)s).NewDeclaringClass(newArgs));
+		RValue value = (((DefaultMethod)s).New(CURRENT_CLASS_TYPE, newArgs));
 		fields.add(field);
 		s.get(field).set(value);
 		enumFieldCounter++;
@@ -374,7 +374,6 @@ public class DefaultClass implements IClass {
 		functions.add(function);
 		return function;
 	}
-
 
 	@Override
 	public Class<?> build() throws BuilderCompilerException {
@@ -466,13 +465,13 @@ public class DefaultClass implements IClass {
 		if (isEnum()) {
 			IMethod m;
 			try {
-				m = addMethod(PUBLIC | STATIC, Enum[].class, "values");
-					Variable v = m.addVar(Enum[].class);
+				m = addMethod(PUBLIC | STATIC, CURRENT_CLASS_ARRAY_TYPE, "values");
+					Variable v = m.addVar(CURRENT_CLASS_ARRAY_TYPE);
 					int i = 0;
 					for (IField field : fields) {
 						if ((field.getModifiers() & ENUM) != 0) i++;
 					}
-					v.set(m.New(Enum[].class, i));
+					v.set(m.New(CURRENT_CLASS_ARRAY_TYPE, i));
 					i = 0;
 					for (IField field : fields) {
 						if ((field.getModifiers() & ENUM) != 0) {

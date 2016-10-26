@@ -525,15 +525,15 @@ public class IMethodTestCase {
 		Assert.assertEquals(42, test.foo());
 	}
 	
-	@Test
-	public void superStaticMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, BuilderAccessException {
-		IClass cls = classFactory.createClass(PUBLIC, "generated", "MethodTest" + counter, SimpleClass.class, SimpleInterface.class);
-			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
-				m.Return(m.Super().invoke("staticMethod", 42));
-			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
-		Assert.assertEquals(42, test.foo());
-	}
+//	@Test
+//	public void superStaticMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, BuilderAccessException {
+//		IClass cls = classFactory.createClass(PUBLIC, "generated", "MethodTest" + counter, SimpleClass.class, SimpleInterface.class);
+//			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
+//				m.Return(m.Super().invoke("staticMethod", 42));
+//			m.End();
+//		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+//		Assert.assertEquals(42, test.foo());
+//	}
 	
 	@Test
 	public void superFinalMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, BuilderAccessException {

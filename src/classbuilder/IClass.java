@@ -33,6 +33,17 @@ import java.util.Collection;
  * The IClass interface represents a class.
  */
 public interface IClass {
+	
+	/**
+	 * Represents the class type of the current class.
+	 */
+	public static final Class<?> CURRENT_CLASS_TYPE = IClass.class;
+	
+	/**
+	 * Represents the array type of the current class.
+	 */
+	public static final Class<?> CURRENT_CLASS_ARRAY_TYPE = IClass[].class;
+	
 	/**
 	 * Modifier for public visibility.
 	 */
