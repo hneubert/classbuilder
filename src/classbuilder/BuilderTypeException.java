@@ -68,7 +68,7 @@ public class BuilderTypeException extends BuilderException {
 	 * @param required required type
 	 */
 	public BuilderTypeException(Object source, Class<?> found, Class<?> ...required) {
-		super(source, "invalid type: " + VMConst.getTypeName(found) /*+ " required type: " + required.getName()*/);
+		super(source, "invalid type: " + VMConst.getTypeName(null, found) /*+ " required type: " + required.getName()*/);
 	}
 	
 }

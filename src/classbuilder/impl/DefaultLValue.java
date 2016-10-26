@@ -1126,7 +1126,13 @@ public class DefaultLValue implements LValue {
 			
 			if (id instanceof Method) s = source + "." + ((Method)id).getName() + "(";
 			if (id instanceof Constructor) s = source + "(";
-			if (id instanceof IMethod) s = source + ((IMethod)id).getName() + "(";
+			if (id instanceof IMethod) {
+				if (((IMethod)id).isConstructor()) {
+					s = source + "(";
+				} else {
+					s = source + "." + ((IMethod)id).getName() + "(";
+				}
+			}
 			args = (DefaultLValue[])value;
 			for (i = 0; i < args.length; i++) {
 				if (i > 0) s += ", ";
@@ -1229,10 +1235,10 @@ public class DefaultLValue implements LValue {
 			break;
 		case NEW:
 			if (varType.isArray()) {
-				s = source + "new " + VMConst.getTypeName(varType.getComponentType());
+				s = source + "new " + VMConst.getTypeName(fragment.getDeclaringClass(), varType.getComponentType());
 				s += "[" + ((DefaultLValue)value).toString(this, "") + "]";
 			} else if (!varType.isPrimitive()) {
-				s = source + "new " + VMConst.getTypeName(varType);
+				s = source + "new " + VMConst.getTypeName(fragment.getDeclaringClass(), varType);
 			}
 			if (next != null) s += next.toString(this, "");
 			break;

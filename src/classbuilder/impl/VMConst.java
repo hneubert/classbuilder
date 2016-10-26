@@ -79,7 +79,7 @@ public class VMConst {
 		return s;
 	}
 	
-	public static String getTypeName(Class<?> cls) {
+	public static String getTypeName(IClass component, Class<?> cls) {
 		if (cls == null) return "void";
 		if (cls == boolean.class) return "boolean";
 		if (cls == byte.class) return "byte";
@@ -89,6 +89,14 @@ public class VMConst {
 		if (cls == float.class) return "float";
 		if (cls == double.class) return "double";
 		if (cls == char.class) return "char";
+		if (cls == IClass.CURRENT_CLASS_TYPE) {
+			if (component != null) return component.getSimpleName();
+			return "<current type>";
+		}
+		if (cls == IClass.CURRENT_CLASS_ARRAY_TYPE) {
+			if (component != null) return component.getSimpleName() + "[]";
+			return "<current type>[]";
+		}
 		String name = cls.getName();
 		String array = "";
 		while (name.startsWith("[")) {

@@ -207,7 +207,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 				s = "static {";
 			} else {
 				if (type == FragmentType.FUNCTION) {
-					s = VMConst.getModifier(flags) + VMConst.getTypeName(returnType) + " " + name + "(";
+					s = VMConst.getModifier(flags) + VMConst.getTypeName(component, returnType) + " " + name + "(";
 				} else {
 					s = VMConst.getModifier(flags) + component.getSimpleName() + "(";
 				}

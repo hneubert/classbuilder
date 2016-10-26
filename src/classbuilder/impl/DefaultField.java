@@ -111,7 +111,7 @@ public class DefaultField implements IField {
 			return "\t" + text;
 		} else {
 			String text = VMConst.getModifier(modifiers);
-			text += VMConst.getTypeName(type) + " " + name;
+			text += VMConst.getTypeName(declaringClass, type) + " " + name;
 			if (value != null) {
 				text += " = " + VMConst.getConst(value);
 			}

@@ -64,7 +64,7 @@ public class DefaultVariable implements Variable {
 	
 	@Override
 	public String toString() {
-		return VMConst.getTypeName(varType) + " " + name + ";";
+		return VMConst.getTypeName(method.getDeclaringClass(), varType) + " " + name + ";";
 	}
 	
 	public short getIndex() {
