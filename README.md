@@ -18,10 +18,10 @@ Usage:
 * replacement of interpreters/parsers
 
 Download:
-* [classbuilder-1.0.1.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-1.0.1.jar)
-* [classbuilder-src-1.0.1.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-src-1.0.1.jar)
-* [classbuilder-doc-1.0.1.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-doc-1.0.1.zip)
-* [classbuilder-demo-1.0.1.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-demo-1.0.1.zip)
+* [classbuilder-1.1.0.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-1.1.0.jar)
+* [classbuilder-src-1.1.0.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-src-1.1.0.jar)
+* [classbuilder-doc-1.1.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-doc-1.1.0.zip)
+* [classbuilder-demo-1.1.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-demo-1.1.0.zip)
 
 Limitations:
 * no implicit operator priority (a.add(1).mul(2) means (a \+ 1) \* 2)
