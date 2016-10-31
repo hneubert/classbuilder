@@ -958,6 +958,12 @@ public class IMethodTestCase {
 		cls = classFactory.createClass(PUBLIC, "methodTest", "InvokeSuperTest2", Object.class);
 			ctor = cls.addConstructor(PUBLIC);
 				ctor.invokeSuper();
+				try {
+					ctor.invokeSuper();
+					Assert.fail("super already called");
+				} catch (BuilderSyntaxException e) {
+					
+				}
 				i = ctor.addVar(int.class);
 				i.set(1);
 			ctor.End();

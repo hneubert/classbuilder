@@ -53,6 +53,7 @@ public class BuilderSyntaxException extends BuilderException {
 	public static final int TOO_MANY_VARIABLES =		119;
 	public static final int ENUM_CONST_CREATION_FAILD =	120;
 	public static final int ENUM_CONST_NOT_ALLOWED =	121;
+	public static final int SUPER_ALREADY_CALLED =		122;
 	
 	private int error;
 	
@@ -151,6 +152,8 @@ public class BuilderSyntaxException extends BuilderException {
 			return "enum constant could not be created: " + value;
 		case ENUM_CONST_NOT_ALLOWED :
 			return "enum constant not allowed";
+		case SUPER_ALREADY_CALLED :
+			return "super constructor already called";
 		default:
 			return "unknown error";	
 		}

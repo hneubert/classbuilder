@@ -343,7 +343,7 @@ public class DefaultClass implements IClass {
 		constructors.add(function);
 		if (isEnum()) {
 			try {
-				function.Super().invoke("<init>", function.getParameter(-2), function.getParameter(-1));
+				function.invokeSuper(function.getParameter(-2), function.getParameter(-1));
 				function.hideLast();
 			} catch (BuilderSyntaxException e) {
 				throw new BuilderTypeException(function, e.getMessage(), e);
@@ -408,8 +408,8 @@ public class DefaultClass implements IClass {
 		
 		try {
 			if (constructors.isEmpty() && (flags & (INTERFACE | ENUM)) == 0) {
-				IMethod c = addConstructor(PUBLIC);
-					c.Super().invoke("<init>");
+				IConstructor c = addConstructor(PUBLIC);
+					c.invokeSuper();
 				c.End();
 			}
 		} catch (BuilderException e) {

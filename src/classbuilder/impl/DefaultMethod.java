@@ -29,7 +29,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.ElementType;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -168,6 +167,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	private DebugData debug;
 	private List<TryCatchBlock> tryCatchList;
 	private List<DefaultLValue> instructions;
+	private boolean superInvoked;
 	
 	public DefaultMethod(FragmentType type, int flags, String name, Class<?> returnType, IClass component, ConstantPool constantPool, Class<?> ...params) {
 		boolean first;
@@ -181,6 +181,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		this.returnType = returnType;
 		this.component = component;
 		this.params = new ArrayList<Variable>();
+		this.superInvoked = false;
 		
 		fragmentData = new Stack<FragmentData>();
 		preprocessFragment(FragmentType.FUNCTION, null);
@@ -312,7 +313,9 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		testClosed();
 		testStatic();
 		if (!isConstructor() || out.getPos() != 0) throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR_ALLOWED);
+		if (superInvoked) throw new BuilderSyntaxException(this, BuilderSyntaxException.SUPER_ALREADY_CALLED);
 		Super().invoke("<init>", args);
+		superInvoked = true;
 	}
 	
 	public byte[] getCode() {
@@ -931,22 +934,16 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			if (!node.isRemoved()) {
 				int offset = out.getPos();
 				
-				if (isConstructor()) {
-					if (offset == 0) {
-						if (node.getType() != NodeType.SUPER && node.getNext() != null) {
-							DefaultLValue next = node.getNext();
-							if (next.getType() != NodeType.INVOKE || !(next.getId() instanceof Constructor)) {
-								DefaultLValue spr = new DefaultLValue(null, null, NodeType.SUPER, null, null, component.getSuperclass());
-								try {
-									spr.invoke("<init>");
-									spr.build(null, out, constantPool, false);
-								} catch (BuilderAccessException e) {
-									throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
-								} catch (BuilderTypeException e) {
-									throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
-								}
-							}
-						}
+				if (isConstructor() && !superInvoked) {
+					DefaultLValue spr = new DefaultLValue(null, null, NodeType.SUPER, null, null, component.getSuperclass());
+					try {
+						spr.invoke("<init>");
+						spr.build(null, out, constantPool, false);
+						superInvoked = true;
+					} catch (BuilderAccessException e) {
+						throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
+					} catch (BuilderTypeException e) {
+						throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
 					}
 				}
 				
