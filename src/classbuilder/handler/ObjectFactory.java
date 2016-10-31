@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -262,7 +261,7 @@ public class ObjectFactory {
 		interfaces = new Class[0];
 		typeMap = new ConcurrentHashMap<Class<?>, Class<?>>();
 		helperMap = new ConcurrentHashMap<Class<?>, InstantiationHelper>();
-		suffix = Integer.toString(Math.abs(new Random().nextInt()));
+		suffix = "generated";
 		annotationCache = new ConcurrentHashMap<Class<?>, AnnotationInfo>();
 		this.metadata = new ConcurrentHashMap<String, Object>();
 	}
