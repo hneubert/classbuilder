@@ -80,9 +80,9 @@ public class DefaultAnnotation implements IAnnotation {
 		try {
 			method = type.getMethod(name);
 		} catch (NoSuchMethodException e) {
-			throw new BuilderAccessException(target, BuilderAccessException.METHOD_NOT_FOUND, e);
+			throw new BuilderAccessException(target, BuilderAccessException.METHOD_NOT_FOUND, name, e);
 		} catch (SecurityException e) {
-			throw new BuilderAccessException(target, BuilderAccessException.METHOD_NOT_FOUND, e);
+			throw new BuilderAccessException(target, BuilderAccessException.METHOD_NOT_FOUND, name, e);
 		}
 		checkType(method.getReturnType(), value);
 		values.put(name, value);

@@ -97,7 +97,7 @@ public class DefaultLValue implements LValue {
 		DefaultLValue next = null;
 		
 		if (name == null) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, "<null>");
-		if (varType == null || varType.isPrimitive() || varType.isArray()) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, getVarTypeName());
+		if (varType == null || varType.isPrimitive() || varType.isArray()) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, name);
 		
 		try {
 			Object f;
@@ -183,7 +183,7 @@ public class DefaultLValue implements LValue {
 		DefaultLValue[] newArgs;
 		int i;
 		
-		if (types.length != args.length) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, Integer.toString(args.length));
+		if (types.length != args.length) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, method.getName());
 		newArgs = new DefaultLValue[args.length];
 		
 		for (i = 0; i < args.length; i++) {
@@ -210,16 +210,16 @@ public class DefaultLValue implements LValue {
 			varType = fragment.getDeclaringClass().getSuperclass();
 		}
 		if (method == null) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, "<null>");
-		if (!method.getDeclaringClass().isAssignableFrom(varType)) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND);
+		if (!method.getDeclaringClass().isAssignableFrom(varType)) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, method.getName());
 		if (type == NodeType.CLASS && (method.getModifiers() & Modifier.STATIC) == 0) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_STATIC, method.getName());
 		if (type != NodeType.CLASS && (method.getModifiers() & Modifier.STATIC) != 0) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_STATIC, method.getName());
-		if (!VMConst.isAccessable(method, fragment.getDeclaringClass().getPackage(), method.getDeclaringClass().isAssignableFrom(fragment.getDeclaringClass().getSuperclass()))) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE);
+		if (!VMConst.isAccessable(method, fragment.getDeclaringClass().getPackage(), method.getDeclaringClass().isAssignableFrom(fragment.getDeclaringClass().getSuperclass()))) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE, method.getName());
 		
 		Class<?>[] types = method.getParameterTypes();
 		DefaultLValue[] newArgs;
 		int i;
 		
-		if (types.length != args.length) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, Integer.toString(args.length));
+		if (types.length != args.length) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, method.getName());
 		newArgs = new DefaultLValue[args.length];
 		
 		for (i = 0; i < args.length; i++) {
@@ -346,7 +346,7 @@ public class DefaultLValue implements LValue {
 		}
 		
 		if (method == null) throw new NoSuchMethodException(name);
-		if (!VMConst.isAccessable(method, fragment.getDeclaringClass().getPackage(), protectedAccess)) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE);
+		if (!VMConst.isAccessable(method, fragment.getDeclaringClass().getPackage(), protectedAccess)) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE, name);
 		return method;
 	}
 	
@@ -404,7 +404,7 @@ public class DefaultLValue implements LValue {
 		}
 		
 		if (field == null) throw new NoSuchFieldException(name);
-		if (!VMConst.isAccessable(field, fragment.getDeclaringClass().getPackage(), protectedAccess)) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE);
+		if (!VMConst.isAccessable(field, fragment.getDeclaringClass().getPackage(), protectedAccess)) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE, name);
 		return field;
 	}
 	
@@ -433,8 +433,8 @@ public class DefaultLValue implements LValue {
 		
 		lv = cast(lv, varType);
 		
-		if (id instanceof Field) if ((((Field)id).getModifiers() & IClass.FINAL) != 0) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE);
-		if (id instanceof IField) if ((((IField)id).getModifiers() & IClass.FINAL) != 0 && (((IField)id).getModifiers() & IClass.ENUM) == 0) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE);
+		if (id instanceof Field) if ((((Field)id).getModifiers() & IClass.FINAL) != 0) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE, ((Field)id).getName());
+		if (id instanceof IField) if ((((IField)id).getModifiers() & IClass.FINAL) != 0 && (((IField)id).getModifiers() & IClass.ENUM) == 0) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE, ((IField)id).getName());
 		
 		if (type == NodeType.FGET) {
 			type = NodeType.FSET;
@@ -1492,7 +1492,7 @@ public class DefaultLValue implements LValue {
 	private void check(DefaultLValue lv) throws BuilderAccessException {
 		if (lv.getType() == NodeType.LGET) {
 			if (!((Variable)lv.id).isInitialized()) {
-				throw new BuilderAccessException(fragment, BuilderAccessException.VARIABLE_NOT_INITIALIZED, ((Variable)lv.id).getName());
+				throw new BuilderAccessException(fragment, BuilderAccessException.VARIABLE_NOT_INITIALIZED, ((Variable)lv.id).getName() + " (" + ((Variable)lv.id).getType().getName() + ")");
 			}
 		}
 	}
