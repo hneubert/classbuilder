@@ -26,11 +26,12 @@
 package classbuilder.handler;
 
 import classbuilder.BuilderException;
+import classbuilder.util.DefaultDynamicClassLoader;
 
 /**
  * The HandlerClassLoader generates and loads automatically sub classes.
  */
-public class HandlerClassLoader extends ClassLoader {
+public class HandlerClassLoader extends DefaultDynamicClassLoader {
 	
 	private ObjectFactory objectFactory;
 	

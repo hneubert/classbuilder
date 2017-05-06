@@ -54,7 +54,7 @@ public class IFieldTestCase {
 				m.get(field).set(1);
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -65,7 +65,7 @@ public class IFieldTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -76,7 +76,7 @@ public class IFieldTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -88,7 +88,7 @@ public class IFieldTestCase {
 				m.get(field).set(1);
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -99,7 +99,7 @@ public class IFieldTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -110,7 +110,7 @@ public class IFieldTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -121,7 +121,7 @@ public class IFieldTestCase {
 				m.Super().get("field").set(42);	
 				m.Return(m.Super().get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -132,7 +132,7 @@ public class IFieldTestCase {
 				m.$(cls).get("staticField").set(42);	
 				m.Return(m.$(cls).get("staticField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -142,7 +142,7 @@ public class IFieldTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.Super().get("finalField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -153,7 +153,7 @@ public class IFieldTestCase {
 				m.Super().get("finalField").set(42);	
 				m.Return(m.Super().get("finalField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -164,7 +164,7 @@ public class IFieldTestCase {
 				m.This().get("field").set(42);	
 				m.Return(m.This().get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -175,7 +175,7 @@ public class IFieldTestCase {
 				m.$(cls).get("staticField").set(42);	
 				m.Return(m.$(cls).get("staticField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -185,7 +185,7 @@ public class IFieldTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.This().get("finalField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -196,7 +196,7 @@ public class IFieldTestCase {
 				m.This().get("finalField").set(42);	
 				m.Return(m.This().get("finalField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -208,7 +208,7 @@ public class IFieldTestCase {
 				m.$(cls).get("field").set(1);
 				m.Return(m.$(cls).get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -220,7 +220,7 @@ public class IFieldTestCase {
 				m.This().get("field").set(1);
 				m.Return(m.This().get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -231,7 +231,7 @@ public class IFieldTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(cls).get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -244,7 +244,7 @@ public class IFieldTestCase {
 				obj.get("staticField").set(1);
 				m.Return(obj.get("staticField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -257,7 +257,7 @@ public class IFieldTestCase {
 				obj.get("field").set(1);
 				m.Return(obj.get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -269,7 +269,7 @@ public class IFieldTestCase {
 				obj.set(m.New(SimpleClass.class));
 				m.Return(obj.get("finalField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -280,7 +280,7 @@ public class IFieldTestCase {
 				m.$(SimpleClass.class).get("staticField").set(1);
 				m.Return(m.$(SimpleClass.class).get("staticField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -291,7 +291,7 @@ public class IFieldTestCase {
 				m.$(SimpleClass.class).get("field").set(1);
 				m.Return(m.$(SimpleClass.class).get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -355,7 +355,15 @@ public class IFieldTestCase {
 				m.get(field).set(null);
 				m.Return(m.get(field));
 			m.End();
-		SimpleObjectInterface test = (SimpleObjectInterface)cls.build().newInstance();
+		SimpleObjectInterface test = (SimpleObjectInterface)getInstance(cls.build());
 		Assert.assertEquals(null, test.foo());
+	}
+	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
 	}
 }

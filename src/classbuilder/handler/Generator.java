@@ -33,15 +33,17 @@ import java.util.jar.JarFile;
 
 import classbuilder.BuilderException;
 import classbuilder.ClassFactory;
+import classbuilder.DynamicClassLoader;
 import classbuilder.handler.HandlerException;
 import classbuilder.handler.ObjectFactory;
+import classbuilder.util.DefaultDynamicClassLoader;
 
 /**
  * The Generator builds class and java-files at build-time.
  */
 public class Generator {
 	private ClassFactory classFactory;
-	private ClassLoader classLoader;
+	private DynamicClassLoader classLoader;
 	private ObjectFactory objectFactory;
 	private String filter;
 	
@@ -64,7 +66,7 @@ public class Generator {
 			filter = filter.replace("!", "[^\\.]*");
 		}
 		this.filter = filter;
-		classLoader = Thread.currentThread().getContextClassLoader();
+		classLoader = new DefaultDynamicClassLoader();
 		
 		classFactory = new ClassFactory();
 		classFactory.setClassLoader(classLoader);
@@ -164,7 +166,7 @@ public class Generator {
 		classname = classname.replace('$', '.');
 		if (filter == null || classname.matches(filter)) {
 			try {
-				Class<?> cls = classLoader.loadClass(classname);
+				Class<?> cls = classLoader.getClassLoader().loadClass(classname);
 				objectFactory.getSubclass(cls, null, null);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();

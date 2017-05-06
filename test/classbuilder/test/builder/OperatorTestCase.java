@@ -36,7 +36,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(1).add(2));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -46,7 +46,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(4).sub(1));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -56,7 +56,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(1).mul(3));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -66,7 +66,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(9).div(3));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -76,7 +76,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(3).mod(4));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -86,7 +86,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(3).and(15));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -96,7 +96,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(1).or(2));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -106,7 +106,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(3).xor(0));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -116,7 +116,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(3).shl(1));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(6, test.foo());
 	}
 	
@@ -126,7 +126,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(6).ushr(1));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -136,7 +136,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(-6).shr(1));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(-3, test.foo());
 	}
 	
@@ -146,7 +146,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(-3).neg());
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -156,7 +156,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(~3).not());
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -179,7 +179,7 @@ public class OperatorTestCase {
 			m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(System.class).get("out").instanceOf(PrintStream.class));
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -189,7 +189,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(1).equal(1));
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -199,7 +199,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(1).notEqual(2));
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -209,7 +209,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(1).less(2));
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -219,7 +219,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(2).greater(1));
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -229,7 +229,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(1).lessEqual(2));
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -239,7 +239,7 @@ public class OperatorTestCase {
 			IMethod m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(2).greaterEqual(1));
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -260,7 +260,7 @@ public class OperatorTestCase {
 			m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(System.class).get("out").isNull());
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(false, test.foo());
 		
 		cls = addClass(BoolInterface.class);
@@ -269,7 +269,7 @@ public class OperatorTestCase {
 				i.set(null);
 				m.Return(i.isNull());
 			m.End();
-		test = (BoolInterface)cls.build().newInstance();
+		test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 	}
 	
@@ -290,7 +290,7 @@ public class OperatorTestCase {
 			m = cls.addMethod(PUBLIC, boolean.class, "foo");
 				m.Return(m.$(System.class).get("out").isNotNull());
 			m.End();
-		BoolInterface test = (BoolInterface)cls.build().newInstance();
+		BoolInterface test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(true, test.foo());
 		
 		cls = addClass(BoolInterface.class);
@@ -299,7 +299,7 @@ public class OperatorTestCase {
 				i.set(null);
 				m.Return(i.isNotNull());
 			m.End();
-		test = (BoolInterface)cls.build().newInstance();
+		test = (BoolInterface)getInstance(cls.build());
 		Assert.assertEquals(false, test.foo());
 	}
 	
@@ -477,7 +477,7 @@ public class OperatorTestCase {
 					}
 				}
 			m.End();
-		MatrixTest test = (MatrixTest)cls.build().newInstance();
+		MatrixTest test = (MatrixTest)getInstance(cls.build());
 		Assert.assertEquals(result , test.foo());
 	}
 	
@@ -624,5 +624,13 @@ public class OperatorTestCase {
 		if (a instanceof Short || b instanceof Short) return ((Number)n).intValue();
 		if (a instanceof Byte || b instanceof Byte) return ((Number)n).intValue();
 		return n;
+	}
+	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
 	}
 }

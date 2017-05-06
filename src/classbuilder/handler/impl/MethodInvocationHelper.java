@@ -143,12 +143,12 @@ public class MethodInvocationHelper implements MethodReference {
 		try {
 			if (index < proxyList.size()) {
 				index++;
-				ProxyHandler handler = (ProxyHandler)proxyList.get(proxyList.size() - index).getHandler().newInstance();
+				ProxyHandler handler = (ProxyHandler)proxyList.get(proxyList.size() - index).getHandler().getConstructor().newInstance();
 				handler.handle(proxyList.get(proxyList.size() - index), method.getDeclaringClass(), methodWrapper, declaration, this);
 				index--;
 				methodWrapper.writeOffsets();
 			} else if (methodHandler != null) {
-				MethodHandler handler = (MethodHandler)methodHandler.getHandler().newInstance();
+				MethodHandler handler = (MethodHandler)methodHandler.getHandler().getConstructor().newInstance();
 				handler.handle(methodHandler, method.getDeclaringClass(), methodWrapper, declaration);
 				methodWrapper.writeOffsets();
 			} else if (target != null) {
@@ -158,9 +158,11 @@ public class MethodInvocationHelper implements MethodReference {
 					result.set(method.Super().invoke(target.getName(), (Object[])getParameters()));
 				}
 			}
-		} catch (InstantiationException e) {
-			throw new HandlerException("handler instanziation faild: ", e);
-		} catch (IllegalAccessException e) {
+		} catch (BuilderException e) {
+			throw e;
+		} catch (HandlerException e) {
+			throw e;
+		} catch (Exception e) {
 			throw new HandlerException("handler instanziation faild: ", e);
 		}
 		return result;

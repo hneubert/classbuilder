@@ -53,7 +53,7 @@ public class BasicTestCase {
 			IAnnotation annotation = cls.addAnnotation(TestAnnotation.class);
 			annotation.setValue("value", "blubber");
 			annotation.setValue("num", 5);
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -67,7 +67,7 @@ public class BasicTestCase {
 			IAnnotation annotation = cls.addAnnotation(TestAnnotation.class);
 			annotation.setValue("value", "blubber");
 			annotation.setValue("num", 5);
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 		System.out.println(test.getClass().getAnnotation(TestAnnotation.class).num());
 	}
@@ -78,7 +78,7 @@ public class BasicTestCase {
 			IMethod m = cls.addMethod(PUBLIC, "foo");
 				m.$(System.class).get("out").invoke("println", "hallo");
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -94,7 +94,7 @@ public class BasicTestCase {
 				
 				i.set(i.add(j));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -110,7 +110,7 @@ public class BasicTestCase {
 					m.$(System.class).get("out").invoke("println", "error");
 				m.End();
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -126,7 +126,7 @@ public class BasicTestCase {
 					i.set(i.add(1));
 				m.End();
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -144,7 +144,7 @@ public class BasicTestCase {
 					m.$(System.class).get("out").invoke("println", e);
 				m.End();
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -158,7 +158,7 @@ public class BasicTestCase {
 					m.$(System.class).get("out").invoke("println", e.invoke("getMessage"));
 				m.End();
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -174,7 +174,7 @@ public class BasicTestCase {
 				
 				m.$(System.class).get("out").invoke("println", array.get(2));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -190,7 +190,7 @@ public class BasicTestCase {
 				
 				m.$(System.class).get("out").invoke("println", array.get(2));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -207,7 +207,7 @@ public class BasicTestCase {
 				
 				m.$(System.class).get("out").invoke("println", array.get(2).get(2));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -236,4 +236,11 @@ public class BasicTestCase {
 		return classFactory.createClass(PUBLIC, "generated", "BasicTest" + counter, Object.class, intf);
 	}
 	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
+	}
 }

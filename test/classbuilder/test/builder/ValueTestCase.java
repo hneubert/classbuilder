@@ -37,7 +37,7 @@ public class ValueTestCase {
 				i.set(3);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -52,7 +52,7 @@ public class ValueTestCase {
 				i.set(j);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -66,7 +66,7 @@ public class ValueTestCase {
 				i.set(j);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -81,7 +81,7 @@ public class ValueTestCase {
 				i.set(j.cast(int.class));
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -95,7 +95,7 @@ public class ValueTestCase {
 				i.set(j);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -108,7 +108,7 @@ public class ValueTestCase {
 				i.set(3);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -124,7 +124,7 @@ public class ValueTestCase {
 				i.set(j.cast(int.class));
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -139,7 +139,7 @@ public class ValueTestCase {
 				i.set(j);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -155,7 +155,7 @@ public class ValueTestCase {
 				i.set(j.cast(int.class));
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -170,7 +170,7 @@ public class ValueTestCase {
 				i.set(j);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -182,7 +182,7 @@ public class ValueTestCase {
 				var.set(m.New(int[].class, 5));
 				m.Return(3);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -194,7 +194,7 @@ public class ValueTestCase {
 				var.set(m.New(String.class));
 				m.Return(3);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -206,7 +206,7 @@ public class ValueTestCase {
 				var.set(m.New(Integer.class, 1));
 				m.Return(3);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -218,7 +218,7 @@ public class ValueTestCase {
 				var.set(m.New(String[].class, 3));
 				m.Return(3);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -228,7 +228,7 @@ public class ValueTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.$(Math.class).invoke("abs", 3));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -238,7 +238,7 @@ public class ValueTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.New(Integer.class, 3).invoke("intValue"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -252,7 +252,7 @@ public class ValueTestCase {
 			IMethod n = cls.addMethod(PUBLIC, int.class, "foo");
 				n.Return(n.This().invoke("test"));
 			n.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -262,7 +262,7 @@ public class ValueTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.New(Integer.class, 3).invoke("intValue"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -276,7 +276,7 @@ public class ValueTestCase {
 			IMethod n = cls.addMethod(PUBLIC, int.class, "foo");
 				n.Return(n.This().invoke("test"));
 			n.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -287,7 +287,7 @@ public class ValueTestCase {
 				m.$(System.class).get("out").invoke("println", (Object)null);
 				m.Return(3);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -298,7 +298,7 @@ public class ValueTestCase {
 				m.Super().invoke("toString");
 				m.Return(3);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 
@@ -310,7 +310,7 @@ public class ValueTestCase {
 				i.set(3);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -321,7 +321,7 @@ public class ValueTestCase {
 				m.$(ValueTestCase.class).get("staticField").set(3);
 				m.Return(m.$(ValueTestCase.class).get("staticField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -339,7 +339,7 @@ public class ValueTestCase {
 				field.get("field").set(3);
 				m.Return(field.get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -352,7 +352,7 @@ public class ValueTestCase {
 				array.get(1).set(3);
 				m.Return(array.get(1));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -365,7 +365,7 @@ public class ValueTestCase {
 				m.get(field).set(3);
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -375,7 +375,7 @@ public class ValueTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 
@@ -387,7 +387,7 @@ public class ValueTestCase {
 				i.set(3);
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -398,7 +398,7 @@ public class ValueTestCase {
 				m.$(ValueTestCase.class).get("staticField").set(3);
 				m.Return(m.$(ValueTestCase.class).get("staticField"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -412,7 +412,7 @@ public class ValueTestCase {
 				field.get("field").set(3);
 				m.Return(field.get("field"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -425,7 +425,7 @@ public class ValueTestCase {
 				m.get(field).set(3);
 				m.Return(m.get(field));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -435,7 +435,7 @@ public class ValueTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -445,7 +445,7 @@ public class ValueTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.New(Integer.class, 3).invoke("intValue"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -455,7 +455,7 @@ public class ValueTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.New(Integer.class, 3).cast(Integer.class).invoke("intValue"));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -477,7 +477,7 @@ public class ValueTestCase {
 				array.get(1).set(42);
 				m.Return(array.get(1));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -498,7 +498,7 @@ public class ValueTestCase {
 				array.set(m.New(int[].class, 3));
 				m.Return(array.length());
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -515,4 +515,11 @@ public class ValueTestCase {
 		return classFactory.createClass(PUBLIC, "generated", "VarTest" + counter, Object.class, intf);
 	}
 	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
+	}
 }

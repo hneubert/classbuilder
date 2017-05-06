@@ -105,7 +105,7 @@ public class TypeCastTestCase {
 						m.End();
 					Class<?> c = cls.build();
 					
-					ITest test = (ITest)c.newInstance();
+					ITest test = (ITest)getInstance(c);
 					
 					Assert.assertEquals(values[j], test.test(values[i]));
 					assertTrue(from[i] + " -> " + to[j], matrix[i][j]);
@@ -137,7 +137,7 @@ public class TypeCastTestCase {
 				m.End();
 			Class<?> c = cls.build();
 			
-			ITest test = (ITest)c.newInstance();
+			ITest test = (ITest)getInstance(c);
 			
 			Assert.assertEquals(5, test.test(5));
 			assertTrue(from + " -> " + to, allowed);
@@ -149,6 +149,14 @@ public class TypeCastTestCase {
 			assertFalse(from + " -> " + to, allowed);
 		} catch (BuilderException e) {
 			fail(from + " -> " + to + " " + e.getMessage());
+		}
+	}
+	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
 		}
 	}
 }

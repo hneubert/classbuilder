@@ -174,7 +174,7 @@ public class IClassTestCase {
 				s.get(f).set(1);
 			s.End();
 		Class<?> c = cls.build();
-		c.newInstance();
+		getInstance(c);
 		
 		Field field = c.getField("test");
 		Assert.assertEquals(1, field.get(null));
@@ -274,7 +274,7 @@ public class IClassTestCase {
 			IClass cls = classFactory.createClass(PUBLIC, "package", "Class", ConstructorTest.class);
 				IConstructor ctor = cls.addConstructor(PUBLIC);
 				ctor.End();
-			cls.build().newInstance();
+			getInstance(cls.build());
 			Assert.fail();
 		} catch (BuilderSyntaxException e) {
 			
@@ -296,7 +296,7 @@ public class IClassTestCase {
 		cls = classFactory.createClass(PUBLIC, "package", "AddConstructorTestCase2", Object.class);
 			ctor = cls.addConstructor(PUBLIC);
 			ctor.End();
-		cls.build().newInstance();
+		getInstance(cls.build());
 	}
 	
 	@Test
@@ -885,7 +885,7 @@ public class IClassTestCase {
 		}
 		cls.addInterface(Serializable.class);
 		Class<?> c = cls.build();
-		Assert.assertTrue(c.newInstance() instanceof Serializable);
+		Assert.assertTrue(getInstance(c) instanceof Serializable);
 	}
 	
 	@Test
@@ -991,5 +991,13 @@ public class IClassTestCase {
 			m.End();
 		Object obj = cls.build().getMethod("getInstance").invoke(null);
 		System.out.println(obj.getClass());
+	}
+	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
 	}
 }

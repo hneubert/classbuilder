@@ -245,7 +245,7 @@ public class IMethodTestCase {
 			method.Return(1);
 		method.End();
 		Class<?> c = cls.build();
-		TestObject obj = (TestObject)c.newInstance();
+		TestObject obj = (TestObject)getInstance(c);
 		obj.foo();
 		
 		cls = classFactory.createClass(PUBLIC, "methodTest", "GetTest2", TestObject.class);
@@ -264,7 +264,7 @@ public class IMethodTestCase {
 			method.Return(1);
 		method.End();
 		c = cls.build();
-		obj = (TestObject)c.newInstance();
+		obj = (TestObject)getInstance(c);
 		obj.foo();
 	}
 	
@@ -357,7 +357,7 @@ public class IMethodTestCase {
 			m.Return(1);
 		m.End();
 		Class<?> c = cls.build();
-		TestObject obj = (TestObject)c.newInstance();
+		TestObject obj = (TestObject)getInstance(c);
 		obj.foo();
 		
 		cls = classFactory.createClass(PUBLIC, "methodTest", "InvokeTest2", TestObject.class);
@@ -377,7 +377,7 @@ public class IMethodTestCase {
 			m.Return(1);
 		m.End();
 		c = cls.build();
-		obj = (TestObject)c.newInstance();
+		obj = (TestObject)getInstance(c);
 		obj.foo();
 	}
 	
@@ -387,7 +387,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(1);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -397,7 +397,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC | STATIC, int.class, "foo");
 				m.Return(1);
 			m.End();
-		Object test = cls.build().newInstance();
+		Object test = getInstance(cls.build());
 		Assert.assertEquals(1, test.getClass().getMethod("foo").invoke(test));
 	}
 	
@@ -407,7 +407,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC | FINAL, int.class, "foo");
 				m.Return(1);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(1, test.foo());
 	}
 	
@@ -427,7 +427,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.invoke(method, 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -440,7 +440,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.invoke(method, 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -453,7 +453,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.invoke(method, 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -477,7 +477,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.This().invoke("method", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -487,7 +487,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.This().invoke("staticMethod", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -497,7 +497,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.This().invoke("finalMethod", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -521,7 +521,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.Super().invoke("method", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -531,7 +531,7 @@ public class IMethodTestCase {
 //			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 //				m.Return(m.Super().invoke("staticMethod", 42));
 //			m.End();
-//		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+//		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 //		Assert.assertEquals(42, test.foo());
 //	}
 	
@@ -541,7 +541,7 @@ public class IMethodTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(m.Super().invoke("finalMethod", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -567,7 +567,7 @@ public class IMethodTestCase {
 				var.set(m.New(SimpleClass.class));
 				m.Return(var.invoke("method", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -579,7 +579,7 @@ public class IMethodTestCase {
 				var.set(m.New(SimpleClass.class));
 				m.Return(var.invoke("staticMethod", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -591,7 +591,7 @@ public class IMethodTestCase {
 				var.set(m.New(SimpleClass.class));
 				m.Return(var.invoke("finalMethod", 42));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -776,7 +776,7 @@ public class IMethodTestCase {
 				method.Return(method.New(Object.class));
 			method.End();
 		Class<?> c = cls.build();
-		NewTest test = (NewTest)c.newInstance();
+		NewTest test = (NewTest)getInstance(c);
 		Assert.assertEquals(Object.class, test.foo().getClass());
 		
 		cls = classFactory.createClass(PUBLIC, "methodTest", "NewTest3", Object.class, NewTest.class);
@@ -784,7 +784,7 @@ public class IMethodTestCase {
 				method.Return(method.New(int[].class, 1));
 			method.End();
 		c = cls.build();
-		test = (NewTest)c.newInstance();
+		test = (NewTest)getInstance(c);
 		Assert.assertEquals(int[].class, test.foo().getClass());
 		
 		
@@ -793,7 +793,7 @@ public class IMethodTestCase {
 				method.Return(method.New(Integer.class, 42));
 			method.End();
 		c = cls.build();
-		test = (NewTest)c.newInstance();
+		test = (NewTest)getInstance(c);
 		Assert.assertEquals(42, test.foo());
 	}
 	
@@ -849,7 +849,7 @@ public class IMethodTestCase {
 			method.End();
 		Class<?> c = cls.build();
 		
-		ReturnTest test = (ReturnTest)c.newInstance();
+		ReturnTest test = (ReturnTest)getInstance(c);
 		test.foo();
 		Assert.assertEquals(1, test.bar());
 		test.foobar();
@@ -878,7 +878,7 @@ public class IMethodTestCase {
 			method.End();
 		Class<?> c = cls.build();
 		
-		SimpleInterface test = (SimpleInterface)c.newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(c);
 		
 		try {
 			test.foo();
@@ -912,7 +912,7 @@ public class IMethodTestCase {
 			method.End();
 		Class<?> c = cls.build();
 		
-		ThisTest test = (ThisTest)c.newInstance();
+		ThisTest test = (ThisTest)getInstance(c);
 		Assert.assertEquals(test, test.foo());
 	}
 	
@@ -936,7 +936,7 @@ public class IMethodTestCase {
 			method.End();
 		Class<?> c = cls.build();
 		
-		ThisTest test = (ThisTest)c.newInstance();
+		ThisTest test = (ThisTest)getInstance(c);
 		Assert.assertEquals(test, test.foo());
 		Assert.assertEquals(2, test.bar());
 	}
@@ -953,7 +953,7 @@ public class IMethodTestCase {
 				i.set(1);
 			ctor.End();
 		Class<?> c = cls.build();
-		c.newInstance();
+		getInstance(c);
 		
 		cls = classFactory.createClass(PUBLIC, "methodTest", "InvokeSuperTest2", Object.class);
 			ctor = cls.addConstructor(PUBLIC);
@@ -968,7 +968,7 @@ public class IMethodTestCase {
 				i.set(1);
 			ctor.End();
 		c = cls.build();
-		c.newInstance();
+		getInstance(c);
 		
 		cls = classFactory.createClass(PUBLIC, "methodTest", "InvokeSuperTest3", InvokeSuperTest.class);
 			ctor = cls.addConstructor(PUBLIC);
@@ -986,6 +986,14 @@ public class IMethodTestCase {
 				i.set(1);
 			ctor.End();
 		c = cls.build();
-		c.newInstance();
+		getInstance(c);
+	}
+	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
 	}
 }

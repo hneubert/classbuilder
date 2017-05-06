@@ -178,10 +178,8 @@ public class ObjectFactory {
 			Collection<MethodId> methods = null;
 			if (MethodSelector.class.isAssignableFrom(handlerType)) {
 				try {
-					methods = ((MethodSelector)handlerType.newInstance()).getMethods(ctx);
-				} catch (InstantiationException e) {
-					throw new HandlerException("method selector instanziation faild: ", e);
-				} catch (IllegalAccessException e) {
+					methods = ((MethodSelector)handlerType.getConstructor().newInstance()).getMethods(ctx);
+				} catch (Exception e) {
 					throw new HandlerException("method selector instanziation faild: ", e);
 				}
 			}
@@ -314,11 +312,11 @@ public class ObjectFactory {
 				}
 				if (!defaultOnly) {
 					try {
-						helperMap.put(primaryType, (InstantiationHelper)createInstantiationHelper(subclass).newInstance());
-					} catch (InstantiationException e1) {
-						throw new HandlerException("instantiation faild", e1);
-					} catch (IllegalAccessException e1) {
-						throw new HandlerException("instantiation faild", e1);
+						helperMap.put(primaryType, (InstantiationHelper)createInstantiationHelper(subclass).getConstructor().newInstance());
+					} catch (BuilderException e) {
+						throw e;
+					} catch (Exception e) {
+						throw new HandlerException("instantiation faild", e);
 					}
 				}
 			}
@@ -356,10 +354,12 @@ public class ObjectFactory {
 				if (obj == null) throw new HandlerException("no appropriate constructor");
 				return obj;
 			}
-			return (T)type.newInstance();
-		} catch (InstantiationException e) {
-			throw new HandlerException("instantiation faild: " + e.getMessage(), e);
-		} catch (IllegalAccessException e) {
+			return (T)type.getConstructor().newInstance();
+		} catch (BuilderException e) {
+			throw e;
+		} catch (HandlerException e) {
+			throw e;
+		} catch (Exception e) {
 			throw new HandlerException("instantiation faild: " + e.getMessage(), e);
 		}
 	}
@@ -376,10 +376,12 @@ public class ObjectFactory {
 	public <T> T create(Class<T> primaryType) throws BuilderException, HandlerException {
 		try {
 			Class<?> type = getSubclass(primaryType, interfaces, metadata);
-			return (T)type.newInstance();
-		} catch (InstantiationException e) {
-			throw new HandlerException("instantiation faild: " + e.getMessage(), e);
-		} catch (IllegalAccessException e) {
+			return (T)type.getConstructor().newInstance();
+		} catch (BuilderException e) {
+			throw e;
+		} catch (HandlerException e) {
+			throw e;
+		} catch (Exception e) {
 			throw new HandlerException("instantiation faild: " + e.getMessage(), e);
 		}
 	}
@@ -425,11 +427,13 @@ public class ObjectFactory {
 		for (HandlerContext ctx : data.classHandlers.values()) {
 			Class<?> handlerType = ctx.getHandler();
 			try {
-				ClassHandler handler = (ClassHandler)handlerType.newInstance();
+				ClassHandler handler = (ClassHandler)handlerType.getConstructor().newInstance();
 				handler.handle(ctx, cls);
-			} catch (InstantiationException e) {
-				throw new HandlerException("class handler instanziation faild: ", e);
-			} catch (IllegalAccessException e) {
+			} catch (BuilderException e) {
+				throw e;
+			} catch (HandlerException e) {
+				throw e;
+			} catch (Exception e) {
 				throw new HandlerException("class handler instanziation faild: ", e);
 			}
 		}
@@ -452,11 +456,13 @@ public class ObjectFactory {
 			constructor = cls.addConstructor(IClass.PUBLIC, id.getTypes());
 			Class<?> handlerType = entry.getValue().getHandler();
 			try {
-				ConstructorHandler handler = (ConstructorHandler)handlerType.newInstance();
+				ConstructorHandler handler = (ConstructorHandler)handlerType.getConstructor().newInstance();
 				handler.handle(entry.getValue(), cls, constructor);
-			} catch (InstantiationException e) {
-				throw new HandlerException("class handler instanziation faild: ", e);
-			} catch (IllegalAccessException e) {
+			} catch (BuilderException e) {
+				throw e;
+			} catch (HandlerException e) {
+				throw e;
+			} catch (Exception e) {
 				throw new HandlerException("class handler instanziation faild: ", e);
 			}
 			constructor.End();

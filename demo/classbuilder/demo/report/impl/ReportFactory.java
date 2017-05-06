@@ -33,7 +33,7 @@ public class ReportFactory {
 	private int counter;
 	
 	public ReportFactory() {
-		factory = XMLInputFactory.newFactory();
+		factory = XMLInputFactory.newInstance();
 		classFactory = new ClassFactory();
 		reportMap = new HashMap<String, Report>();
 		counter = 0;
@@ -119,10 +119,8 @@ public class ReportFactory {
 				}
 			method.End();
 		try {
-			reportMap.put(name, (Report)cls.build().newInstance());
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+			reportMap.put(name, (Report)cls.build().getConstructor().newInstance());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

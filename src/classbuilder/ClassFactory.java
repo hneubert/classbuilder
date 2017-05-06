@@ -27,6 +27,7 @@ package classbuilder;
 
 import classbuilder.impl.DefaultClass;
 import classbuilder.impl.VMConst;
+import classbuilder.util.DefaultDynamicClassLoader;
 
 /**
  * The ClassFactory generates new classes.
@@ -35,14 +36,14 @@ public class ClassFactory {
 	
 	private String classPath = null;
 	private String sourcePath = null;
-	private ClassLoader classLoader = null;
+	private DynamicClassLoader classLoader = null;
 	private short debug = 0;
 	
 	/**
 	 * Sole constructor.
 	 */
 	public ClassFactory() {
-		classLoader = Thread.currentThread().getContextClassLoader();
+		classLoader = new DefaultDynamicClassLoader();
 	}
 	
 	/**
@@ -103,16 +104,16 @@ public class ClassFactory {
 	 * Returns the class loader
 	 * @return class loader
 	 */
-	public ClassLoader getClassLoader() {
+	public DynamicClassLoader getClassLoader() {
 		return classLoader;
 	}
 	
 	/**
 	 * Sets the class loader.
-	 * The default class loader is the current thread class loader.
+	 * The default class loader is a sub class loader of the current thread class loader.
 	 * @param classLoader class loader
 	 */
-	public void setClassLoader(ClassLoader classLoader) {
+	public void setClassLoader(DynamicClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 }

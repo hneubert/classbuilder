@@ -34,7 +34,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,19 +78,6 @@ public class DefaultClass implements IClass {
 	protected ConstantPool constantPool;
 	
 	protected ClassFactory classFactory;
-	
-	protected static Method defineClass;
-	
-	static {
-		try {
-			defineClass = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-			defineClass.setAccessible(true);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException("ClassLoader.defineClass not accessible", e);
-		} catch (SecurityException e) {
-			throw new RuntimeException("ClassLoader.defineClass not accessible", e);
-		}
-	}
 	
 	public DefaultClass(ClassFactory classFactory, int flags, String pkg, String name, Class<?> superClass, Class<?> ...intf) throws BuilderModifierException, BuilderNameException, BuilderTypeException {
 		this.name = name;
@@ -559,13 +545,9 @@ public class DefaultClass implements IClass {
 		}
 		
 		try {
-			return (Class<?>)defineClass.invoke(classFactory.getClassLoader(), getName(), buffer, 0, buffer.length);
-		} catch (IllegalAccessException e) {
+			return classFactory.getClassLoader().addClass(getName(), buffer, 0, buffer.length);
+		} catch (Exception e) {
 			throw new BuilderCompilerException(this, e.getMessage(), e);
-		} catch (IllegalArgumentException e) {
-			throw new BuilderCompilerException(this, e.getMessage(), e);
-		} catch (InvocationTargetException e) {
-			throw new BuilderCompilerException(this, e.getTargetException().getMessage(), e);
 		}
 	}
 	

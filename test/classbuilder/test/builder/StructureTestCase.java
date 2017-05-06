@@ -39,7 +39,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -58,7 +58,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -77,7 +77,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -100,7 +100,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -123,7 +123,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -146,7 +146,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -169,7 +169,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -188,7 +188,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -207,7 +207,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -228,7 +228,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -245,7 +245,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -268,7 +268,7 @@ public class StructureTestCase {
 				
 				m.Return(j);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -315,7 +315,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		clear();
 		test.foo();
 		check(new int[] {0, 1, 2, 4, 5});
@@ -348,7 +348,7 @@ public class StructureTestCase {
 				m.End();
 				m.Return(i.mul(j));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(9, test.foo());
 		
 		cls = addClass(SimpleInterface.class);
@@ -382,7 +382,7 @@ public class StructureTestCase {
 				m.End();
 				m.Return(i.mul(j));
 			m.End();
-		test = (SimpleInterface)cls.build().newInstance();
+		test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(9, test.foo());
 	}
 	
@@ -407,7 +407,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(5, test.foo());
 	}
 	
@@ -428,7 +428,7 @@ public class StructureTestCase {
 				
 				m.Return(j.add(i));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(8, test.foo());
 	}
 	
@@ -455,7 +455,7 @@ public class StructureTestCase {
 				
 				m.Return(j.add(i));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(8, test.foo());
 	}
 	
@@ -474,7 +474,7 @@ public class StructureTestCase {
 				
 				m.Return(j);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -493,7 +493,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -516,7 +516,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -539,7 +539,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(6, test.foo());
 	}
 	
@@ -570,7 +570,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(9, test.foo());
 	}
 	
@@ -593,7 +593,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -616,7 +616,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -640,7 +640,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -650,7 +650,7 @@ public class StructureTestCase {
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Throw(m.New(Exception.class));
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -669,7 +669,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -689,7 +689,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -712,7 +712,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -736,7 +736,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -759,7 +759,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -783,7 +783,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -803,7 +803,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -822,7 +822,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -843,7 +843,7 @@ public class StructureTestCase {
 				
 				m.Return(i);
 			m.End();
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
 	}
 	
@@ -981,7 +981,7 @@ public class StructureTestCase {
 			m.End();
 		Class<?> c = cls.build();
 		
-		IfElseTest test = (IfElseTest)c.newInstance();
+		IfElseTest test = (IfElseTest)getInstance(c);
 		Assert.assertEquals(1, test.foo(1));
 		Assert.assertEquals(2, test.foo(2));
 		Assert.assertEquals(3, test.foo(3));
@@ -993,4 +993,11 @@ public class StructureTestCase {
 		return classFactory.createClass(PUBLIC, "generated", "StructureTest" + counter, Object.class, intf);
 	}
 	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
+	}
 }

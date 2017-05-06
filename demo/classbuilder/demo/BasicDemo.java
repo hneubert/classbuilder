@@ -4,13 +4,7 @@ import static classbuilder.IClass.PUBLIC;
 
 import org.junit.Test;
 
-import classbuilder.BuilderAccessException;
-import classbuilder.BuilderCompilerException;
 import classbuilder.BuilderException;
-import classbuilder.BuilderModifierException;
-import classbuilder.BuilderNameException;
-import classbuilder.BuilderSyntaxException;
-import classbuilder.BuilderTypeException;
 import classbuilder.ClassFactory;
 import classbuilder.IClass;
 import classbuilder.IMethod;
@@ -34,7 +28,7 @@ public class BasicDemo {
 	 * create a class with a method, which prints a sys-out
 	 */
 	@Test
-	public void simpleTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void simpleTest() throws Exception {
 		// public class generated.SimpleTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "SimpleTest", Object.class, SimpleInterface.class);
 			// public void foo() {
@@ -46,7 +40,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -54,7 +48,7 @@ public class BasicDemo {
 	 * usage of variables
 	 */
 	@Test
-	public void varTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void varTest() throws Exception {
 		// public class generated.VarTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "VarTest", Object.class, SimpleInterface.class);
 			// public void foo() {
@@ -76,7 +70,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -84,7 +78,7 @@ public class BasicDemo {
 	 * usage of if-else
 	 */
 	@Test
-	public void ifElseTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void ifElseTest() throws Exception {
 		// public class generated.IfElseTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "IfElseTest", Object.class, SimpleInterface.class);
 			// public void foo() {
@@ -108,7 +102,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -116,7 +110,7 @@ public class BasicDemo {
 	 * usage of while-loops
 	 */
 	@Test
-	public void whileTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void whileTest() throws Exception {
 		// public class generated.WhileTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "WhileTest", Object.class, SimpleInterface.class);
 			// public void foo() {
@@ -139,7 +133,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -147,7 +141,7 @@ public class BasicDemo {
 	 * uasage of for-each-loops
 	 */
 	@Test
-	public void forEachTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void forEachTest() throws Exception {
 		// public class generated.ForEachTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "ForEachTest", Object.class, SimpleInterface.class);
 			// public void foo() {
@@ -175,7 +169,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -183,7 +177,7 @@ public class BasicDemo {
 	 * usage of try-catch
 	 */
 	@Test
-	public void tryCatchTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void tryCatchTest() throws Exception {
 		// public class generated.TryCatchTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "TryCatchTest", Object.class, SimpleInterface.class);
 			// public void foo() {
@@ -203,7 +197,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -211,7 +205,7 @@ public class BasicDemo {
 	 * usage of arrays
 	 */
 	@Test
-	public void arrayTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void arrayTest() throws Exception {
 		// public class generated.ArrayTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "ArrayTest", Object.class, SimpleInterface.class);
 			// public void foo() {
@@ -232,7 +226,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -240,7 +234,7 @@ public class BasicDemo {
 	 * usage of MethodDefinition class for a simplified programming
 	 */
 	@Test
-	public void methodDefinitionTest() throws BuilderException, InstantiationException, IllegalAccessException {
+	public void methodDefinitionTest() throws Exception {
 		// public class generated.MethodDefinitionTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "MethodDefinitionTest", Object.class, SimpleInterface.class);
 		new MethodDefinition(cls, PUBLIC, "foo") {
@@ -266,7 +260,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		instance.foo();
 	}
 	
@@ -280,7 +274,7 @@ public class BasicDemo {
 	 * 5. step into (F5)
 	 */
 	@Test
-	public void debugDemo() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderAccessException, BuilderCompilerException, InstantiationException, IllegalAccessException {
+	public void debugDemo() throws Exception {
 		// new ClassFactory
 		ClassFactory classFactory = new ClassFactory();
 		// source path for generated java-files
@@ -308,7 +302,7 @@ public class BasicDemo {
 		// }
 		Class<?> newClass = cls.build();
 		
-		SimpleInterface instance = (SimpleInterface)newClass.newInstance();
+		SimpleInterface instance = (SimpleInterface)newClass.getConstructor().newInstance();
 		
 		// set a breakpoint in the next line and step-into (F5)
 		instance.foo();

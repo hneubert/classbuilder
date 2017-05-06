@@ -37,7 +37,7 @@ public class UtilTest {
 				$(System.class).get("out").invoke("println", "hallo");
 			}
 		};
-		SimpleInterface test = (SimpleInterface)cls.build().newInstance();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
 	}
 	
@@ -45,5 +45,13 @@ public class UtilTest {
 	private IClass addClass(Class<?> ...intf) throws BuilderModifierException, BuilderNameException, BuilderTypeException {
 		counter++;
 		return classFactory.createClass(PUBLIC, "generated", "UtilTest" + counter, Object.class, intf);
+	}
+	
+	private Object getInstance(Class<?> cls) throws InstantiationException, IllegalAccessException {
+		try {
+			return cls.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new InstantiationException(e.getMessage());
+		}
 	}
 }
