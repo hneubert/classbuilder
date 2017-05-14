@@ -43,7 +43,7 @@ public class ClassFactory {
 	 * Sole constructor.
 	 */
 	public ClassFactory() {
-		classLoader = new DefaultDynamicClassLoader();
+		
 	}
 	
 	/**
@@ -105,6 +105,9 @@ public class ClassFactory {
 	 * @return class loader
 	 */
 	public DynamicClassLoader getClassLoader() {
+		if (classLoader == null) {
+			classLoader = new DefaultDynamicClassLoader();
+		}
 		return classLoader;
 	}
 	

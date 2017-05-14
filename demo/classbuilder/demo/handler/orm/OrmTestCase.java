@@ -1,7 +1,6 @@
 package classbuilder.demo.handler.orm;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -23,12 +22,12 @@ public class OrmTestCase {
 	private Connection connection;
 	
 	@Before
-	public void before() throws InstantiationException, IllegalAccessException, ClassNotFoundException, MalformedURLException, SQLException {
+	public void before() throws Exception {
 		// load derby
 		URL url = new File(System.getenv().get("JAVA_HOME").replace('\\', '/') + "/db/lib/derby.jar").toURI().toURL();
 		URLClassLoader cl = new URLClassLoader(new URL[] {url}, Thread.currentThread().getContextClassLoader());
 		Thread.currentThread().setContextClassLoader(cl);
-		Driver driver = (Driver)Class.forName("org.apache.derby.jdbc.AutoloadedDriver", true, cl).newInstance();
+		Driver driver = (Driver)Class.forName("org.apache.derby.jdbc.AutoloadedDriver", true, cl).getConstructor().newInstance();
 		connection = driver.connect("jdbc:derby:memory:JcbTestDB;create=true", new Properties());
 		
 		// create a table
