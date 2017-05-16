@@ -27,6 +27,7 @@ package classbuilder;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.ProtectionDomain;
 import java.util.Collection;
 
 /**
@@ -332,4 +333,16 @@ public interface IClass {
 	 * @return current ClassFactory
 	 */
 	public ClassFactory getClassFactory();
+	
+	/**
+	 * Returns the protection domain of this class.
+	 * @return protection domain or null
+	 */
+	public ProtectionDomain getProtectionDomain();
+	
+	/**
+	 * Sets the protection domain.
+	 * @param protectionDomain protection domain or null
+	 */
+	public void setProtectionDomain(ProtectionDomain protectionDomain);
 }

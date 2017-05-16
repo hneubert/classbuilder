@@ -25,9 +25,11 @@
 
 package classbuilder;
 
+import java.security.ProtectionDomain;
+
 import classbuilder.impl.DefaultClass;
 import classbuilder.impl.VMConst;
-import classbuilder.util.DefaultDynamicClassLoader;
+import classbuilder.util.SimpleClassLoader;
 
 /**
  * The ClassFactory generates new classes.
@@ -36,7 +38,8 @@ public class ClassFactory {
 	
 	private String classPath = null;
 	private String sourcePath = null;
-	private DynamicClassLoader classLoader = null;
+	private IClassLoader classLoader = null;
+	private ProtectionDomain protectionDomain = null;
 	private short debug = 0;
 	
 	/**
@@ -104,9 +107,9 @@ public class ClassFactory {
 	 * Returns the class loader
 	 * @return class loader
 	 */
-	public DynamicClassLoader getClassLoader() {
+	public IClassLoader getClassLoader() {
 		if (classLoader == null) {
-			classLoader = new DefaultDynamicClassLoader();
+			classLoader = new SimpleClassLoader();
 		}
 		return classLoader;
 	}
@@ -116,7 +119,23 @@ public class ClassFactory {
 	 * The default class loader is a sub class loader of the current thread class loader.
 	 * @param classLoader class loader
 	 */
-	public void setClassLoader(DynamicClassLoader classLoader) {
+	public void setClassLoader(IClassLoader classLoader) {
 		this.classLoader = classLoader;
+	}
+	
+	/**
+	 * Returns the default protection domain.
+	 * @return protection domain or null
+	 */
+	public ProtectionDomain getProtectionDomain() {
+		return protectionDomain;
+	}
+	
+	/**
+	 * Sets the default protection domain.
+	 * @param protectionDomain protection domain or null
+	 */
+	public void setProtectionDomain(ProtectionDomain protectionDomain) {
+		this.protectionDomain = protectionDomain;
 	}
 }

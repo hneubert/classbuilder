@@ -27,17 +27,13 @@ package classbuilder.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,6 +73,8 @@ public class DefaultClass implements IClass {
 	
 	protected ConstantPool constantPool;
 	
+	protected ProtectionDomain protectionDomain;
+	
 	protected ClassFactory classFactory;
 	
 	public DefaultClass(ClassFactory classFactory, int flags, String pkg, String name, Class<?> superClass, Class<?> ...intf) throws BuilderModifierException, BuilderNameException, BuilderTypeException {
@@ -85,6 +83,7 @@ public class DefaultClass implements IClass {
 		this.flags = flags;
 		this.superClass = superClass;
 		this.classFactory = classFactory;
+		this.protectionDomain = classFactory.getProtectionDomain();
 		
 		if (isEnum()) {
 			this.flags |= FINAL;
@@ -363,9 +362,6 @@ public class DefaultClass implements IClass {
 
 	@Override
 	public Class<?> build() throws BuilderCompilerException {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		byte[] buffer;
-		
 		if ((flags & VMConst.ABSTRACT) == 0) {
 			// nicht ausreichend protected wird nicht beachtet
 			for (Method method : superClass.getMethods()) {
@@ -493,62 +489,7 @@ public class DefaultClass implements IClass {
 			testAnnotations(method.getDefaultAnnotations());
 		}
 		
-		try {
-			write(out);
-		} catch (IOException e) {
-			throw new BuilderCompilerException(this, e.getMessage(), e);
-		} catch (BuilderException e) {
-			throw new BuilderCompilerException(this, e.getMessage(), e);
-		}
-		buffer = out.toByteArray();
-		
-		if (classFactory.getClassPath() != null) {
-			Path path = Paths.get(classFactory.getClassPath() + File.separator + getName().replace('.', File.separatorChar) + ".class");
-			
-			if (!Files.exists(path.getParent())) {
-				try {
-					Files.createDirectories(path.getParent());
-				} catch (IOException e) {
-					throw new BuilderCompilerException(this, e.getMessage(), e);
-				}
-			}
-			
-			FileOutputStream fos;
-			try {
-				fos = new FileOutputStream(path.toFile());
-				fos.write(buffer);
-				fos.close();
-			} catch (Exception e) {
-				throw new BuilderCompilerException(this, e.getMessage(), e);
-			}
-		}
-		
-		if (classFactory.getSourcePath() != null) {
-			Path path = Paths.get(classFactory.getSourcePath() + File.separator + getName().replace('.', File.separatorChar) + ".java");
-			
-			if (!Files.exists(path.getParent())) {
-				try {
-					Files.createDirectories(path.getParent());
-				} catch (IOException e) {
-					throw new BuilderCompilerException(this, e.getMessage(), e);
-				}
-			}
-			
-			FileOutputStream fos;
-			try {
-				fos = new FileOutputStream(path.toFile());
-				writeSource(fos);
-				fos.close();
-			} catch (Exception e) {
-				throw new BuilderCompilerException(this, e.getMessage(), e);
-			}
-		}
-		
-		try {
-			return classFactory.getClassLoader().addClass(getName(), buffer, 0, buffer.length);
-		} catch (Exception e) {
-			throw new BuilderCompilerException(this, e.getMessage(), e);
-		}
+		return classFactory.getClassLoader().addClass(this);
 	}
 	
 	private void testAnnotations(List<DefaultAnnotation> annotations) throws BuilderCompilerException {
@@ -836,5 +777,15 @@ public class DefaultClass implements IClass {
 	@Override
 	public ClassFactory getClassFactory() {
 		return classFactory;
+	}
+	
+	@Override
+	public ProtectionDomain getProtectionDomain() {
+		return protectionDomain;
+	}
+	
+	@Override
+	public void setProtectionDomain(ProtectionDomain protectionDomain) {
+		this.protectionDomain = protectionDomain;
 	}
 }

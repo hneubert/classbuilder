@@ -27,6 +27,7 @@ package classbuilder.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.ProtectionDomain;
 import java.util.Collection;
 
 import classbuilder.BuilderAccessException;
@@ -195,5 +196,13 @@ public class ClassDelegate implements IClass {
 	@Override
 	public ClassFactory getClassFactory() {
 		return cls.getClassFactory();
+	}
+	
+	public ProtectionDomain getProtectionDomain() {
+		return cls.getProtectionDomain();
+	}
+	
+	public void setProtectionDomain(ProtectionDomain protectionDomain) {
+		cls.setProtectionDomain(protectionDomain);
 	}
 }

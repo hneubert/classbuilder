@@ -13,9 +13,9 @@ import classbuilder.BuilderModifierException;
 import classbuilder.BuilderNameException;
 import classbuilder.BuilderTypeException;
 import classbuilder.ClassFactory;
-import classbuilder.DynamicClassLoader;
+import classbuilder.IClassLoader;
 import classbuilder.IClass;
-import classbuilder.util.DefaultDynamicClassLoader;
+import classbuilder.util.SimpleClassLoader;
 
 public class ClassFactoryTestCase {
 	
@@ -187,14 +187,14 @@ public class ClassFactoryTestCase {
 		}
 	}
 	
-	public static class TestClassLoader extends DefaultDynamicClassLoader {
+	public static class TestClassLoader extends SimpleClassLoader {
 		
 	}
 	
 	@Test
 	public void setClassLoaderTest() throws BuilderCompilerException, BuilderModifierException, BuilderNameException, BuilderTypeException {
 		ClassFactory factory = new ClassFactory();
-		DynamicClassLoader cl = new TestClassLoader();
+		IClassLoader cl = new TestClassLoader();
 		factory.setClassLoader(cl);
 		
 		IClass cls = factory.createClass(IClass.PUBLIC, "test", "SetClassLoaderTest", Object.class);
