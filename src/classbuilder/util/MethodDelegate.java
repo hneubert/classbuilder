@@ -174,8 +174,23 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
+	public void TryWithFinally() throws BuilderSyntaxException {
+		method.TryWithFinally();
+	}
+	
+	@Override
 	public Variable Catch(Class<?> exception) throws BuilderSyntaxException, BuilderTypeException {
 		return method.Catch(exception);
+	}
+	
+	@Override
+	public void Finally() throws BuilderSyntaxException {
+		method.Finally();
+	}
+	
+	@Override
+	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException {
+		method.Synchronized(object);
 	}
 	
 	@Override

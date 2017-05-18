@@ -54,6 +54,7 @@ public class BuilderSyntaxException extends BuilderException {
 	public static final int ENUM_CONST_CREATION_FAILD =	120;
 	public static final int ENUM_CONST_NOT_ALLOWED =	121;
 	public static final int SUPER_ALREADY_CALLED =		122;
+	public static final int FINALLY_NOT_ALLOWED =		123;
 	
 	private int error;
 	
@@ -154,6 +155,8 @@ public class BuilderSyntaxException extends BuilderException {
 			return "enum constant not allowed";
 		case SUPER_ALREADY_CALLED :
 			return "super constructor already called";
+		case FINALLY_NOT_ALLOWED :
+			return "finally only on try/catch segment allowed";
 		default:
 			return "unknown error";	
 		}

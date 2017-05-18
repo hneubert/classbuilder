@@ -64,7 +64,7 @@ public interface IMethod {
 	 * @param type data type
 	 * @return a new variable
 	 * @throws BuilderTypeException invalid type
-	 * @throws BuilderSyntaxException method is allready closed
+	 * @throws BuilderSyntaxException method is already closed
 	 */
 	public Variable addVar(Class<?> type) throws BuilderSyntaxException, BuilderTypeException;
 	
@@ -126,7 +126,7 @@ public interface IMethod {
 	 * @return new object or array
 	 * @throws BuilderTypeException invalid array or object type
 	 * @throws BuilderAccessException no such constructor
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public RValue New(Class<?> type, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException;
 	
@@ -134,7 +134,7 @@ public interface IMethod {
 	 * Throws an exception.
 	 * @param exception a r-value of type Throwable
 	 * @throws BuilderTypeException exception is no Throwable
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException;
 	
@@ -142,13 +142,13 @@ public interface IMethod {
 	 * Starts a new if-block.
 	 * @param condition a r-value of type boolean or Boolean
 	 * @throws BuilderTypeException condition is no boolean or Boolean
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException;
 	
 	/**
 	 * Closes the current if-block and starts an else-block.
-	 * @throws BuilderSyntaxException method is allready closed or no if-block present
+	 * @throws BuilderSyntaxException method is already closed or no if-block present
 	 */
 	public void Else() throws BuilderSyntaxException;
 	
@@ -156,7 +156,7 @@ public interface IMethod {
 	 * Closes the current if-block and starts an else-if-block.
 	 * @param condition a r-value of type boolean or Boolean
 	 * @throws BuilderTypeException condition is no boolean or Boolean
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException;
 	
@@ -165,7 +165,7 @@ public interface IMethod {
 	 * @param iterable a r-value of type Iterable or an array
 	 * @return a variable of type Object or the array element type, which contains the element data
 	 * @throws BuilderTypeException iterable is no Iterable or an array
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException;
 	
@@ -175,49 +175,69 @@ public interface IMethod {
 	 * @param elementType element type
 	 * @return a variable of type 'elementType' or the array element type, which contains the element data
 	 * @throws BuilderTypeException iterable is no Iterable or an array
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException;
 	
 	/**
 	 * Starts a new while-block.
 	 * @param condition a r-value of type boolean or Boolean
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderTypeException condition is no boolean or Boolean
 	 */
 	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException;
 	
 	/**
 	 * Break the current loop.
-	 * @throws BuilderSyntaxException method allready closed or no loop present
+	 * @throws BuilderSyntaxException method already closed or no loop present
 	 */
 	public void Break() throws BuilderSyntaxException;
 	
 	/**
 	 * Continue the current loop.
-	 * @throws BuilderSyntaxException method allready closed or no loop present
+	 * @throws BuilderSyntaxException method already closed or no loop present
 	 */
 	public void Continue() throws BuilderSyntaxException;
 	
 	/**
 	 * Starts a new try-block.
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public void Try() throws BuilderSyntaxException;
+	
+	/**
+	 * Starts a new try-block and prepare it for a finally block.
+	 * @throws BuilderSyntaxException method already closed
+	 */
+	public void TryWithFinally() throws BuilderSyntaxException;
 	
 	/**
 	 * Closes the current try-block and starts a catch-block.
 	 * @param exception an exception type
 	 * @return a variable, which contains the exception
 	 * @throws BuilderTypeException exception is no exception type
-	 * @throws BuilderSyntaxException no try block or method allready closed
+	 * @throws BuilderSyntaxException no try block or method already closed
 	 */
 	public Variable Catch(Class<?> exception) throws BuilderSyntaxException, BuilderTypeException;
 	
 	/**
+	 * Closes the current try or catch-block and starts a finally-block.
+	 * @throws BuilderSyntaxException 
+	 */
+	public void Finally() throws BuilderSyntaxException;
+	
+	/**
+	 * Starts a synchronized-block.
+	 * @param object object for synchronization
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderTypeException no object type
+	 */
+	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException;
+	
+	/**
 	 * Returns from the method without a return value.
 	 * @throws BuilderTypeException return value required
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public void Return() throws BuilderSyntaxException, BuilderTypeException;
 	
@@ -225,7 +245,7 @@ public interface IMethod {
 	 * Returns from the method with a return value.
 	 * @param value the return value
 	 * @throws BuilderTypeException invalid return type or no return type
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException;
 	
@@ -233,8 +253,8 @@ public interface IMethod {
 	 * Creates a l-value for the given declared field.
 	 * @param field a declared field
 	 * @return a l-value
-	 * @throws BuilderSyntaxException method allready closed
-	 * @throws BuilderAccessException field not present or not accessable
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException field not present or not accessible
 	 */
 	public LValue get(IField field) throws BuilderSyntaxException, BuilderAccessException;
 	
@@ -242,8 +262,8 @@ public interface IMethod {
 	 * Creates a l-value for the given declared or super field.
 	 * @param field a field name of a declared or super field
 	 * @return a l-value
-	 * @throws BuilderSyntaxException method allready closed
-	 * @throws BuilderAccessException field not present or not accessable
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException field not present or not accessible
 	 */
 	public LValue get(String field) throws BuilderSyntaxException, BuilderAccessException;
 	
@@ -251,8 +271,8 @@ public interface IMethod {
 	 * Creates a l-value for the given super field.
 	 * @param field a super field
 	 * @return a l-value
-	 * @throws BuilderSyntaxException method allready closed
-	 * @throws BuilderAccessException field not present or not accessable
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException field not present or not accessible
 	 */
 	public LValue get(Field field) throws BuilderSyntaxException, BuilderAccessException;
 	
@@ -276,7 +296,7 @@ public interface IMethod {
 	 * @param value a constant, string, class or null
 	 * @return a r-value
 	 * @throws BuilderTypeException invalid data type
-	 * @throws BuilderSyntaxException method allready closed
+	 * @throws BuilderSyntaxException method already closed
 	 */
 	public RValue $(Object value) throws BuilderSyntaxException, BuilderTypeException;
 	
@@ -285,8 +305,8 @@ public interface IMethod {
 	 * @param method a declared method
 	 * @param args method arguments: constants or r-values
 	 * @return return value: a r-value or null
-	 * @throws BuilderSyntaxException method allready closed
-	 * @throws BuilderAccessException unknown or inaccessable method
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException unknown or inaccessible method
 	 * @throws BuilderTypeException invalid parameter type
 	 */
 	public RValue invoke(IMethod method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
@@ -296,8 +316,8 @@ public interface IMethod {
 	 * @param method a declared or super method
 	 * @param args method arguments: constants or r-values
 	 * @return return value: a r-value or null
-	 * @throws BuilderSyntaxException method allready closed
-	 * @throws BuilderAccessException unknown or inaccessable method
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException unknown or inaccessible method
 	 * @throws BuilderTypeException invalid parameter type
 	 */
 	public RValue invoke(String method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
@@ -307,31 +327,31 @@ public interface IMethod {
 	 * @param method a super method
 	 * @param args method arguments: constants or r-values
 	 * @return return value: a r-value or null
-	 * @throws BuilderSyntaxException method allready closed
-	 * @throws BuilderAccessException unknown or inaccessable method
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException unknown or inaccessible method
 	 * @throws BuilderTypeException invalid parameter type
 	 */
 	public RValue invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Closes a block or a non abstract method.
-	 * @throws BuilderSyntaxException the method is allready closed or a try block is opened
+	 * @throws BuilderSyntaxException the method is already closed or a try block is opened
 	 */
 	public void End() throws BuilderSyntaxException;
 	
 	/**
 	 * Returns a 'this' reference.
 	 * @return a 'this' reference
-	 * @throws BuilderSyntaxException method allready closed
-	 * @throws BuilderAccessException invokation in a static method
+	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException invocation in a static method
 	 */
 	public RValue This() throws BuilderSyntaxException, BuilderAccessException;
 	
 	/**
-	 * Returns a 'super' refernce.
-	 * @return a 'super' refernce
-	 * @throws BuilderSyntaxException die method allready closed
-	 * @throws BuilderAccessException invokation in a static method
+	 * Returns a 'super' reference.
+	 * @return a 'super' reference
+	 * @throws BuilderSyntaxException die method already closed
+	 * @throws BuilderAccessException invocation in a static method
 	 */
 	public RValue Super() throws BuilderSyntaxException, BuilderAccessException;
 	

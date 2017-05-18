@@ -62,7 +62,9 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		TRY,
 		CATCH,
 		FUNCTION,
-		CONSTRUCTOR
+		CONSTRUCTOR,
+		SYNCHRONIZED,
+		FINALLY
 	}
 	
 	private static class FragmentData {
@@ -80,6 +82,9 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		public BitSet varBase; // readable from parent
 		public BitSet varMark; // mark &= readable -> set at every path (try/catch or if/(elseif)/else)
 		public BitSet varReadable; // current readable
+		
+		public DefaultVariable varReturn;
+		public boolean hasFinally = false;
 		
 		public FragmentData(FragmentType type, TryCatchBlock tryCatch, FragmentData parent) {
 			this.type = type;
@@ -605,6 +610,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		fragment.closeState = FragmentData.CANCELED;
 		build();
 		data.Break(out.getPos());
+		handleBreakContinueReturn(true);
 		out.write(VMConst.GOTO, (short)0);
 	}
 	
@@ -618,11 +624,37 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		fragment.closeState = FragmentData.CANCELED;
 		build();
 		data.Continue(out.getPos());
+		handleBreakContinueReturn(true);
 		out.write(VMConst.GOTO, (short)0);
+	}
+	
+	private void handleBreakContinueReturn(boolean loop) {
+		for (int i = fragmentData.size() - 1; i >= 0; i--) {
+			FragmentData data = fragmentData.elementAt(i);
+			if (data.getType() == FragmentType.TRY || data.getType() == FragmentType.CATCH) {
+				if (data.hasFinally) {
+					data.breakList.add(out.getPos());
+					out.write(VMConst.JSR, (short)0);
+				}
+			} else if (data.getType() == FragmentType.SYNCHRONIZED) {
+				out.write(VMConst.ALOAD, (byte)fragment.varReturn.getIndex());
+				out.write(VMConst.MONITOREXIT);
+			}
+			if (loop && (data.getType() == FragmentType.WHILE || data.getType() == FragmentType.FOR_EACH)) return;
+		}
 	}
 	
 	@Override
 	public void Try() throws BuilderSyntaxException {
+		Try(false);
+	}
+	
+	@Override
+	public void TryWithFinally() throws BuilderSyntaxException {
+		Try(true);
+	}
+	
+	private void Try(boolean hasFinally) throws BuilderSyntaxException {
 		testClosed();
 		build();
 		
@@ -634,6 +666,10 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			debug.incrementLevel();
 		}
 		preprocessFragment(FragmentType.TRY, tryCatch);
+		fragment.hasFinally = hasFinally;
+		if (hasFinally) {
+			fragment.breakList = new ArrayList<Integer>();
+		}
 	}
 	
 	@Override
@@ -648,17 +684,24 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		build();
 		fragment.setType(FragmentType.CATCH);
 		
+		if (fragment.hasFinally) {
+			fragment.breakList.add(out.getPos());
+			out.write(VMConst.JSR, (short)0);
+		}
+		
 		TryCatchBlock tryCatch = fragment.getTryCatch();
 		
 		tryCatch.setEnd((short)out.getPos());
 		
 		DefaultVariable var = addVar(exception, true);
 		set(var.getIndex());
-		if (fragment.closeState == 0) out.write(VMConst.GOTO, InstructionWriter.PUSH);
+		if (fragment.closeState == 0) {
+			out.write(VMConst.GOTO, InstructionWriter.PUSH);
+		}
 		
 		if ((flags & VMConst.DEBUG) != 0) {
 			debug.decrementLevel();
-			debug.addLine("} catch (" + var.getType().getName() + " $" + var.getName() + ") {");
+			debug.addLine("} catch (" + var.getType().getName() + " " + var.getName() + ") {");
 			debug.incrementLevel();
 		}
 		
@@ -667,13 +710,95 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		
 		out.write(VMConst.ASTORE, (byte)var.getIndex());
 		
+		if (fragment.hasFinally) {
+			fragment.breakList.add(out.getPos());
+			out.write(VMConst.JSR, (short)0);
+		}
+		
 		return var;
+	}
+	
+	@Override
+	public void Finally() throws BuilderSyntaxException {
+		testClosed2();
+		if (getType() != FragmentType.TRY && getType() != FragmentType.CATCH) {
+			throw new BuilderSyntaxException(this, BuilderSyntaxException.FINALLY_NOT_ALLOWED);
+		}
+		
+		build();
+		
+		if (fragment.getTryCatch().getException() != Throwable.class) {
+			out.pop();
+			out.write(VMConst.GOTO, InstructionWriter.PUSH);
+			
+			TryCatchBlock tryCatch = new TryCatchBlock();
+			tryCatch.setStart(fragment.getTryCatch().getStart());
+			tryCatch.setEnd(fragment.getTryCatch().getEnd());
+			tryCatch.setException(Throwable.class);
+			tryCatch.setHandler((short)out.getPos());
+			out.write(VMConst.POP);
+			fragment.breakList.add(out.getPos());
+			out.write(VMConst.JSR, (short)0);
+			tryCatchList.add(tryCatch);
+		}
+		
+		out.pop();
+		out.write(VMConst.GOTO, InstructionWriter.PUSH);
+		fragment.setType(FragmentType.FINALLY);
+		
+		if ((flags & VMConst.DEBUG) != 0) {
+			debug.decrementLevel();
+			debug.addLine("} finally {");
+			debug.incrementLevel();
+		}
+		
+		int pos = out.getPos();
+		for (Integer p : fragment.breakList) {
+			out.writeOffset(p + 1, (short)(pos - p));
+		}
+		
+		fragment.varReturn = addVar(Integer.class, true);
+		out.write(VMConst.ASTORE, (byte)fragment.varReturn.getIndex());
+	}
+	
+	@Override
+	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException {
+		testClosed();
+		if (object == null || Object.class.isAssignableFrom(object.getVarType())) {
+			throw new BuilderTypeException(this, BuilderTypeException.OBJECT_REQUIRED);
+		}
+		
+		DefaultVariable sync = addVar(Object.class, true);
+		try {
+			sync.set(object);
+		} catch (BuilderAccessException e) {
+			throw new BuilderSyntaxException(this, e.getMessage(), e);
+		}
+		
+		build();
+		preprocessFragment(FragmentType.SYNCHRONIZED, null);
+		fragment.varReturn = sync;
+
+		out.write(VMConst.ALOAD, (byte)fragment.varReturn.getIndex());
+		out.write(VMConst.MONITORENTER);
+		
+		TryCatchBlock tryCatch = new TryCatchBlock();
+		tryCatch.setStart((short)(out.getPos()));
+		tryCatchList.add(tryCatch);
+		fragment.tryCatch = tryCatch;
+		
+		if ((flags & VMConst.DEBUG) != 0) {
+			debug.addLine("synchronized (" + object + ") {");
+			debug.incrementLevel();
+		}
 	}
 	
 	@Override
 	public void Return() throws BuilderSyntaxException, BuilderTypeException {
 		testClosed();
 		if (returnType != null && returnType != void.class && returnType != Void.class) throw new BuilderTypeException(this, returnType);
+		build();
+		handleBreakContinueReturn(false);
 		instructions.add(new DefaultLValue(this, null, NodeType.RETURN, null, null, null));
 		fragment.closeState = FragmentData.CLOSED;
 	}
@@ -682,6 +807,8 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException {
 		testClosed();
 		if (returnType == null || returnType == void.class || returnType == Void.class) throw new BuilderTypeException(this, returnType);
+		build();
+		handleBreakContinueReturn(false);
 		DefaultLValue lv = new DefaultLValue(this, null, NodeType.RETURN, null, null, returnType);
 		DefaultLValue v = (DefaultLValue)$(value);
 		if (VMConst.isAssignable(component, v.getVarType(), returnType) == -1) throw new BuilderTypeException(this, returnType);
@@ -889,6 +1016,26 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			break;
 		case CATCH :
 			if (fragment.closeMark == 0) out.pop();
+			break;
+		case FINALLY :
+			out.write(VMConst.RET, (byte)fragment.varReturn.getIndex());
+			out.pop();
+			break;
+		case SYNCHRONIZED :
+			TryCatchBlock tryCatch = fragment.getTryCatch();
+			tryCatch.setEnd((short)out.getPos());
+			
+			out.write(VMConst.ALOAD, (byte)fragment.varReturn.getIndex());
+			out.write(VMConst.MONITOREXIT);
+			out.write(VMConst.GOTO, InstructionWriter.PUSH);
+			
+			tryCatch.setException(Throwable.class);
+			tryCatch.setHandler((short)out.getPos());
+			
+			out.write(VMConst.POP);
+			out.write(VMConst.ALOAD, (byte)fragment.varReturn.getIndex());
+			out.write(VMConst.MONITOREXIT);
+			out.pop();
 			break;
 		default:
 			break;

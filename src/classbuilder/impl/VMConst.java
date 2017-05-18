@@ -424,9 +424,9 @@ public class VMConst {
 	public static final byte IF_ACMPEQ = (byte)0xa5;
 	public static final byte IF_ACMPNE = (byte)0xa6;
 	public static final byte GOTO = (byte)0xa7;
-	//public static final byte JSR = (byte)0xa8;
-	//public static final byte RET = (byte)0xa9;
-	public static final byte TABLESWITCH = (byte)0xaa;
+	public static final byte JSR = (byte)0xa8;
+	public static final byte RET = (byte)0xa9;
+	//public static final byte TABLESWITCH = (byte)0xaa;
 	//public static final byte LOOKUPSWITCH = (byte)0xab;
 	public static final byte IRETURN = (byte)0xac;
 	public static final byte LRETURN = (byte)0xad;
@@ -449,8 +449,8 @@ public class VMConst {
 	public static final byte ATHROW = (byte)0xbf;
 	public static final byte CHECKCAST = (byte)0xc0;
 	public static final byte INSTANCEOF = (byte)0xc1;
-	//public static final byte MONITORENTER = (byte)0xc2;
-	//public static final byte MONITOREXIT = (byte)0xc3;
+	public static final byte MONITORENTER = (byte)0xc2;
+	public static final byte MONITOREXIT = (byte)0xc3;
 	//public static final byte WIDE = (byte)0xc4;
 	//public static final byte MULTIANEWARRAY = (byte)0xc5;
 	public static final byte IFNULL = (byte)0xc6;
