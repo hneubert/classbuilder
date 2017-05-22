@@ -429,6 +429,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			throw new BuilderSyntaxException(this, BuilderSyntaxException.ELSE_NOT_ALLOWED);
 		}
 		
+		condition = $(condition);
 		check((DefaultLValue)condition);
 		((DefaultLValue)condition).remove();
 		build();
@@ -727,8 +728,10 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	@Override
 	public void Finally() throws BuilderSyntaxException {
 		testClosed2();
-		if ((getType() != FragmentType.TRY && getType() != FragmentType.CATCH) || !fragment.hasFinally) {
+		if (getType() != FragmentType.TRY && getType() != FragmentType.CATCH) {
 			throw new BuilderSyntaxException(this, BuilderSyntaxException.FINALLY_NOT_ALLOWED);
+		} else if (!fragment.hasFinally) {
+			throw new BuilderSyntaxException(this, BuilderSyntaxException.FINALLY_NOT_PREPARED);
 		}
 		
 		build();
@@ -793,10 +796,11 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	@Override
 	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
-		if (object == null || Object.class.isAssignableFrom(object.getVarType())) {
+		if (object == null || !Object.class.isAssignableFrom(object.getVarType())) {
 			throw new BuilderTypeException(this, BuilderTypeException.OBJECT_REQUIRED);
 		}
 		
+		object = $(object);
 		check((DefaultLValue)object);
 		DefaultVariable sync = addVar(Object.class, true);
 		try {

@@ -55,6 +55,7 @@ public class BuilderSyntaxException extends BuilderException {
 	public static final int ENUM_CONST_NOT_ALLOWED =	121;
 	public static final int SUPER_ALREADY_CALLED =		122;
 	public static final int FINALLY_NOT_ALLOWED =		123;
+	public static final int FINALLY_NOT_PREPARED =		124;
 	
 	private int error;
 	
@@ -157,6 +158,8 @@ public class BuilderSyntaxException extends BuilderException {
 			return "super constructor already called";
 		case FINALLY_NOT_ALLOWED :
 			return "finally only on try/catch segment allowed";
+		case FINALLY_NOT_PREPARED :
+			return "finally not prepared, TryWithFinally() required";
 		default:
 			return "unknown error";	
 		}

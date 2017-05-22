@@ -776,6 +776,26 @@ public class StructureTestCase {
 	}
 	
 	@Test
+	public void synchronized_() throws BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, BuilderSyntaxException, BuilderAccessException {
+		IClass cls = addClass(SimpleInterface.class);
+			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
+				Variable i = m.addVar(int.class);
+				Variable obj = m.addVar(Object.class);
+				obj.set(m.New(Object.class));
+				
+				i.set(1);
+				m.Synchronized(obj);
+					i.set(2);
+				m.End();
+				i.set(3);
+				
+				m.Return(i);
+			m.End();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(3, test.foo());
+	}
+	
+	@Test
 	public void trysCatch() throws BuilderException, InstantiationException, IllegalAccessException {
 		IClass cls = addClass(SimpleInterface.class);
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
