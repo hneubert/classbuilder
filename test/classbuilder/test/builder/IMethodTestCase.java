@@ -132,7 +132,7 @@ public class IMethodTestCase {
 	}
 	
 	@Test
-	public void EndTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException {
+	public void EndTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderAccessException {
 		IClass cls = classFactory.createClass(PUBLIC, "pkg", "Class", Object.class);
 		IMethod method = cls.addMethod(PUBLIC, "foo");
 		method.End();
@@ -382,7 +382,7 @@ public class IMethodTestCase {
 	}
 	
 	@Test
-	public void method() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException {
+	public void method() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, BuilderAccessException {
 		IClass cls = addClass(SimpleInterface.class);
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
 				m.Return(1);
@@ -392,7 +392,7 @@ public class IMethodTestCase {
 	}
 	
 	@Test
-	public void staticMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public void staticMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, BuilderAccessException {
 		IClass cls = addClass();
 			IMethod m = cls.addMethod(PUBLIC | STATIC, int.class, "foo");
 				m.Return(1);
@@ -402,7 +402,7 @@ public class IMethodTestCase {
 	}
 	
 	@Test
-	public void finalMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public void finalMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, BuilderAccessException {
 		IClass cls = addClass(SimpleInterface.class);
 			IMethod m = cls.addMethod(PUBLIC | FINAL, int.class, "foo");
 				m.Return(1);
@@ -412,7 +412,7 @@ public class IMethodTestCase {
 	}
 	
 	@Test
-	public void abstractMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException {
+	public void abstractMethod() throws BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, InstantiationException, IllegalAccessException, BuilderCompilerException, BuilderAccessException {
 		IClass cls = classFactory.createClass(PUBLIC | ABSTRACT, "generated", "MethodTest" + counter, Object.class, SimpleInterface.class);
 			cls.addMethod(PUBLIC | ABSTRACT, int.class, "foo");
 		cls.build();
@@ -804,7 +804,7 @@ public class IMethodTestCase {
 	}
 	
 	@Test
-	public void returnTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderCompilerException, InstantiationException, IllegalAccessException {
+	public void returnTest() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderCompilerException, InstantiationException, IllegalAccessException, BuilderAccessException {
 		IClass cls = classFactory.createClass(PUBLIC, "methodTest", "ReturnTest", Object.class, ReturnTest.class);
 			IMethod method = cls.addMethod(PUBLIC, "foo");
 				try {

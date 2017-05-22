@@ -129,12 +129,12 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException {
+	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.Throw(exception);
 	}
 	
 	@Override
-	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException {
+	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.If(condition);
 	}
 	
@@ -144,17 +144,17 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException {
+	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.ElseIf(condition);
 	}
 	
 	@Override
-	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException {
+	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return method.ForEach(iterable);
 	}
 	
 	@Override
-	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException {
+	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.While(condition);
 	}
 	
@@ -189,7 +189,7 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException {
+	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.Synchronized(object);
 	}
 	
@@ -199,7 +199,7 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException {
+	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.Return(value);
 	}
 	
@@ -254,7 +254,7 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 
 	@Override
-	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException {
+	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return method.ForEach(iterable, elementType);
 	}
 	

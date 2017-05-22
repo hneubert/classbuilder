@@ -34,12 +34,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import classbuilder.IClass;
 import classbuilder.IMethod;
 
 /**
  * The MethodId class represents a single method signature.
  */
 public class MethodId {
+	public static final int NON_ABSTRACT = 0x00010000;
+	
 	private static final Class<?>[] noParameters = new Class<?>[] {};
 	
 	private int hashCode;
@@ -92,6 +95,10 @@ public class MethodId {
 	 */
 	public static MethodId getMethodId(String name, Class<?>[] types, Class<?> returnType) {
 		return new MethodId(name, types, returnType, null);
+	}
+	
+	public int getModifier() {
+		return 0;
 	}
 	
 	/**
@@ -237,6 +244,47 @@ public class MethodId {
 		}
 		return result;
 	}
+	
+	public static Collection<MethodId> findMethod(Collection<MethodId> methods, int modifier, Class<?> returnType, String prefix, String suffix, Class<?>[] parameterTypes) {
+		ArrayList<MethodId> list = new ArrayList<MethodId>();
+		for (MethodId m : methods) {
+			if (isMethod(m, modifier, returnType, prefix, suffix, parameterTypes)) {
+				list.add(m);
+			}
+		}
+		return list;
+	}
+	
+	public static MethodId findMethods(Collection<MethodId> methods, int modifier, Class<?> returnType, String prefix, String suffix, Class<?>[] parameterTypes) {
+		for (MethodId m : methods) {
+			if (isMethod(m, modifier, returnType, prefix, suffix, parameterTypes)) {
+				return m;
+			}
+		}
+		return null;
+	}
+	
+	public static boolean isMethod(MethodId method, int modifier, Class<?> returnType, String prefix, String suffix, Class<?>[] parameterTypes) {
+		if ((method.getModifier() & modifier & (IClass.PUBLIC | IClass.PROTECTED)) == 0) return false;
+		if ((method.getModifier() & IClass.ABSTRACT) != 0) {
+			if ((modifier & IClass.ABSTRACT) == 0) return false;
+		} else {
+			if ((modifier & NON_ABSTRACT) == 0) return false;
+		}
+		if (returnType != null && returnType != method.getReturnType()) return false;
+		if (prefix != null && !method.getName().startsWith(prefix)) return false;
+		if (suffix != null && !method.getName().endsWith(suffix)) return false;
+		if (parameterTypes != null) {
+			if (parameterTypes.length != method.getTypes().length) return false;
+			for (int i = 0; i < parameterTypes.length; i++) {
+				if (parameterTypes[i] != method.getTypes()[i]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	
 	@Override
 	public boolean equals(Object other) {

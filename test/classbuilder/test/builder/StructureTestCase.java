@@ -694,6 +694,88 @@ public class StructureTestCase {
 	}
 	
 	@Test
+	public void tryCatchFinally() throws BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException, BuilderAccessException, InstantiationException, IllegalAccessException, BuilderCompilerException {
+		// try finally
+		IClass cls = addClass(SimpleInterface.class);
+			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");
+				Variable i = m.addVar(int.class);
+				
+				i.set(1);
+				m.TryWithFinally();
+					i.set(2);
+				m.Finally();
+					i.set(4);
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(4, test.foo());
+		
+		// try catch finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				
+				i.set(1);
+				m.TryWithFinally();
+					i.set(2);
+				m.Catch(Exception.class);
+					i.set(3);
+				m.Finally();
+					i.set(4);
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(4, test.foo());
+		
+		// try throw finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				
+				i.set(0);
+				m.Try();
+					i.set(1);
+					m.TryWithFinally();
+						i.set(2);
+						m.Throw(m.New(Exception.class));
+					m.Finally();
+						i.set(4);
+					m.End();
+				m.Catch(Exception.class);
+					
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(4, test.foo());
+		
+		// try throw catch finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				
+				i.set(1);
+				m.TryWithFinally();
+					i.set(2);
+					m.Throw(m.New(Exception.class));
+				m.Catch(Exception.class);
+					i.set(3);
+				m.Finally();
+					i.set(4);
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(3, test.foo());
+	}
+	
+	@Test
 	public void trysCatch() throws BuilderException, InstantiationException, IllegalAccessException {
 		IClass cls = addClass(SimpleInterface.class);
 			IMethod m = cls.addMethod(PUBLIC, int.class, "foo");

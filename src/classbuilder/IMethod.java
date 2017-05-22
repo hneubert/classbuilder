@@ -135,16 +135,18 @@ public interface IMethod {
 	 * @param exception a r-value of type Throwable
 	 * @throws BuilderTypeException exception is no Throwable
 	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException exception not accessible
 	 */
-	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException;
+	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new if-block.
 	 * @param condition a r-value of type boolean or Boolean
 	 * @throws BuilderTypeException condition is no boolean or Boolean
 	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException condition not accessible
 	 */
-	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException;
+	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Closes the current if-block and starts an else-block.
@@ -157,8 +159,9 @@ public interface IMethod {
 	 * @param condition a r-value of type boolean or Boolean
 	 * @throws BuilderTypeException condition is no boolean or Boolean
 	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException condition not accessible
 	 */
-	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException;
+	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new for-each-loop.
@@ -166,8 +169,9 @@ public interface IMethod {
 	 * @return a variable of type Object or the array element type, which contains the element data
 	 * @throws BuilderTypeException iterable is no Iterable or an array
 	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException iterable not accessible
 	 */
-	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException;
+	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new for-each-loop with explicit type cast.
@@ -176,16 +180,18 @@ public interface IMethod {
 	 * @return a variable of type 'elementType' or the array element type, which contains the element data
 	 * @throws BuilderTypeException iterable is no Iterable or an array
 	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException iterable not accessible
 	 */
-	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException;
+	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new while-block.
 	 * @param condition a r-value of type boolean or Boolean
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderTypeException condition is no boolean or Boolean
+	 * @throws BuilderAccessException condition not accessible
 	 */
-	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException;
+	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Break the current loop.
@@ -231,8 +237,9 @@ public interface IMethod {
 	 * @param object object for synchronization
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderTypeException no object type
+	 * @throws BuilderAccessException object not accessible
 	 */
-	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException;
+	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns from the method without a return value.
@@ -246,8 +253,9 @@ public interface IMethod {
 	 * @param value the return value
 	 * @throws BuilderTypeException invalid return type or no return type
 	 * @throws BuilderSyntaxException method already closed
+	 * @throws BuilderAccessException value not accessible
 	 */
-	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException;
+	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Creates a l-value for the given declared field.

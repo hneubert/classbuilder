@@ -85,6 +85,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		
 		public DefaultVariable varReturn;
 		public boolean hasFinally = false;
+		public BitSet varCatch;
 		
 		public FragmentData(FragmentType type, TryCatchBlock tryCatch, FragmentData parent) {
 			this.type = type;
@@ -379,10 +380,11 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException {
+	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		exception = $(exception);
 		DefaultLValue value, lv = (DefaultLValue)$(exception);
+		check(lv);
 		
 		if (lv.getType() == NodeType.NULL) throw new BuilderTypeException(this, null);
 		if (!Throwable.class.isAssignableFrom(lv.getVarType())) throw new BuilderTypeException(this, lv.getVarType(), Throwable.class);
@@ -394,9 +396,10 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException {
+	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		condition = $(condition);
+		check((DefaultLValue)condition);
 		DefaultLValue lv = (DefaultLValue)condition;
 		if (lv.getType() == NodeType.NULL) throw new BuilderTypeException(this, null);
 		if (!boolean.class.isAssignableFrom(lv.getVarType()) && !Boolean.class.isAssignableFrom(lv.getVarType())) {
@@ -420,12 +423,13 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException {
+	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed2();
 		if (getType() != FragmentType.IF && getType() != FragmentType.ELSE_IF) {
 			throw new BuilderSyntaxException(this, BuilderSyntaxException.ELSE_NOT_ALLOWED);
 		}
 		
+		check((DefaultLValue)condition);
 		((DefaultLValue)condition).remove();
 		build();
 		fragment.setType(FragmentType.ELSE_IF);
@@ -472,14 +476,15 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException {
+	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return ForEach(iterable, Object.class);
 	}
 	
 	@Override
-	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException {
+	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		iterable = $(iterable);
+		check((DefaultLValue)iterable);
 		boolean array = ((DefaultLValue)iterable).getVarType().isArray();
 		if (((DefaultLValue)iterable).getType() == NodeType.NULL) throw new BuilderTypeException(this, "<null>");
 		if (elementType == null || elementType == Void.class || elementType.isPrimitive()) throw new BuilderTypeException(this, elementType);
@@ -575,7 +580,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException {
+	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		condition = $(condition);
 		DefaultLValue lv = (DefaultLValue)condition;
@@ -584,6 +589,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			throw new BuilderTypeException(this, ((DefaultLValue)condition).getVarType(), boolean.class);
 		}
 		
+		check((DefaultLValue)condition);
 		((DefaultLValue)condition).remove();
 		build();
 		
@@ -721,30 +727,53 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	@Override
 	public void Finally() throws BuilderSyntaxException {
 		testClosed2();
-		if (getType() != FragmentType.TRY && getType() != FragmentType.CATCH) {
+		if ((getType() != FragmentType.TRY && getType() != FragmentType.CATCH) || !fragment.hasFinally) {
 			throw new BuilderSyntaxException(this, BuilderSyntaxException.FINALLY_NOT_ALLOWED);
 		}
 		
 		build();
 		
-		if (fragment.getTryCatch().getException() != Throwable.class) {
+		if (getType() == FragmentType.TRY) {
+			// close try
+			fragment.getTryCatch().setEnd((short)(out.getPos()));
+			fragment.getTryCatch().setException(Throwable.class);
+			fragment.breakList.add(out.getPos());
+			out.write(VMConst.JSR, (short)0);
+			out.write(VMConst.GOTO, InstructionWriter.PUSH);
+			
+			// write catch
+			fragment.getTryCatch().setHandler((short)out.getPos());
+			DefaultVariable v = addVar(Object.class, true);
+			out.write(VMConst.ASTORE, (byte)v.getIndex());
+			fragment.breakList.add(out.getPos());
+			out.write(VMConst.JSR, (short)0);
+			out.write(VMConst.ALOAD, (byte)v.getIndex());
+			out.write(VMConst.ATHROW);
+		} else if (fragment.getTryCatch().getException() != Throwable.class) {
+			// close other catch
 			out.pop();
 			out.write(VMConst.GOTO, InstructionWriter.PUSH);
 			
+			// add new catch
 			TryCatchBlock tryCatch = new TryCatchBlock();
 			tryCatch.setStart(fragment.getTryCatch().getStart());
 			tryCatch.setEnd(fragment.getTryCatch().getEnd());
 			tryCatch.setException(Throwable.class);
 			tryCatch.setHandler((short)out.getPos());
-			out.write(VMConst.POP);
+			DefaultVariable v = addVar(Object.class, true);
+			out.write(VMConst.ASTORE, (byte)v.getIndex());
 			fragment.breakList.add(out.getPos());
 			out.write(VMConst.JSR, (short)0);
 			tryCatchList.add(tryCatch);
+			out.write(VMConst.ALOAD, (byte)v.getIndex());
+			out.write(VMConst.ATHROW);
+		} else {
+			out.pop();
+			out.write(VMConst.GOTO, InstructionWriter.PUSH);
 		}
 		
-		out.pop();
-		out.write(VMConst.GOTO, InstructionWriter.PUSH);
 		fragment.setType(FragmentType.FINALLY);
+		fragment.varCatch = (BitSet)fragment.varMark.clone();
 		
 		if ((flags & VMConst.DEBUG) != 0) {
 			debug.decrementLevel();
@@ -762,12 +791,13 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException {
+	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		if (object == null || Object.class.isAssignableFrom(object.getVarType())) {
 			throw new BuilderTypeException(this, BuilderTypeException.OBJECT_REQUIRED);
 		}
 		
+		check((DefaultLValue)object);
 		DefaultVariable sync = addVar(Object.class, true);
 		try {
 			sync.set(object);
@@ -804,16 +834,17 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException {
+	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		if (returnType == null || returnType == void.class || returnType == Void.class) throw new BuilderTypeException(this, returnType);
-		build();
-		handleBreakContinueReturn(false);
 		DefaultLValue lv = new DefaultLValue(this, null, NodeType.RETURN, null, null, returnType);
 		DefaultLValue v = (DefaultLValue)$(value);
+		check(v);
 		if (VMConst.isAssignable(component, v.getVarType(), returnType) == -1) throw new BuilderTypeException(this, returnType);
 		v = (DefaultLValue)v.cast(returnType);
 		lv.setNext(v.getRoot(), true);
+		build();
+		handleBreakContinueReturn(false);
 		instructions.add(lv);
 		fragment.closeState = FragmentData.CLOSED;
 	}
@@ -1304,6 +1335,11 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			if (old.getType() == FragmentType.ELSE || old.getType() == FragmentType.CATCH) {
 				old.varMark.and(old.varReadable);
 				fragment.varReadable.or(old.varMark);
+			} else if (old.getType() == FragmentType.FINALLY) {
+				fragment.varReadable.or(old.varReadable);
+				if (old.varCatch != null) {
+					fragment.varReadable.or(old.varCatch);
+				}
 			}
 		}
 	}
@@ -1323,6 +1359,14 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			if (!instructions.get(i).isRemoved()) {
 				instructions.get(i).setVisible(false);
 				break;
+			}
+		}
+	}
+	
+	private void check(DefaultLValue lv) throws BuilderAccessException {
+		if (lv.getType() == NodeType.LGET) {
+			if (!((Variable)lv.id).isInitialized()) {
+				throw new BuilderAccessException(fragment, BuilderAccessException.VARIABLE_NOT_INITIALIZED, ((Variable)lv.id).getName() + " (" + ((Variable)lv.id).getType().getName() + ")");
 			}
 		}
 	}

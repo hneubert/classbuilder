@@ -360,6 +360,10 @@ public class DefaultLValue implements LValue {
 		int value = 1000;
 		
 		try {
+			return cls.getConstructor(types);
+		} catch (NoSuchMethodException e) {}
+		
+		try {
 			method = cls.getDeclaredConstructor(types);
 		} catch (NoSuchMethodException e) {}
 		
