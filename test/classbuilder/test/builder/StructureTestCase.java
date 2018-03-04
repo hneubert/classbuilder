@@ -772,7 +772,144 @@ public class StructureTestCase {
 				m.Return(i);
 			m.End();
 		test = (SimpleInterface)getInstance(cls.build());
-		Assert.assertEquals(3, test.foo());
+		Assert.assertEquals(4, test.foo());
+		
+		// try throw catch throw finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(String.class);
+				
+				i.set("1");
+				m.TryWithFinally();
+					i.set("2");
+					m.Throw(m.New(Exception.class));
+				m.Catch(Exception.class);
+					i.set("3");
+					m.Throw(m.New(Exception.class, i));
+				m.Finally();
+					i.set("4");
+				m.End();
+				
+				m.Return(1);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		try {
+			test.foo();
+		} catch (Exception e_) {
+			Assert.assertEquals("3", e_.getMessage());
+		}
+		
+		// try throw catch throw finally throw
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(String.class);
+				
+				i.set("1");
+				m.TryWithFinally();
+					i.set("2");
+					m.Throw(m.New(Exception.class));
+				m.Catch(Exception.class);
+					i.set("3");
+					m.Throw(m.New(Exception.class, i));
+				m.Finally();
+					i.set("4");
+					m.Throw(m.New(Exception.class, i));
+				m.End();
+				
+				m.Return(1);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		try {
+			test.foo();
+		} catch (Exception e_) {
+			Assert.assertEquals("4", e_.getMessage());
+		}
+		
+		// try return catch finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				
+				i.set(1);
+				m.TryWithFinally();
+					i.set(2);
+					m.Return(i);
+				m.Catch(Exception.class);
+					i.set(3);
+				m.Finally();
+					i.set(4);
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(4, test.foo());
+		
+		// try throw catch return finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				
+				i.set(1);
+				m.TryWithFinally();
+					i.set(2);
+					m.Throw(m.New(Exception.class));
+				m.Catch(Exception.class);
+					i.set(3);
+					m.Return(i);
+				m.Finally();
+					i.set(4);
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(4, test.foo());
+		
+		// try break catch finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				
+				i.set(1);
+				m.While(m.$(true));
+					m.TryWithFinally();
+						i.set(2);
+						m.Break();
+					m.Catch(Exception.class);
+						i.set(3);
+					m.Finally();
+						i.set(4);
+					m.End();
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(4, test.foo());
+		
+		// try throw catch break finally
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				
+				i.set(1);
+				m.While(m.$(true));
+					m.TryWithFinally();
+						i.set(2);
+						m.Throw(m.New(Exception.class));
+					m.Catch(Exception.class);
+						i.set(3);
+						m.Break();
+					m.Finally();
+						i.set(4);
+					m.End();
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(4, test.foo());
 	}
 	
 	@Test
@@ -793,6 +930,65 @@ public class StructureTestCase {
 			m.End();
 		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		Assert.assertEquals(3, test.foo());
+		
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				obj = m.addVar(Object.class);
+				obj.set(m.New(Object.class));
+				
+				i.set(1);
+				m.Synchronized(obj);
+					m.Return(2);
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(2, test.foo());
+		
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				obj = m.addVar(Object.class);
+				obj.set(m.New(Object.class));
+				
+				i.set(0);
+				m.While(m.$(true));
+					i.set(1);
+					m.Synchronized(obj);
+						i.set(2);
+						m.Break();
+					m.End();
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		Assert.assertEquals(2, test.foo());
+		
+		cls = addClass(SimpleInterface.class);
+			m = cls.addMethod(PUBLIC, int.class, "foo");
+				i = m.addVar(int.class);
+				obj = m.addVar(Object.class);
+				obj.set(m.New(Object.class));
+				
+				i.set(1);
+				m.Synchronized(obj);
+					i.set(2);
+					m.Throw(m.New(Exception.class));
+				m.End();
+				
+				m.Return(i);
+			m.End();
+		test = (SimpleInterface)getInstance(cls.build());
+		try {
+			test.foo();
+		} catch (IllegalMonitorStateException e) {
+			Assert.fail();
+		} catch (Exception e) {
+			// ok
+		}
 	}
 	
 	@Test

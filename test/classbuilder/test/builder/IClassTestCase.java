@@ -45,7 +45,7 @@ public class IClassTestCase {
 	public void write_test() throws BuilderCompilerException, IOException, BuilderSyntaxException, BuilderAccessException, BuilderTypeException, BuilderModifierException, BuilderNameException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "WriteSourceTest", Object.class);
 			IMethod m = cls.addMethod(PUBLIC, "foo");
-				m.$(System.class).get("out").invoke("println", "hallo");
+				m.$(System.class).get("out").invoke("println", "hello");
 			m.End();
 		cls.build();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -146,7 +146,7 @@ public class IClassTestCase {
 	public void writeSource_test() throws IOException, BuilderSyntaxException, BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderAccessException, BuilderCompilerException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "WriteSourceTest", Object.class);
 			IMethod m = cls.addMethod(PUBLIC, "foo");
-				m.$(System.class).get("out").invoke("println", "hallo");
+				m.$(System.class).get("out").invoke("println", "hello");
 			m.End();
 		cls.build();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

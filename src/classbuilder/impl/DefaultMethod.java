@@ -616,8 +616,8 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		}
 		fragment.closeState = FragmentData.CANCELED;
 		build();
-		data.Break(out.getPos());
 		handleBreakContinueReturn(true);
+		data.Break(out.getPos());
 		out.write(VMConst.GOTO, (short)0);
 	}
 	
@@ -630,8 +630,8 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		}
 		fragment.closeState = FragmentData.CANCELED;
 		build();
-		data.Continue(out.getPos());
 		handleBreakContinueReturn(true);
+		data.Continue(out.getPos());
 		out.write(VMConst.GOTO, (short)0);
 	}
 	
@@ -717,11 +717,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		
 		out.write(VMConst.ASTORE, (byte)var.getIndex());
 		
-		if (fragment.hasFinally) {
-			fragment.breakList.add(out.getPos());
-			out.write(VMConst.JSR, (short)0);
-		}
-		
 		return var;
 	}
 	
@@ -739,7 +734,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		if (getType() == FragmentType.TRY) {
 			// close try
 			fragment.getTryCatch().setEnd((short)(out.getPos()));
-			fragment.getTryCatch().setException(Throwable.class);
+//			fragment.getTryCatch().setException(Throwable.class);
 			fragment.breakList.add(out.getPos());
 			out.write(VMConst.JSR, (short)0);
 			out.write(VMConst.GOTO, InstructionWriter.PUSH);
@@ -752,7 +747,12 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			out.write(VMConst.JSR, (short)0);
 			out.write(VMConst.ALOAD, (byte)v.getIndex());
 			out.write(VMConst.ATHROW);
-		} else if (fragment.getTryCatch().getException() != Throwable.class) {
+		} else {
+			if (fragment.hasFinally) {
+				fragment.breakList.add(out.getPos());
+				out.write(VMConst.JSR, (short)0);
+			}
+			
 			// close other catch
 			out.pop();
 			out.write(VMConst.GOTO, InstructionWriter.PUSH);
@@ -760,8 +760,8 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			// add new catch
 			TryCatchBlock tryCatch = new TryCatchBlock();
 			tryCatch.setStart(fragment.getTryCatch().getStart());
-			tryCatch.setEnd(fragment.getTryCatch().getEnd());
-			tryCatch.setException(Throwable.class);
+			tryCatch.setEnd((short)(out.getPos() - 3));
+			tryCatch.setException(null);
 			tryCatch.setHandler((short)out.getPos());
 			DefaultVariable v = addVar(Object.class, true);
 			out.write(VMConst.ASTORE, (byte)v.getIndex());
@@ -770,9 +770,6 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			tryCatchList.add(tryCatch);
 			out.write(VMConst.ALOAD, (byte)v.getIndex());
 			out.write(VMConst.ATHROW);
-		} else {
-			out.pop();
-			out.write(VMConst.GOTO, InstructionWriter.PUSH);
 		}
 		
 		fragment.setType(FragmentType.FINALLY);
@@ -800,16 +797,21 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			throw new BuilderTypeException(this, BuilderTypeException.OBJECT_REQUIRED);
 		}
 		
-		object = $(object);
-		check((DefaultLValue)object);
+		DefaultLValue obj = (DefaultLValue)$(object);
+		check(obj);
 		DefaultVariable sync = addVar(Object.class, true);
+		DefaultLValue v = (DefaultLValue)$(sync);
 		try {
-			sync.set(object);
+			v.set(obj);
+			v.getRoot().remove();
 		} catch (BuilderAccessException e) {
 			throw new BuilderSyntaxException(this, e.getMessage(), e);
 		}
 		
 		build();
+		
+		v.getRoot().build(null, out, constantPool, true);
+		
 		preprocessFragment(FragmentType.SYNCHRONIZED, null);
 		fragment.varReturn = sync;
 
@@ -1058,18 +1060,17 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			break;
 		case SYNCHRONIZED :
 			TryCatchBlock tryCatch = fragment.getTryCatch();
-			tryCatch.setEnd((short)out.getPos());
 			
 			out.write(VMConst.ALOAD, (byte)fragment.varReturn.getIndex());
 			out.write(VMConst.MONITOREXIT);
+			tryCatch.setEnd((short)out.getPos());
 			out.write(VMConst.GOTO, InstructionWriter.PUSH);
 			
-			tryCatch.setException(Throwable.class);
 			tryCatch.setHandler((short)out.getPos());
 			
-			out.write(VMConst.POP);
 			out.write(VMConst.ALOAD, (byte)fragment.varReturn.getIndex());
 			out.write(VMConst.MONITOREXIT);
+			out.write(VMConst.ATHROW);
 			out.pop();
 			break;
 		default:
@@ -1264,7 +1265,11 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 				classFile.writeShort(tryCatch.getStart());
 				classFile.writeShort(tryCatch.getEnd());
 				classFile.writeShort(tryCatch.getHandler());
-				classFile.writeShort(constantPool.add(tryCatch.getException()));
+				if (tryCatch.getException() != null) {
+					classFile.writeShort(constantPool.add(tryCatch.getException()));
+				} else {
+					classFile.writeShort(0);
+				}
 			}
 			
 			if ((flags & VMConst.DEBUG) != 0) {

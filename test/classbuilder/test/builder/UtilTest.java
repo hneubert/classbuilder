@@ -34,7 +34,7 @@ public class UtilTest {
 		new MethodDefinition(cls, PUBLIC, "foo") {
 			@Override
 			public void implement() throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
-				$(System.class).get("out").invoke("println", "hallo");
+				$(System.class).get("out").invoke("println", "hello");
 			}
 		};
 		SimpleInterface test = (SimpleInterface)getInstance(cls.build());

@@ -61,7 +61,7 @@ public class BasicTestCase {
 	public void annotationTest() throws BuilderException, InstantiationException, IllegalAccessException {
 		IClass cls = addClass(SimpleInterface.class);
 			IMethod m = cls.addMethod(PUBLIC, "foo");
-				m.$(System.class).get("out").invoke("println", "hallo");
+				m.$(System.class).get("out").invoke("println", "hello");
 			m.End();
 			
 			IAnnotation annotation = cls.addAnnotation(TestAnnotation.class);
@@ -76,7 +76,7 @@ public class BasicTestCase {
 	public void simpleTest() throws BuilderException, InstantiationException, IllegalAccessException {
 		IClass cls = addClass(SimpleInterface.class);
 			IMethod m = cls.addMethod(PUBLIC, "foo");
-				m.$(System.class).get("out").invoke("println", "hallo");
+				m.$(System.class).get("out").invoke("println", "hello");
 			m.End();
 		SimpleInterface test = (SimpleInterface)getInstance(cls.build());
 		test.foo();
@@ -122,7 +122,7 @@ public class BasicTestCase {
 				
 				i.set(0);
 				m.While(i.notEqual(3));
-					m.$(System.class).get("out").invoke("println", "hallo");
+					m.$(System.class).get("out").invoke("println", "hello");
 					i.set(i.add(1));
 				m.End();
 			m.End();

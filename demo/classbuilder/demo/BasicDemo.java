@@ -279,6 +279,7 @@ public class BasicDemo {
 		ClassFactory classFactory = new ClassFactory();
 		// source path for generated java-files
 		classFactory.setSourcePath("gen/src");
+		classFactory.setClassPath("gen/bin");
 		
 		// public class generated.WhileTest implements SimpleInterface {
 		IClass cls = classFactory.createClass(PUBLIC, "generated", "DebugTest", Object.class, SimpleInterface.class);
@@ -297,6 +298,39 @@ public class BasicDemo {
 					i.set(i.add(1));
 				// }
 				m.End();
+				
+//				m.TryWithFinally();
+//					m.$(System.class).get("out").invoke("println", "try");
+//					//m.Return();
+//					m.Throw(m.New(Throwable.class, "blubber"));
+//				Variable e = m.Catch(Exception.class);
+//					m.$(System.class).get("out").invoke("println", "catch");
+//				m.Finally();
+//					m.$(System.class).get("out").invoke("println", "finally");
+//				m.End();
+				
+//				Variable i = m.addVar(int.class);
+//				
+//				m.Synchronized(m.This());
+//					i.set(1);
+//				m.End();
+				
+//				m.TryWithFinally();
+//					i.set(1);
+//				m.Catch(Exception.class);
+//					i.set(2);
+//				m.Finally();
+//					i.set(3);
+//				m.End();
+				
+//				m.$(System.class).get("out").invoke("println", i);
+//				i.set(i.add(1));
+//				
+//				m.Return(i);
+			
+//				m.Synchronized(m.New(Object.class));
+//					m.$(System.class).get("out").invoke("println", "sync");
+//				m.End();
 			// }
 			m.End();
 		// }
