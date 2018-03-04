@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="clasbuilder" default="all" basedir=".">
+<project name="clasbuilder.build" default="all" basedir=".">
 	
 	<property name="source" location="src" />
 	<property name="demo" location="demo" />
@@ -19,7 +19,7 @@
 	<target name="compile">
 		<delete dir="${bin}" />
 		<mkdir dir="${bin}" />
-		<javac includeantruntime="false" target="1.6" source="1.6" srcdir="${source}" destdir="${bin}"/>
+		<javac includeantruntime="false" debug="true" target="1.6" source="1.6" srcdir="${source}" destdir="${bin}"/>
 	</target>
 	
 	<target name="jar">
