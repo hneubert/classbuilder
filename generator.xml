@@ -14,7 +14,7 @@
 		<!-- classpath, which contains classbuilder.jar and all super-classes with @Handler annotations -->
 		<path id="gen.class.path">
 			<pathelement path="bin" />
-			<pathelement path="classbuilder.jar" />
+			<pathelement path="classbuilder-1.2.0.jar" />
 		</path>
 		<!-- generating classes -->
 		<genclasses src="${src}" bin="${bin}" filter="classbuilder.demo.handler.**.Test*" classpath="gen.class.path" />

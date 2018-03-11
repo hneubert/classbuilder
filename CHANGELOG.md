@@ -11,4 +11,7 @@
 * new generic types IClass.CURRENT_CLASS_TYPE and IClass.CURRENT_CLASS_ARRAY_TYPE
 * thread-safety for ObjectFactory
 * default ObjectFactory class name suffix changed to 'generated'
-* new exception for multiple super invocation 
+* new exception for multiple super invocation
+**1.2.0**
+* finally and synchronized support
+* RValue and LValue interface renamed to Value and Assignable

@@ -18,10 +18,10 @@ Usage:
 * replacement of interpreters/parsers
 
 Download:
-* [classbuilder-1.1.0.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-1.1.0.jar)
-* [classbuilder-src-1.1.0.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-src-1.1.0.jar)
-* [classbuilder-doc-1.1.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-doc-1.1.0.zip)
-* [classbuilder-demo-1.1.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-demo-1.1.0.zip)
+* [classbuilder-1.2.0.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-1.2.0.jar)
+* [classbuilder-src-1.2.0.jar](https://github.com/hneubert/classbuilder/raw/master/classbuilder-src-1.2.0.jar)
+* [classbuilder-doc-1.2.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-doc-1.2.0.zip)
+* [classbuilder-demo-1.2.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-demo-1.2.0.zip)
 
 
 ## Example
