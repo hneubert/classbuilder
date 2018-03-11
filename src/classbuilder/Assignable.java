@@ -26,7 +26,7 @@
 package classbuilder;
 
 /**
- * The LValue represents a left-value. Left-values are assignable:
+ * This interface represents an assignable value. Assignable values are:
  * <ul>
  * <li>variables
  * <li>parameters
@@ -34,7 +34,7 @@ package classbuilder;
  * <li>fields
  * </ul>
  */
-public interface LValue extends RValue {
+public interface Assignable extends Value {
 	/**
 	 * Assigns a new value to this value.
 	 * @param value new value

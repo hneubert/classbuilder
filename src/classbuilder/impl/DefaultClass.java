@@ -51,7 +51,7 @@ import classbuilder.IClass;
 import classbuilder.IConstructor;
 import classbuilder.IField;
 import classbuilder.IMethod;
-import classbuilder.RValue;
+import classbuilder.Value;
 import classbuilder.Variable;
 import classbuilder.impl.DefaultMethod.FragmentType;
 
@@ -299,7 +299,7 @@ public class DefaultClass implements IClass {
 			if (level == -1 && type != String.class) throw new BuilderTypeException(this, type);
 			newArgs[i + 2] = arg;
 		}
-		RValue value = (((DefaultMethod)s).New(CURRENT_CLASS_TYPE, newArgs));
+		Value value = (((DefaultMethod)s).New(CURRENT_CLASS_TYPE, newArgs));
 		fields.add(field);
 		s.get(field).set(value);
 		enumFieldCounter++;

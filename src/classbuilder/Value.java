@@ -29,9 +29,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * The RValue interface represents a right-value.
+ * The interface represents a value. Values are:
+ * <ul>
+ * <li>mathematical expressions
+ * <li>logical expressions
+ * <li>constants
+ * <li>variables
+ * <li>array-elements
+ * <li>fields
+ * </ul>
  */
-public interface RValue {
+public interface Value {
 	/**
 	 * Returns the data type.
 	 * @return data type
@@ -41,285 +49,285 @@ public interface RValue {
 	/**
 	 * Returns a field.
 	 * @param name field name
-	 * @return a l-value representing a field
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @return an assignable value representing a field
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderAccessException variable not initialized or field not found or inaccessable
 	 */
-	public LValue get(String name) throws BuilderSyntaxException, BuilderAccessException;
+	public Assignable get(String name) throws BuilderSyntaxException, BuilderAccessException;
 	
 	/**
 	 * Returns a field.
 	 * @param field a field
-	 * @return a l-value representing a field
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @return an assignable value representing a field
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderAccessException variable not initialized or field not found or inaccessable
 	 */
-	public LValue get(Field field) throws BuilderSyntaxException, BuilderAccessException;
+	public Assignable get(Field field) throws BuilderSyntaxException, BuilderAccessException;
 	
 	/**
 	 * Returns an array element.
 	 * @param index an int value representing the index
-	 * @return a l-value representing an array element
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @return an assignable value representing an array element
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException no array
 	 * @throws BuilderAccessException variable not initialized or field not found or inaccessable
 	 */
-	public LValue get(Object index) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Assignable get(Object index) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Invokes a method.
 	 * @param name method name
-	 * @param args arguments: constants or r-values
-	 * @return a r-value representing the return value or null
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @param args arguments: constants or values
+	 * @return a value representing the return value or null
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderAccessException variable not initialized or method not found or inaccessable
 	 * @throws BuilderTypeException invalid argument type
 	 */
-	public RValue invoke(String name, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException;
+	public Value invoke(String name, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException;
 	
 	/**
 	 * Invokes a method.
 	 * @param method a method
-	 * @param args arguments: constants or r-values
-	 * @return a r-value representing the return value or null
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @param args arguments: constants or values
+	 * @return a value representing the return value or null
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderAccessException variable not initialized or field not found or inaccessable
 	 * @throws BuilderTypeException invalid argument type
 	 */
-	public RValue invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException;
+	public Value invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException;
 	
 	/**
 	 * Returns the array length.
 	 * @return array length
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException no array
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue length() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value length() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Casts a value to another type.
 	 * @param type new type
-	 * @return the r-value with a new type
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @return the value with a new type
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException invalid type cast
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue cast(Class<?> type) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value cast(Class<?> type) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Adds this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Adds this value and another value or constant.
+	 * @param a another value or constant
 	 * @return sum
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numeric type
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue add(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value add(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Substracts this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Substracts this value and another value or constant.
+	 * @param a another value or constant
 	 * @return difference
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numeric type
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue sub(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value sub(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Multiplies this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Multiplies this value and another value or constant.
+	 * @param a another value or constant
 	 * @return product
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numeric type
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue mul(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value mul(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Devides this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Devides this value and another value or constant.
+	 * @param a another value or constant
 	 * @return quotient
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numeric type
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue div(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value div(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Calculates the remainder from this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Calculates the remainder from this value and another value or constant.
+	 * @param a another value or constant
 	 * @return remainder
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numeric type
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue mod(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value mod(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Calculates logical or from this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Calculates logical or from this value and another value or constant.
+	 * @param a another value or constant
 	 * @return logical or
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numerical or boolean value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue and(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value and(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Calculates logical and from this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Calculates logical and from this value and another value or constant.
+	 * @param a another value or constant
 	 * @return logical and
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numerical or boolean value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue or(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value or(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Calculates logical exclusive or from this r-value and another r-value or constant.
-	 * @param a another r-value or constant
+	 * Calculates logical exclusive or from this value and another value or constant.
+	 * @param a another value or constant
 	 * @return logical exclusive or
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numerical or boolean value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue xor(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value xor(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Shifts a value n bits arithmetic right.
-	 * @param n another r-value or constant
+	 * @param n another value or constant
 	 * @return right shifted value
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numerical value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue shr(Object n) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value shr(Object n) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Shifts a value n bits left.
-	 * @param n another r-value or constant
+	 * @param n another value or constant
 	 * @return left shifted value
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numerical value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue shl(Object n) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value shl(Object n) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Shifts a value n bits right.
-	 * @param n another r-value or constant
+	 * @param n another value or constant
 	 * @return right shifted value
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numerical value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue ushr(Object n) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value ushr(Object n) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Negates this value logical.
 	 * @return this value logical negated
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numeric or boolean value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue not() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value not() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Negates this value arithmetical.
 	 * @return this value arithmetical negated
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non integral numeric or boolean value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue neg() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value neg() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value is an instance of the given type.
 	 * @param a a class type
 	 * @return true, if this value is an instance of the given type
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException invalid type
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue instanceOf(Class<?> a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value instanceOf(Class<?> a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value is equal to a.
-	 * @param a another r-value or constant
+	 * @param a another value or constant
 	 * @return true, if this value is equal to a
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException dieser R-Wert und der Parameter sind nicht kompatiebel oder kein numerischer oder boolscher Ausdruck
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue equal(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value equal(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value is not equal to a.
-	 * @param a another r-value or constant
+	 * @param a another value or constant
 	 * @return true, if this value is not equal to a
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException dieser R-Wert und der Parameter sind nicht kompatiebel oder kein numerischer oder boolscher Ausdruck
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue notEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value notEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value is less than a.
-	 * @param a another r-value or constant
+	 * @param a another value or constant
 	 * @return true, if this value is less than a
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numerical value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue less(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value less(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value is greater than a.
-	 * @param a another r-value or constant
+	 * @param a another value or constant
 	 * @return a true, if this value is greater than a
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numerical value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue greater(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value greater(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value less than or is equal to a.
-	 * @param a another r-value or constant
+	 * @param a another value or constant
 	 * @return true, if this value less than or is equal to a
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException non numerical value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue lessEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value lessEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value greater than or is equal to a.
-	 * @param a another r-value or constant
+	 * @param a another value or constant
 	 * @return true, if this value greater than or is equal to a
 	 * @throws BuilderSyntaxException der R-Wert wurde bereits compiliert
 	 * @throws BuilderTypeException non numerical value
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue greaterEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value greaterEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value is null.
 	 * @return true, if this value is null
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException no object or array
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue isNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value isNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns true, if this value is not null.
 	 * @return true, if this value is not null
-	 * @throws BuilderSyntaxException r-value allready compiled
+	 * @throws BuilderSyntaxException value allready compiled
 	 * @throws BuilderTypeException no object or array
 	 * @throws BuilderAccessException variable not initialized
 	 */
-	public RValue isNotNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value isNotNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 }

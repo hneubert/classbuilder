@@ -31,8 +31,8 @@ import java.lang.reflect.Method;
 import classbuilder.BuilderAccessException;
 import classbuilder.BuilderSyntaxException;
 import classbuilder.BuilderTypeException;
-import classbuilder.LValue;
-import classbuilder.RValue;
+import classbuilder.Assignable;
+import classbuilder.Value;
 import classbuilder.Variable;
 
 public class DefaultVariable implements Variable {
@@ -73,12 +73,12 @@ public class DefaultVariable implements Variable {
 	
 	@Override
 	public void set(Object value) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
-		((LValue)method.$(this)).set(value);
+		((Assignable)method.$(this)).set(value);
 		method.set(index);
 	}
 	
 	@Override
-	public LValue get(String name) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(String name) throws BuilderSyntaxException, BuilderAccessException {
 		check();
 		try {
 			return method.$(this).get(name);
@@ -88,13 +88,13 @@ public class DefaultVariable implements Variable {
 	}
 	
 	@Override
-	public LValue get(Object index) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Assignable get(Object index) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).get(index);
 	}
 	
 	@Override
-	public RValue invoke(String name, Object... args) throws BuilderSyntaxException, BuilderAccessException {
+	public Value invoke(String name, Object... args) throws BuilderSyntaxException, BuilderAccessException {
 		check();
 		try {
 			return method.$(this).invoke(name, args);
@@ -104,7 +104,7 @@ public class DefaultVariable implements Variable {
 	}
 	
 	@Override
-	public RValue invoke(Method method, Object... args) throws BuilderSyntaxException, BuilderAccessException {
+	public Value invoke(Method method, Object... args) throws BuilderSyntaxException, BuilderAccessException {
 		check();
 		try {
 			return this.method.$(this).invoke(method, args);
@@ -114,139 +114,139 @@ public class DefaultVariable implements Variable {
 	}
 	
 	@Override
-	public RValue length() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value length() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).length();
 	}
 	
 	@Override
-	public RValue cast(Class<?> type) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value cast(Class<?> type) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).cast(type);
 	}
 	
 	@Override
-	public RValue add(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value add(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).add(a);
 	}
 	
 	@Override
-	public RValue sub(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value sub(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).sub(a);
 	}
 	
 	@Override
-	public RValue mul(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value mul(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).mul(a);
 	}
 	
 	@Override
-	public RValue div(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value div(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).div(a);
 	}
 	
 	@Override
-	public RValue mod(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value mod(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).mod(a);
 	}
 	
 	@Override
-	public RValue and(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value and(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).and(a);
 	}
 	
 	@Override
-	public RValue or(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value or(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).or(a);
 	}
 	
 	@Override
-	public RValue xor(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value xor(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).xor(a);
 	}
 	
 	@Override
-	public RValue shr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value shr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).shr(a);
 	}
 	
 	@Override
-	public RValue shl(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value shl(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).shl(a);
 	}
 	
 	@Override
-	public RValue ushr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value ushr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).ushr(a);
 	}
 	
 	@Override
-	public RValue not() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value not() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).not();
 	}
 	
 	@Override
-	public RValue neg() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value neg() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).neg();
 	}
 	
 	@Override
-	public RValue instanceOf(Class<?> a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value instanceOf(Class<?> a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).instanceOf(a);
 	}
 	
 	@Override
-	public RValue equal(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value equal(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).equal(a);
 	}
 	
 	@Override
-	public RValue notEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value notEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).notEqual(a);
 	}
 	
 	@Override
-	public RValue less(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value less(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).less(a);
 	}
 	
 	@Override
-	public RValue greater(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value greater(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).greater(a);
 	}
 	
 	@Override
-	public RValue lessEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value lessEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).lessEqual(a);
 	}
 	
 	@Override
-	public RValue greaterEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value greaterEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).greaterEqual(a);
 	}
 
 	@Override
-	public LValue get(Field field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(Field field) throws BuilderSyntaxException, BuilderAccessException {
 		check();
 		try {
 			return method.$(this).get(field);
@@ -256,13 +256,13 @@ public class DefaultVariable implements Variable {
 	}
 	
 	@Override
-	public RValue isNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value isNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).isNull();
 	}
 	
 	@Override
-	public RValue isNotNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value isNotNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		check();
 		return method.$(this).isNotNull();
 	}

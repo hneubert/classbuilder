@@ -46,7 +46,7 @@ import classbuilder.ClassFactory;
 import classbuilder.IClass;
 import classbuilder.IConstructor;
 import classbuilder.IMethod;
-import classbuilder.RValue;
+import classbuilder.Value;
 import classbuilder.handler.impl.DefaultConstructorHandler;
 import classbuilder.handler.impl.DefaultHandlerContext;
 import classbuilder.handler.impl.InstantiationHelper;
@@ -529,7 +529,7 @@ public class ObjectFactory {
 		for (Constructor<?> constructor : cls.getConstructors()) {
 			int i = 0;
 			ctor.If(ctor.getParameter(0).length().equal(constructor.getParameterTypes().length));
-				RValue rv = null;
+				Value rv = null;
 				for (Class<?> type : constructor.getParameterTypes()) {
 					Class<?> wrapper = VMConst.getWrapperType(type);
 					if (rv == null) {
@@ -551,7 +551,7 @@ public class ObjectFactory {
 				} else {
 					ctor.If(rv);
 						i = 0;
-						RValue[] args = new RValue[constructor.getParameterTypes().length];
+						Value[] args = new Value[constructor.getParameterTypes().length];
 						for (Class<?> type : constructor.getParameterTypes()) {
 							args[i] = ctor.getParameter(0).get(i++).cast(type);
 						}

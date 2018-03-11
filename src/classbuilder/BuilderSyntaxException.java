@@ -133,7 +133,7 @@ public class BuilderSyntaxException extends BuilderException {
 		case EXPRESSION_ALREADY_WRITTEN :
 			return "expression already written";
 		case FREESTANDING_EXPRESSION :
-			return "freestanding r-value";
+			return "freestanding expression";
 		case FUNCTION_IS_CLOSED :
 			return "method is closed";
 		case NO_LVALUE :

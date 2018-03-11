@@ -1,7 +1,7 @@
-# 1 Class-Builder API
+# Class-Builder
 
-The class builder API can be used fpr generating new classes at runtime. 
-But this is no byte code engeneering library for byte code manipulation of existing classes.  
+The class builder API can be used for generating new classes at runtime. 
+But this is no byte code engineering library for byte code manipulation of existing classes.  
 You can use inheritance to extends existing classes.
 
 Features:
@@ -9,12 +9,12 @@ Features:
 * source generation
 * no file system access required
 * fail fast
-* fluent API for expresseion
+* fluent API for expression
 * handler API for aspect oriented programming
 * compatible with future java versions
 
 Usage:
-* replacement of reflaction
+* replacement of reflection
 * replacement of interpreters/parsers
 
 Download:
@@ -23,9 +23,63 @@ Download:
 * [classbuilder-doc-1.1.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-doc-1.1.0.zip)
 * [classbuilder-demo-1.1.0.zip](https://github.com/hneubert/classbuilder/raw/master/classbuilder-demo-1.1.0.zip)
 
-Limitations:
-* no implicit operator priority (a.add(1).mul(2) means (a \+ 1) \* 2)
-* logical expressions will be completely executed (ex. if (a == null &amp;&amp; a.length &gt;= 0))
+
+## Example
+
+### Step 1: create a method-handler
+
+```java
+public class GetterHandler extends AbstractMethodHandler {
+	
+    // create a generic method implementation
+	@Override
+	public void handle(HandlerContext context) throws BuilderException, HandlerException {
+		String field = Introspector.decapitalize(getName().substring(3));
+        
+        // return field;
+		Return(get(field));
+	}
+}
+```
+
+### Step 2: create an annotation
+
+```java
+// connect the annotation with the method-handler
+@Handler(GetterHandler.class)
+@Target(value=ElementType.METHOD)
+@Retention(value=RetentionPolicy.RUNTIME)
+public @interface Getter {
+	
+}
+```
+
+### Step 3: use it
+
+```java
+public class TestBean {
+	protected int foo = 42;
+	
+	@Getter
+	public abstract int getFoo();
+}
+
+public class TestCase {
+	
+	public void test() {
+		// create an object factory
+        ObjectFactory factory = new ObjectFactory();
+		
+        // create an enhanced TestBean
+		TestBean testBean = (TestBean)factory.create(TestBean.class);
+		
+        // invoke getFoo()
+		System.out.println(testBean.getFoo());
+	}
+}
+```
+
+# 1 Class-Builder API
 
 ## 1.1 Create new classes
 
@@ -35,7 +89,7 @@ The ClassFactory has different properties:
 parameter | description
 ----------|------------
 CLASS_PATH | Path to the destination directory for the .class-files (optional).
-SOURCE_PATH | Path to the destination directory for the .class-files (optional). This property must set for debuggung.
+SOURCE_PATH | Path to the destination directory for the .class-files (optional). This property must set for debugging.
 CLASS_LOADER | The class loader, which is used for loading generated classes (optional). Default value: current thread class loader.
 
 New classes can be created with the ObjectFactory.createClass method.
@@ -65,10 +119,10 @@ Class<?> newClass = cls.build();
 
 ## 1.2 Create expressions
 
-Expressions are right-values (r-values). 
-R-values are constants, variables, fields, method invocations with a return value or by operators connected values.  
-You can use the IMethod.$() method, to convert constants to r-values. 
-Many methods have parameters of type Object, which coverts constants implicit.
+The interface Value represents expressions. 
+Values are constants, variables, fields, method invocations with a return value or by operators connected values.  
+You can use the IMethod.$() method, to convert constants to values. 
+Many methods have parameters of type Object, which converts constants implicit.
 
 ```java
 IMethod m = cls.addMethod(PUBLIC, "foo");
@@ -131,10 +185,10 @@ operator | method | description
 ^ | xor | logical exclusive or
 &lt;&lt; | shl | shift left
 &gt;&gt; | shr | shift arithmetic right
-&gt;&gt;&gt; | ushr | schift right
+&gt;&gt;&gt; | ushr | shift right
 \- | neg | arithmetical negation
 \+ | add | add
-\- | sub | substract
+\- | sub | subtract
 \* | mul | multiply
 / | div | divide
 % | mod | remainder
@@ -147,12 +201,15 @@ operator | method | description
 (&lt;type&gt;) | cast | type cast
 instanceof | instanceOf | check type
 
+Limitations:
+* no implicit operator priority (a.add(1).mul(2) means (a \+ 1) \* 2)
+* logical expressions will be completely executed (ex. if (a == null &amp;&amp; a.length &gt;= 0))
 
 ## 1.3 Structures
-Methods were implemented by the IMethod interfaces, which can be uesed to create diffent structures and complex expressen by a fluent api.
-There exists to kinds of values:
-* right-values (r-values): r-values are constants, l-values and by operators connected values. R-values cen be assigned to r-values.
-* left-values (l-values): this values are writable like variables, method arguments, fields or array elements.
+Methods were implemented by the IMethod interfaces, which can be used to create different structures and complex expression by a fluent API.
+There exists two kinds of values:
+* values (Value): constants, assignable values and by operators connected values. values can be assigned to assignable values.
+* assignable values (Assignable): this values are writable like variables, method arguments, fields or array elements.
 
 **Read method parameters:**
 ```java
@@ -212,7 +269,7 @@ m.End()
 
 # 2 Handler API
 
-The handler api is for aspect oriented programming. 
+The handler API is for aspect oriented programming. 
 The ObjectFactory creates new classes and objects by handling annotations.
 
 Different handler types:
@@ -289,7 +346,7 @@ Proxy handlers implements method wrappers.
 If a method is annotated, then this method is wrapped. 
 If the super class or an interface is annotated, then all abstracted methods were wrapped. 
 Alternatively, you can implement the MethodSelector interface. 
-There is multible proxy handlers per method possible.
+There is multiple proxy handlers per method possible.
 
 Example:
 ```java

@@ -40,11 +40,11 @@ import classbuilder.IClass;
 import classbuilder.IConstructor;
 import classbuilder.IField;
 import classbuilder.IMethod;
-import classbuilder.LValue;
-import classbuilder.RValue;
+import classbuilder.Assignable;
+import classbuilder.Value;
 import classbuilder.Variable;
 
-public class DefaultLValue implements LValue {
+public class DefaultLValue implements Assignable {
 	protected DefaultLValue root;
 	protected NodeType type;
 	protected Object value;
@@ -93,7 +93,7 @@ public class DefaultLValue implements LValue {
 	}
 	
 	@Override
-	public LValue get(String name) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(String name) throws BuilderSyntaxException, BuilderAccessException {
 		DefaultLValue next = null;
 		
 		if (name == null) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, "<null>");
@@ -131,7 +131,7 @@ public class DefaultLValue implements LValue {
 	}
 	
 	@Override
-	public LValue get(Field field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(Field field) throws BuilderSyntaxException, BuilderAccessException {
 		Class<?> type = varType;
 		if (this.type == NodeType.CLASS) {
 			type = (Class<?>)value;
@@ -159,7 +159,7 @@ public class DefaultLValue implements LValue {
 	}
 	
 	@Override
-	public LValue get(Object index) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Assignable get(Object index) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		if (index == null) throw new BuilderTypeException(fragment, "<null>");
 		if (varType != null && varType.isArray()) {
 			DefaultLValue lv = (DefaultLValue)fragment.$(index);
@@ -173,7 +173,7 @@ public class DefaultLValue implements LValue {
 		}
 	}
 	
-	public RValue invoke(IMethod method, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
+	public Value invoke(IMethod method, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
 		if (method == null) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, "<null>");
 		if (method.getDeclaringClass() != fragment.getDeclaringClass()) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, method.getName());
 		if (type == NodeType.CLASS && (method.getModifiers() & Modifier.STATIC) == 0) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_STATIC, method.getName());
@@ -201,7 +201,7 @@ public class DefaultLValue implements LValue {
 	}
 	
 	@Override
-	public RValue invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
+	public Value invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
 		Class<?> varType = this.varType;
 		if (this.type == NodeType.CLASS) {
 			varType = (Class<?>)value;
@@ -235,7 +235,7 @@ public class DefaultLValue implements LValue {
 	}
 	
 	@Override
-	public RValue invoke(String name, Object... args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
+	public Value invoke(String name, Object... args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
 		DefaultLValue[] newArgs;
 		DefaultLValue next = null;
 		Class<?>[] types = null;
@@ -458,7 +458,7 @@ public class DefaultLValue implements LValue {
 	}
 	
 	@Override
-	public RValue length() throws BuilderSyntaxException, BuilderTypeException {
+	public Value length() throws BuilderSyntaxException, BuilderTypeException {
 		if (varType != null && varType.isArray()) {
 			DefaultLValue lv = new DefaultLValue(fragment, root, NodeType.LENGTH, null, null, int.class);
 			setNext(lv, false);//this.next = lv;
@@ -469,7 +469,7 @@ public class DefaultLValue implements LValue {
 	}
 	
 	@Override
-	public RValue cast(Class<?> type) throws BuilderSyntaxException, BuilderTypeException {
+	public Value cast(Class<?> type) throws BuilderSyntaxException, BuilderTypeException {
 		if (type == null) throw new BuilderTypeException(fragment, "<null>");
 		if (this.type == NodeType.THIS) {
 			boolean castable = false;
@@ -1267,74 +1267,74 @@ public class DefaultLValue implements LValue {
 	}
 
 	@Override
-	public RValue add(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value add(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.ADD, a);
 	}
 
 	@Override
-	public RValue sub(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value sub(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.SUB, a);
 	}
 
 	@Override
-	public RValue mul(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value mul(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.MUL, a);
 	}
 
 	@Override
-	public RValue div(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value div(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.DIV, a);
 	}
 
 	@Override
-	public RValue mod(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value mod(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.MOD, a);
 	}
 
 	@Override
-	public RValue and(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value and(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.AND, a);
 	}
 
 	@Override
-	public RValue or(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value or(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.OR, a);
 	}
 
 	@Override
-	public RValue xor(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value xor(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.XOR, a);
 	}
 
 	@Override
-	public RValue shr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value shr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.SHR, a);
 	}
 
 	@Override
-	public RValue shl(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value shl(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.SHL, a);
 	}
 
 	@Override
-	public RValue ushr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value ushr(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.USHR, a);
 	}
 
 	@Override
-	public RValue not() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value not() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		// a -> lv -> getRoot
 		return getResultType(NodeType.NOT, null);
 	}
 
 	@Override
-	public RValue neg() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value neg() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		// a -> lv -> getRoot
 		return getResultType(NodeType.NEG, null);
 	}
 
 	@Override
-	public RValue instanceOf(Class<?> a) throws BuilderSyntaxException, BuilderTypeException {
+	public Value instanceOf(Class<?> a) throws BuilderSyntaxException, BuilderTypeException {
 		// a -> lv -> getRoot
 		if (varType == null || varType == void.class || varType.isPrimitive()) throw new BuilderTypeException(fragment, BuilderTypeException.OBJECT_REQUIRED);
 		if (a == null || a == void.class) throw new BuilderTypeException(fragment, BuilderTypeException.CLASS_REQUIRED);
@@ -1344,42 +1344,42 @@ public class DefaultLValue implements LValue {
 	}
 
 	@Override
-	public RValue equal(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value equal(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.EQUAL, a);
 	}
 
 	@Override
-	public RValue notEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value notEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.UNEQUAL, a);
 	}
 
 	@Override
-	public RValue less(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value less(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.LOWER, a);
 	}
 
 	@Override
-	public RValue greater(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value greater(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.GREATER, a);
 	}
 
 	@Override
-	public RValue lessEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value lessEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.LOWER_EQUAL, a);
 	}
 
 	@Override
-	public RValue greaterEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value greaterEqual(Object a) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.GREATER_EQUAL, a);
 	}
 	
 	@Override
-	public RValue isNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value isNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.IS_NULL, null);
 	}
 	
 	@Override
-	public RValue isNotNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value isNotNull() throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return getResultType(NodeType.IS_NOT_NULL, null);
 	}
 	

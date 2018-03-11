@@ -37,8 +37,8 @@ import classbuilder.IAnnotation;
 import classbuilder.IClass;
 import classbuilder.IField;
 import classbuilder.IMethod;
-import classbuilder.LValue;
-import classbuilder.RValue;
+import classbuilder.Assignable;
+import classbuilder.Value;
 import classbuilder.Variable;
 
 /**
@@ -124,17 +124,17 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public RValue New(Class<?> type, Object... args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
+	public Value New(Class<?> type, Object... args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
 		return method.New(type, args);
 	}
 	
 	@Override
-	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void Throw(Value exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.Throw(exception);
 	}
 	
 	@Override
-	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void If(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.If(condition);
 	}
 	
@@ -144,17 +144,17 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void ElseIf(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.ElseIf(condition);
 	}
 	
 	@Override
-	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Variable ForEach(Value iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return method.ForEach(iterable);
 	}
 	
 	@Override
-	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void While(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.While(condition);
 	}
 	
@@ -189,7 +189,7 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void Synchronized(Value object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		method.Synchronized(object);
 	}
 	
@@ -204,37 +204,37 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public LValue get(IField field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(IField field) throws BuilderSyntaxException, BuilderAccessException {
 		return method.get(field);
 	}
 	
 	@Override
-	public LValue get(String field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(String field) throws BuilderSyntaxException, BuilderAccessException {
 		return method.get(field);
 	}
 	
 	@Override
-	public LValue get(Field field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(Field field) throws BuilderSyntaxException, BuilderAccessException {
 		return method.get(field);
 	}
 	
 	@Override
-	public RValue $(Object value) throws BuilderSyntaxException, BuilderTypeException {
+	public Value $(Object value) throws BuilderSyntaxException, BuilderTypeException {
 		return method.$(value);
 	}
 	
 	@Override
-	public RValue invoke(IMethod method, Object... args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value invoke(IMethod method, Object... args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return this.method.invoke(method, args);
 	}
 	
 	@Override
-	public RValue invoke(String method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value invoke(String method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return this.method.invoke(method, args);
 	}
 	
 	@Override
-	public RValue invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return this.method.invoke(method, args);
 	}
 	
@@ -244,17 +244,17 @@ public class MethodDelegate extends ClassDelegate implements IMethod {
 	}
 	
 	@Override
-	public RValue This() throws BuilderSyntaxException, BuilderAccessException {
+	public Value This() throws BuilderSyntaxException, BuilderAccessException {
 		return method.This();
 	}
 	
 	@Override
-	public RValue Super() throws BuilderSyntaxException, BuilderAccessException {
+	public Value Super() throws BuilderSyntaxException, BuilderAccessException {
 		return method.Super();
 	}
 
 	@Override
-	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Variable ForEach(Value iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return method.ForEach(iterable, elementType);
 	}
 	

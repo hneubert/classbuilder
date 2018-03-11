@@ -128,25 +128,25 @@ public interface IMethod {
 	 * @throws BuilderAccessException no such constructor
 	 * @throws BuilderSyntaxException method already closed
 	 */
-	public RValue New(Class<?> type, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException;
+	public Value New(Class<?> type, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException;
 	
 	/**
 	 * Throws an exception.
-	 * @param exception a r-value of type Throwable
+	 * @param exception a value of type Throwable
 	 * @throws BuilderTypeException exception is no Throwable
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException exception not accessible
 	 */
-	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public void Throw(Value exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new if-block.
-	 * @param condition a r-value of type boolean or Boolean
+	 * @param condition a value of type boolean or Boolean
 	 * @throws BuilderTypeException condition is no boolean or Boolean
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException condition not accessible
 	 */
-	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public void If(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Closes the current if-block and starts an else-block.
@@ -156,42 +156,42 @@ public interface IMethod {
 	
 	/**
 	 * Closes the current if-block and starts an else-if-block.
-	 * @param condition a r-value of type boolean or Boolean
+	 * @param condition a value of type boolean or Boolean
 	 * @throws BuilderTypeException condition is no boolean or Boolean
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException condition not accessible
 	 */
-	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public void ElseIf(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new for-each-loop.
-	 * @param iterable a r-value of type Iterable or an array
+	 * @param iterable a value of type Iterable or an array
 	 * @return a variable of type Object or the array element type, which contains the element data
 	 * @throws BuilderTypeException iterable is no Iterable or an array
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException iterable not accessible
 	 */
-	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Variable ForEach(Value iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new for-each-loop with explicit type cast.
-	 * @param iterable a r-value of type Iterable or an array
+	 * @param iterable a value of type Iterable or an array
 	 * @param elementType element type
 	 * @return a variable of type 'elementType' or the array element type, which contains the element data
 	 * @throws BuilderTypeException iterable is no Iterable or an array
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException iterable not accessible
 	 */
-	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Variable ForEach(Value iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Starts a new while-block.
-	 * @param condition a r-value of type boolean or Boolean
+	 * @param condition a value of type boolean or Boolean
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderTypeException condition is no boolean or Boolean
 	 * @throws BuilderAccessException condition not accessible
 	 */
-	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public void While(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Break the current loop.
@@ -239,7 +239,7 @@ public interface IMethod {
 	 * @throws BuilderTypeException no object type
 	 * @throws BuilderAccessException object not accessible
 	 */
-	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public void Synchronized(Value object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Returns from the method without a return value.
@@ -258,34 +258,34 @@ public interface IMethod {
 	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
-	 * Creates a l-value for the given declared field.
+	 * Creates an assignable value for the given declared field.
 	 * @param field a declared field
-	 * @return a l-value
+	 * @return an assignable value
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException field not present or not accessible
 	 */
-	public LValue get(IField field) throws BuilderSyntaxException, BuilderAccessException;
+	public Assignable get(IField field) throws BuilderSyntaxException, BuilderAccessException;
 	
 	/**
-	 * Creates a l-value for the given declared or super field.
+	 * Creates an assignable value for the given declared or super field.
 	 * @param field a field name of a declared or super field
-	 * @return a l-value
+	 * @return an assignable value
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException field not present or not accessible
 	 */
-	public LValue get(String field) throws BuilderSyntaxException, BuilderAccessException;
+	public Assignable get(String field) throws BuilderSyntaxException, BuilderAccessException;
 	
 	/**
-	 * Creates a l-value for the given super field.
+	 * Creates an assignable value for the given super field.
 	 * @param field a super field
-	 * @return a l-value
+	 * @return an assignable value
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException field not present or not accessible
 	 */
-	public LValue get(Field field) throws BuilderSyntaxException, BuilderAccessException;
+	public Assignable get(Field field) throws BuilderSyntaxException, BuilderAccessException;
 	
 	/**
-	 * Creates a r-value from a constant value
+	 * Creates a value from a constant value
 	 * <p>
 	 * Allowed types:
 	 * <ul>
@@ -299,47 +299,47 @@ public interface IMethod {
 	 * <li>String
 	 * <li>Class
 	 * <li>null
-	 * <li>RValue: does nothing
+	 * <li>Value: does nothing
 	 * </ul>
 	 * @param value a constant, string, class or null
-	 * @return a r-value
+	 * @return a value
 	 * @throws BuilderTypeException invalid data type
 	 * @throws BuilderSyntaxException method already closed
 	 */
-	public RValue $(Object value) throws BuilderSyntaxException, BuilderTypeException;
+	public Value $(Object value) throws BuilderSyntaxException, BuilderTypeException;
 	
 	/**
 	 * Invokes a declared method.
 	 * @param method a declared method
-	 * @param args method arguments: constants or r-values
-	 * @return return value: a r-value or null
+	 * @param args method arguments: constants or values
+	 * @return return value: a value or null
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException unknown or inaccessible method
 	 * @throws BuilderTypeException invalid parameter type
 	 */
-	public RValue invoke(IMethod method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value invoke(IMethod method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Invokes a declared or super method.
 	 * @param method a declared or super method
-	 * @param args method arguments: constants or r-values
-	 * @return return value: a r-value or null
+	 * @param args method arguments: constants or values
+	 * @return return value: a value or null
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException unknown or inaccessible method
 	 * @throws BuilderTypeException invalid parameter type
 	 */
-	public RValue invoke(String method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value invoke(String method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Invokes a super method.
 	 * @param method a super method
-	 * @param args method arguments: constants or r-values
-	 * @return return value: a r-value or null
+	 * @param args method arguments: constants or values
+	 * @return return value: a value or null
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException unknown or inaccessible method
 	 * @throws BuilderTypeException invalid parameter type
 	 */
-	public RValue invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
+	public Value invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException;
 	
 	/**
 	 * Closes a block or a non abstract method.
@@ -353,7 +353,7 @@ public interface IMethod {
 	 * @throws BuilderSyntaxException method already closed
 	 * @throws BuilderAccessException invocation in a static method
 	 */
-	public RValue This() throws BuilderSyntaxException, BuilderAccessException;
+	public Value This() throws BuilderSyntaxException, BuilderAccessException;
 	
 	/**
 	 * Returns a 'super' reference.
@@ -361,6 +361,6 @@ public interface IMethod {
 	 * @throws BuilderSyntaxException die method already closed
 	 * @throws BuilderAccessException invocation in a static method
 	 */
-	public RValue Super() throws BuilderSyntaxException, BuilderAccessException;
+	public Value Super() throws BuilderSyntaxException, BuilderAccessException;
 	
 }

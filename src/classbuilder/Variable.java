@@ -28,7 +28,7 @@ package classbuilder;
 /**
  * The Variable interface represents a variable.
  */
-public interface Variable extends LValue {
+public interface Variable extends Assignable {
 	
 	/**
 	 * Returns the variable name.

@@ -47,8 +47,8 @@ import classbuilder.IClass;
 import classbuilder.IConstructor;
 import classbuilder.IField;
 import classbuilder.IMethod;
-import classbuilder.LValue;
-import classbuilder.RValue;
+import classbuilder.Assignable;
+import classbuilder.Value;
 import classbuilder.Variable;
 import classbuilder.impl.DebugData.LineNumberEntry;
 
@@ -337,7 +337,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public RValue This() throws BuilderSyntaxException, BuilderAccessException {
+	public Value This() throws BuilderSyntaxException, BuilderAccessException {
 		testClosed();
 		testStatic();
 		DefaultLValue value = new DefaultLValue(this, (DefaultLValue)null, NodeType.THIS, null, component, IClass.CURRENT_CLASS_TYPE);
@@ -346,7 +346,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public RValue Super() throws BuilderSyntaxException, BuilderAccessException {
+	public Value Super() throws BuilderSyntaxException, BuilderAccessException {
 		testClosed();
 		testStatic();
 		DefaultLValue value = new DefaultLValue(this, null, NodeType.SUPER, null, null, component.getSuperclass());
@@ -355,7 +355,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public RValue New(Class<?> type, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
+	public Value New(Class<?> type, Object ...args) throws BuilderSyntaxException, BuilderAccessException, BuilderTypeException {
 		testClosed();
 		if (type == null || type == void.class || type == Void.class || type.isPrimitive()) throw new BuilderTypeException(this, type);
 		DefaultLValue value;
@@ -380,7 +380,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void Throw(RValue exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void Throw(Value exception) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		exception = $(exception);
 		DefaultLValue value, lv = (DefaultLValue)$(exception);
@@ -396,7 +396,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void If(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void If(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		condition = $(condition);
 		check((DefaultLValue)condition);
@@ -423,7 +423,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void ElseIf(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void ElseIf(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed2();
 		if (getType() != FragmentType.IF && getType() != FragmentType.ELSE_IF) {
 			throw new BuilderSyntaxException(this, BuilderSyntaxException.ELSE_NOT_ALLOWED);
@@ -477,12 +477,12 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public Variable ForEach(RValue iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Variable ForEach(Value iterable) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		return ForEach(iterable, Object.class);
 	}
 	
 	@Override
-	public Variable ForEach(RValue iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Variable ForEach(Value iterable, Class<?> elementType) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		iterable = $(iterable);
 		check((DefaultLValue)iterable);
@@ -581,7 +581,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void While(RValue condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void While(Value condition) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		condition = $(condition);
 		DefaultLValue lv = (DefaultLValue)condition;
@@ -791,7 +791,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public void Synchronized(RValue object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public void Synchronized(Value object) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		if (object == null || !Object.class.isAssignableFrom(object.getVarType())) {
 			throw new BuilderTypeException(this, BuilderTypeException.OBJECT_REQUIRED);
@@ -856,7 +856,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public LValue get(IField field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(IField field) throws BuilderSyntaxException, BuilderAccessException {
 		testClosed();
 		if (field == null) throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_FOUND, "<null>");
 		if (field.getDeclaringClass() != getDeclaringClass()) throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_FOUND, field.getName());
@@ -872,7 +872,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public LValue get(String field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(String field) throws BuilderSyntaxException, BuilderAccessException {
 		try {
 			Object f = DefaultLValue.getField(this, IClass.CURRENT_CLASS_TYPE, field, false);
 			if (f instanceof IField) {
@@ -886,7 +886,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public LValue get(Field field) throws BuilderSyntaxException, BuilderAccessException {
+	public Assignable get(Field field) throws BuilderSyntaxException, BuilderAccessException {
 		if (!field.getDeclaringClass().isAssignableFrom(component.getSuperclass())) throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_FOUND, field.getName());
 		if ((field.getModifiers() & IClass.STATIC) != 0) {
 			try {
@@ -900,7 +900,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public RValue $(Object value) throws BuilderSyntaxException, BuilderTypeException {
+	public Value $(Object value) throws BuilderSyntaxException, BuilderTypeException {
 		testClosed();
 		DefaultLValue node;
 		
@@ -910,8 +910,8 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 			Variable var = (Variable)value;
 			node = new DefaultLValue(this, (DefaultLValue)null, NodeType.LGET, value, null, var.getType());
 			instructions.add(node);
-		} else if (value instanceof RValue) {
-			return (RValue)value;
+		} else if (value instanceof Value) {
+			return (Value)value;
 		} else if (value instanceof Class) {
 			node = new DefaultLValue(this, null, NodeType.CLASS, null, value, Class.class);
 			instructions.add(node);
@@ -946,7 +946,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 		
 	@Override
-	public RValue invoke(IMethod method, Object ...params) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value invoke(IMethod method, Object ...params) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		testClosed();
 		if (method == null) throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, "<null>");
 		if (method.getDeclaringClass() != component) throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, method.getName());
@@ -962,7 +962,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public RValue invoke(String method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value invoke(String method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		DefaultLValue[] newArgs;
 		Class<?>[] ac;
 		int i;
@@ -993,7 +993,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	@Override
-	public RValue invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+	public Value invoke(Method method, Object ...args) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
 		if (!method.getDeclaringClass().isAssignableFrom(component.getSuperclass())) throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, method.getName());
 		if ((method.getModifiers() & IClass.STATIC) != 0) {
 			return $(component).invoke(method, args);
