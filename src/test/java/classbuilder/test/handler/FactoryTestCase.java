@@ -1,9 +1,9 @@
 package classbuilder.test.handler;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -145,14 +145,15 @@ public class FactoryTestCase {
 		public abstract void foo();
 	}
 	
-	@Test
-	public void prepareSerialisationTest() throws FileNotFoundException, IOException, BuilderException, HandlerException {
-		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("./test/classbuilder/test/handler/serialisationTest.dat"));
+	public byte[] prepareSerialisationTest() throws FileNotFoundException, IOException, BuilderException, HandlerException {
+		ByteArrayOutputStream bo = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(bo);
 		ObjectFactory factory = new ObjectFactory();
 		factory.setSuffix("Test"); // the full class name must be equal
 		SerialisationTest test = factory.create(SerialisationTest.class);
 		out.writeObject(test);
 		out.close();
+		return bo.toByteArray();
 	}
 	
 	public static class MyObjectInputStream extends ObjectInputStream {
@@ -165,14 +166,14 @@ public class FactoryTestCase {
 	}
 	
 	@Test
-	public void serialisationTest() throws FileNotFoundException, IOException, ClassNotFoundException {
+	public void serialisationTest() throws FileNotFoundException, IOException, ClassNotFoundException, BuilderException, HandlerException {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		ObjectFactory factory = new ObjectFactory();
 		factory.setSuffix("Test"); // the full class name must be equal
 		ClassLoader classLoader = new HandlerClassLoader(factory);
 		Thread.currentThread().setContextClassLoader(classLoader);
 		
-		ObjectInputStream in = new MyObjectInputStream(new FileInputStream("./test/classbuilder/test/handler/serialisationTest.dat"));
+		ObjectInputStream in = new MyObjectInputStream(new ByteArrayInputStream(prepareSerialisationTest()));
 		SerialisationTest test = (SerialisationTest)in.readObject();
 		Assert.assertEquals(42, test.i);
 		test.foo();

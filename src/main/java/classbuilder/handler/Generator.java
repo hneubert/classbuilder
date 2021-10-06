@@ -33,8 +33,6 @@ import java.util.jar.JarFile;
 
 import classbuilder.BuilderException;
 import classbuilder.ClassFactory;
-import classbuilder.handler.HandlerException;
-import classbuilder.handler.ObjectFactory;
 import classbuilder.util.SimpleClassLoader;
 
 /**
