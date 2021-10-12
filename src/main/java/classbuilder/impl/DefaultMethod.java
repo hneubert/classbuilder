@@ -1113,22 +1113,35 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	}
 	
 	private void build() throws BuilderSyntaxException {
+		if (isConstructor() && !superInvoked) {
+			DefaultLValue spr = new DefaultLValue(this, null, NodeType.SUPER, null, null, component.getSuperclass());
+			try {
+				spr.invoke("<init>");
+				spr.build(null, out, constantPool, false);
+				superInvoked = true;
+			} catch (BuilderAccessException e) {
+				throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
+			} catch (BuilderTypeException e) {
+				throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
+			}
+		}
+		
 		for (DefaultLValue node : instructions) {
 			if (!node.isRemoved()) {
 				int offset = out.getPos();
 				
-				if (isConstructor() && !superInvoked) {
-					DefaultLValue spr = new DefaultLValue(null, null, NodeType.SUPER, null, null, component.getSuperclass());
-					try {
-						spr.invoke("<init>");
-						spr.build(null, out, constantPool, false);
-						superInvoked = true;
-					} catch (BuilderAccessException e) {
-						throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
-					} catch (BuilderTypeException e) {
-						throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
-					}
-				}
+//				if (isConstructor() && !superInvoked) {
+//					DefaultLValue spr = new DefaultLValue(null, null, NodeType.SUPER, null, null, component.getSuperclass());
+//					try {
+//						spr.invoke("<init>");
+//						spr.build(null, out, constantPool, false);
+//						superInvoked = true;
+//					} catch (BuilderAccessException e) {
+//						throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
+//					} catch (BuilderTypeException e) {
+//						throw new BuilderSyntaxException(this, BuilderSyntaxException.NO_SUPER_CONSTRUCTOR, e);
+//					}
+//				}
 				
 				node.build(null, out, constantPool, false);
 				
