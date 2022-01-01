@@ -42,9 +42,9 @@ public class SimpleClassLoader extends ClassLoader implements IClassLoader {
 		try {
 			cls.write(out);
 		} catch (IOException e) {
-			throw new BuilderCompilerException(this, e.getMessage(), e);
+			throw new BuilderCompilerException(this, "write class data failed: " + e.getMessage(), e);
 		} catch (BuilderException e) {
-			throw new BuilderCompilerException(this, e.getMessage(), e);
+			throw new BuilderCompilerException(this, "write class data failed: " + e.getMessage(), e);
 		}
 		byte[] buffer = out.toByteArray();
 		
@@ -55,7 +55,7 @@ public class SimpleClassLoader extends ClassLoader implements IClassLoader {
 				try {
 					Files.createDirectories(path.getParent());
 				} catch (IOException e) {
-					throw new BuilderCompilerException(this, e.getMessage(), e);
+					throw new BuilderCompilerException(this, "could not create class folder: " + e.getMessage(), e);
 				}
 			}
 			
@@ -65,7 +65,7 @@ public class SimpleClassLoader extends ClassLoader implements IClassLoader {
 				fos.write(buffer);
 				fos.close();
 			} catch (Exception e) {
-				throw new BuilderCompilerException(this, e.getMessage(), e);
+				throw new BuilderCompilerException(this, "could not write class file: " + e.getMessage(), e);
 			}
 		}
 		
@@ -76,7 +76,7 @@ public class SimpleClassLoader extends ClassLoader implements IClassLoader {
 				try {
 					Files.createDirectories(path.getParent());
 				} catch (IOException e) {
-					throw new BuilderCompilerException(this, e.getMessage(), e);
+					throw new BuilderCompilerException(this, "could not create source folder: " + e.getMessage(), e);
 				}
 			}
 			
@@ -86,7 +86,7 @@ public class SimpleClassLoader extends ClassLoader implements IClassLoader {
 				cls.writeSource(fos);
 				fos.close();
 			} catch (Exception e) {
-				throw new BuilderCompilerException(this, e.getMessage(), e);
+				throw new BuilderCompilerException(this, "could not write source file: " + e.getMessage(), e);
 			}
 		}
 		

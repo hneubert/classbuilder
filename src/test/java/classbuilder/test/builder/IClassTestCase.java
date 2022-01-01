@@ -72,7 +72,7 @@ public class IClassTestCase {
 	}
 	
 	@Test
-	public void getField_test() throws NoSuchFieldException, BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException {
+	public void getField_test() throws BuilderAccessException, BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "Class", Object.class);
 		cls.addField(PUBLIC, int.class, "field");
 		IField field = cls.getField("field");
@@ -97,7 +97,7 @@ public class IClassTestCase {
 	}
 	
 	@Test
-	public void getMethod_test() throws NoSuchMethodException, BuilderModifierException, BuilderNameException, BuilderTypeException, NoSuchFieldException, BuilderSyntaxException {
+	public void getMethod_test() throws BuilderAccessException, BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "Class", Object.class);
 		cls.addMethod(PUBLIC, int.class, "method", int.class);
 		IMethod method = cls.getMethod("method", new Class<?>[] {int.class});
@@ -122,7 +122,7 @@ public class IClassTestCase {
 	}
 	
 	@Test
-	public void getConstructor_test() throws NoSuchMethodException, BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException {
+	public void getConstructor_test() throws BuilderAccessException, BuilderModifierException, BuilderNameException, BuilderTypeException, BuilderSyntaxException {
 		IClass cls = classFactory.createClass(PUBLIC, "package", "Class", Object.class);
 		cls.addConstructor(PUBLIC, int.class);
 		IConstructor method = cls.getConstructor(new Class<?>[] {int.class});

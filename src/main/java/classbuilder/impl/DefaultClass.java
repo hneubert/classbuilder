@@ -166,13 +166,13 @@ public class DefaultClass implements IClass {
 	}
 	
 	@Override
-	public IField getField(String name) throws NoSuchFieldException {
+	public IField getField(String name) throws BuilderAccessException {
 		for (DefaultField field : fields) {
 			if (field.getName().equals(name)) {
 				return field;
 			}
 		}
-		throw new NoSuchFieldException(name);
+		throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, name);
 	}
 	
 	@Override
@@ -182,7 +182,7 @@ public class DefaultClass implements IClass {
 	}
 	
 	@Override
-	public IMethod getMethod(String name, Class<?>[] types) throws NoSuchMethodException {
+	public IMethod getMethod(String name, Class<?>[] types) throws BuilderAccessException {
 		IMethod method = null;
 		int best = 1000;
 		
@@ -208,7 +208,7 @@ public class DefaultClass implements IClass {
 			}
 		}
 		if (method != null) return method;
-		throw new NoSuchMethodException();
+		throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, name);
 	}
 	
 	@Override
@@ -218,7 +218,7 @@ public class DefaultClass implements IClass {
 	}
 	
 	@Override
-	public IConstructor getConstructor(Class<?>[] types) throws NoSuchMethodException {
+	public IConstructor getConstructor(Class<?>[] types) throws BuilderAccessException {
 		IConstructor method = null;
 		int best = 1000;
 		
@@ -244,7 +244,7 @@ public class DefaultClass implements IClass {
 			}
 		}
 		if (method != null) return method;
-		throw new NoSuchMethodException();
+		throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, "<init>");
 	}
 	
 	@Override
@@ -368,7 +368,7 @@ public class DefaultClass implements IClass {
 				if ((method.getModifiers() & VMConst.ABSTRACT) != 0) {
 					try {
 						getMethod(method.getName(), method.getParameterTypes());
-					} catch (NoSuchMethodException e) {
+					} catch (BuilderAccessException e) {
 						throw new BuilderCompilerException(this, "no implementation present: " + method.toGenericString(), e);
 					}
 				}
@@ -381,7 +381,7 @@ public class DefaultClass implements IClass {
 						} catch (NoSuchMethodException e) {
 							getMethod(method.getName(), method.getParameterTypes());
 						}
-					} catch (NoSuchMethodException e) {
+					} catch (BuilderAccessException e) {
 						throw new BuilderCompilerException(this, "no implementation present: " + method.toGenericString(), e);
 					}
 				}

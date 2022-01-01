@@ -585,7 +585,7 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		testClosed();
 		condition = $(condition);
 		DefaultLValue lv = (DefaultLValue)condition;
-		if (lv.getType() == NodeType.NULL) throw new BuilderTypeException(this, null, boolean.class);
+		if (lv.getType() == NodeType.NULL) throw new BuilderTypeException(this, (Class<?>)null, boolean.class);
 		if (!boolean.class.isAssignableFrom(lv.getVarType()) && !Boolean.class.isAssignableFrom(lv.getVarType())) {
 			throw new BuilderTypeException(this, ((DefaultLValue)condition).getVarType(), boolean.class);
 		}
@@ -873,15 +873,11 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 	
 	@Override
 	public Assignable get(String field) throws BuilderSyntaxException, BuilderAccessException {
-		try {
-			Object f = DefaultLValue.getField(this, IClass.CURRENT_CLASS_TYPE, field, false);
-			if (f instanceof IField) {
-				return get((IField)f);
-			} else {
-				return get((Field)f);
-			}
-		} catch (NoSuchFieldException e) {
-			throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_FOUND, field);
+		Object f = DefaultLValue.getField(this, IClass.CURRENT_CLASS_TYPE, field, false);
+		if (f instanceof IField) {
+			return get((IField)f);
+		} else {
+			return get((Field)f);
 		}
 	}
 	
@@ -982,13 +978,9 @@ public class DefaultMethod implements IConstructor, VariableInfo {
 		try {
 			IMethod m = component.getMethod(method, ac);
 			return invoke(m, (Object[])newArgs);
-		} catch (NoSuchMethodException e) {
-			try {
-				Method m = (Method)DefaultLValue.getMethod(this, component.getSuperclass(), method, ac, false);
-				return invoke(m, (Object[])newArgs);
-			} catch (NoSuchMethodException e1) {
-				throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_FOUND, method);
-			}
+		} catch (BuilderAccessException e) {
+			Method m = (Method)DefaultLValue.getMethod(this, component.getSuperclass(), method, ac, false);
+			return invoke(m, (Object[])newArgs);
 		}
 	}
 	

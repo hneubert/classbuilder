@@ -104,7 +104,7 @@ public class ClassDelegate implements IClass {
 	}
 
 	@Override
-	public IField getField(String name) throws NoSuchFieldException {
+	public IField getField(String name) throws BuilderAccessException {
 		return cls.getField(name);
 	}
 
@@ -114,7 +114,7 @@ public class ClassDelegate implements IClass {
 	}
 
 	@Override
-	public IMethod getMethod(String name, Class<?>[] paramTypes) throws NoSuchMethodException {
+	public IMethod getMethod(String name, Class<?>[] paramTypes) throws BuilderAccessException {
 		return cls.getMethod(name, paramTypes);
 	}
 
@@ -124,7 +124,7 @@ public class ClassDelegate implements IClass {
 	}
 
 	@Override
-	public IConstructor getConstructor(Class<?>[] paramTypes) throws NoSuchMethodException {
+	public IConstructor getConstructor(Class<?>[] paramTypes) throws BuilderAccessException {
 		return cls.getConstructor(paramTypes);
 	}
 

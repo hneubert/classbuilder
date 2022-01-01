@@ -99,32 +99,28 @@ public class DefaultLValue implements Assignable {
 		if (name == null) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, "<null>");
 		if (varType == null || varType.isPrimitive() || varType.isArray()) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, name);
 		
-		try {
-			Object f;
-			if (this.type == NodeType.CLASS) {
-				f = getField(fragment, (Class<?>)value, name, type == NodeType.SUPER);
-			} else {
-				f = getField(fragment, varType, name, type == NodeType.SUPER);
-			}
-			Class<?> type;
-			boolean isStatic = false;
-			
-			if (f instanceof IField) {
-				type = ((IField)f).getType();
-				if ((((IField)f).getModifiers() & IClass.STATIC) != 0) isStatic = true;
-			} else {
-				type = ((Field)f).getType();
-				if ((((Field)f).getModifiers() & IClass.STATIC) != 0) isStatic = true;
-			}
-			if (isStatic) {
-				if (this.type != NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.FIELD_STATIC, name);
-				next = new DefaultLValue(fragment, root, NodeType.SGET, f, null, type);
-			} else {
-				if (this.type == NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_STATIC, name);
-				next = new DefaultLValue(fragment, root, NodeType.FGET, f, null, type);
-			}
-		} catch (NoSuchFieldException e) {
-			throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, name, e);
+		Object f;
+		if (this.type == NodeType.CLASS) {
+			f = getField(fragment, (Class<?>)value, name, type == NodeType.SUPER);
+		} else {
+			f = getField(fragment, varType, name, type == NodeType.SUPER);
+		}
+		Class<?> type;
+		boolean isStatic = false;
+		
+		if (f instanceof IField) {
+			type = ((IField)f).getType();
+			if ((((IField)f).getModifiers() & IClass.STATIC) != 0) isStatic = true;
+		} else {
+			type = ((Field)f).getType();
+			if ((((Field)f).getModifiers() & IClass.STATIC) != 0) isStatic = true;
+		}
+		if (isStatic) {
+			if (this.type != NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.FIELD_STATIC, name);
+			next = new DefaultLValue(fragment, root, NodeType.SGET, f, null, type);
+		} else {
+			if (this.type == NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.FIELD_NOT_STATIC, name);
+			next = new DefaultLValue(fragment, root, NodeType.FGET, f, null, type);
 		}
 		setNext(next, false);
 		return next;
@@ -256,41 +252,37 @@ public class DefaultLValue implements Assignable {
 			newArgs[i] = lv;
 		}
 		
-		try {
-			Object m;
-			if (this.type == NodeType.NEW || "<init>".equals(name)) {
-				m = getConstructor(fragment, varType, ac, type == NodeType.SUPER);
-			} else if (this.type == NodeType.CLASS) {
-				m = getMethod(fragment, (Class<?>)value, name, ac, type == NodeType.SUPER);
-			} else {
-				m = getMethod(fragment, varType, name, ac, type == NodeType.SUPER);
-			}
-			Class<?> type = varType;
-			boolean isStatic = false;
-			
-			if (m instanceof IMethod) {
-				IMethod method = (IMethod)m;
-				if (!method.isConstructor()) type = method.getReturnType();
-				types = method.getParameterTypes();
-				if ((method.getModifiers() & IClass.STATIC) != 0) isStatic = true;
-			} else if (m instanceof Method) {
-				type = ((Method)m).getReturnType();
-				types = ((Method)m).getParameterTypes();
-				if ((((Method)m).getModifiers() & IClass.STATIC) != 0) isStatic = true;
-			} else if (m instanceof Constructor) {
-				types = ((Constructor<?>)m).getParameterTypes();
-			}
-			
-			if (isStatic) {
-				if (this.type != NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.METHOD_STATIC, name);
-			} else {
-				if (this.type == NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_STATIC, name);
-			}
-			for (i = 0; i < types.length; i++) newArgs[i] = cast(newArgs[i], types[i]).getRoot();
-			next = new DefaultLValue(fragment, root, NodeType.INVOKE, m, newArgs, type);
-		} catch (NoSuchMethodException e) {
-			throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, name, e);
+		Object m;
+		if (this.type == NodeType.NEW || "<init>".equals(name)) {
+			m = getConstructor(fragment, varType, ac, type == NodeType.SUPER);
+		} else if (this.type == NodeType.CLASS) {
+			m = getMethod(fragment, (Class<?>)value, name, ac, type == NodeType.SUPER);
+		} else {
+			m = getMethod(fragment, varType, name, ac, type == NodeType.SUPER);
 		}
+		Class<?> type = varType;
+		boolean isStatic = false;
+		
+		if (m instanceof IMethod) {
+			IMethod method = (IMethod)m;
+			if (!method.isConstructor()) type = method.getReturnType();
+			types = method.getParameterTypes();
+			if ((method.getModifiers() & IClass.STATIC) != 0) isStatic = true;
+		} else if (m instanceof Method) {
+			type = ((Method)m).getReturnType();
+			types = ((Method)m).getParameterTypes();
+			if ((((Method)m).getModifiers() & IClass.STATIC) != 0) isStatic = true;
+		} else if (m instanceof Constructor) {
+			types = ((Constructor<?>)m).getParameterTypes();
+		}
+		
+		if (isStatic) {
+			if (this.type != NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.METHOD_STATIC, name);
+		} else {
+			if (this.type == NodeType.CLASS) throw new BuilderAccessException(this, BuilderAccessException.METHOD_NOT_STATIC, name);
+		}
+		for (i = 0; i < types.length; i++) newArgs[i] = cast(newArgs[i], types[i]).getRoot();
+		next = new DefaultLValue(fragment, root, NodeType.INVOKE, m, newArgs, type);
 		setNext(next, false);
 		return next;
 	}
@@ -303,13 +295,13 @@ public class DefaultLValue implements Assignable {
 		return new DefaultLValue(fragment, root, NodeType.INVOKE, method, newArgs, method.getReturnType());
 	}
 	
-	public static Object getMethod(IMethod fragment, Class<?> cls, String name, Class<?>[] types, boolean superAccess) throws NoSuchMethodException, BuilderAccessException {
+	public static Object getMethod(IMethod fragment, Class<?> cls, String name, Class<?>[] types, boolean superAccess) throws BuilderAccessException {
 		boolean protectedAccess = superAccess;
 		if (cls == IClass.CURRENT_CLASS_TYPE) {
 			protectedAccess = true;
 			try {
 				return fragment.getDeclaringClass().getMethod(name, types);
-			} catch (NoSuchMethodException e) {
+			} catch (BuilderAccessException e) {
 				cls = fragment.getDeclaringClass().getSuperclass();
 			}
 		}
@@ -345,12 +337,12 @@ public class DefaultLValue implements Assignable {
 			}
 		}
 		
-		if (method == null) throw new NoSuchMethodException(name);
+		if (method == null) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, name);
 		if (!VMConst.isAccessable(method, fragment.getDeclaringClass().getPackage(), protectedAccess)) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE, name);
 		return method;
 	}
 	
-	public Object getConstructor(IMethod fragment, Class<?> cls, Class<?>[] types, boolean protectedAccess) throws NoSuchMethodException, BuilderAccessException {
+	public Object getConstructor(IMethod fragment, Class<?> cls, Class<?>[] types, boolean protectedAccess) throws BuilderAccessException {
 		if (cls == IClass.CURRENT_CLASS_TYPE) {
 			protectedAccess = true;
 			return fragment.getDeclaringClass().getConstructor(types);
@@ -376,18 +368,18 @@ public class DefaultLValue implements Assignable {
 			}
 		}
 		
-		if (method == null) throw new NoSuchMethodException("<init>");
+		if (method == null) if (method == null) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_FOUND, "<init>");
 		if ((method.getModifiers() & IClass.PRIVATE) != 0  || ((method.getModifiers() & IClass.PROTECTED) != 0 && !protectedAccess && !method.getDeclaringClass().getPackage().getName().equals(fragment.getDeclaringClass().getPackage()))) throw new BuilderAccessException(fragment, BuilderAccessException.METHOD_NOT_ACCESSABLE);
 		return method;
 	}
 	
-	public static Object getField(IMethod fragment, Class<?> cls, String name, boolean superAccess) throws NoSuchFieldException, BuilderAccessException {
+	public static Object getField(IMethod fragment, Class<?> cls, String name, boolean superAccess) throws BuilderAccessException {
 		boolean protectedAccess = superAccess;
 		if (cls == IClass.CURRENT_CLASS_TYPE) {
 			protectedAccess = true;
 			try {
 				return fragment.getDeclaringClass().getField(name);
-			} catch (NoSuchFieldException e) {
+			} catch (BuilderAccessException e) {
 				cls = fragment.getDeclaringClass().getSuperclass();
 			}
 		}
@@ -407,7 +399,7 @@ public class DefaultLValue implements Assignable {
 			}
 		}
 		
-		if (field == null) throw new NoSuchFieldException(name);
+		if (field == null) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_FOUND, name);;
 		if (!VMConst.isAccessable(field, fragment.getDeclaringClass().getPackage(), protectedAccess)) throw new BuilderAccessException(fragment, BuilderAccessException.FIELD_NOT_ACCESSABLE, name);
 		return field;
 	}

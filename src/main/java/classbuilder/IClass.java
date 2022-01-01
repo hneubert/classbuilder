@@ -189,9 +189,9 @@ public interface IClass {
 	 * Returns a declared field.
 	 * @param name field name
 	 * @return declared field
-	 * @throws NoSuchFieldException no such field present
+	 * @throws BuilderAccessException no such field present
 	 */
-	public IField getField(String name) throws NoSuchFieldException;
+	public IField getField(String name) throws BuilderAccessException;
 	
 	/**
 	 * Returns all declared fields.
@@ -204,9 +204,9 @@ public interface IClass {
 	 * @param name method name
 	 * @param paramTypes parameter types
 	 * @return declared method
-	 * @throws NoSuchMethodException no such method present
+	 * @throws BuilderAccessException no such method present
 	 */
-	public IMethod getMethod(String name, Class<?>[] paramTypes) throws NoSuchMethodException;
+	public IMethod getMethod(String name, Class<?>[] paramTypes) throws BuilderAccessException;
 	
 	/**
 	 * Returns all declared methods.
@@ -218,9 +218,9 @@ public interface IClass {
 	 * Returns a declared constructor.
 	 * @param paramTypes parameter types
 	 * @return declared constructor
-	 * @throws NoSuchMethodException no such constructor present
+	 * @throws BuilderAccessException no such constructor present
 	 */
-	public IConstructor getConstructor(Class<?>[] paramTypes) throws NoSuchMethodException;
+	public IConstructor getConstructor(Class<?>[] paramTypes) throws BuilderAccessException;
 	
 	/**
 	 * Returns all declared constructors.

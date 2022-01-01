@@ -33,7 +33,11 @@ import classbuilder.impl.VMConst;
 public class BuilderTypeException extends BuilderException {
 	private static final long serialVersionUID = 1L;
 	
-	public static final String UNSUPPORTED_TYPE =			"primitive, String, null or Var needed";
+	public static final String ANNOTATION_TYPE = "no annotation type: %s";
+	public static final String ANNOTATION_RETENTION = "annotation type must have Retention=RetentionPolicy.RUNTIME: %s";
+	public static final String ANNOTATION_TARGET = "annotation type must have Target=%s: %s";
+	
+	public static final String UNSUPPORTED_TYPE =			"primitive, String, null or Variable needed";
 	public static final String BOOLEAN_OR_INTEGER_REQUIRED ="boolean or integer required";
 	public static final String NUMERIC_REQUIRED =			"numeric required";
 	public static final String BOOLEAN_OR_NUMERIC_REQUIRED ="boolean or numeric required";
@@ -71,4 +75,25 @@ public class BuilderTypeException extends BuilderException {
 		super(source, "invalid type: " + VMConst.getTypeName(null, found) /*+ " required type: " + required.getName()*/);
 	}
 	
+	public BuilderTypeException(Object source, String text, Object ...values) {
+		super(null, gen(text, values));
+	}
+	
+	public static String gen(String text, Object ...values) {
+		Object[] params = new String[values.length];
+		
+		for (int i = 0; i < params.length; i++) {
+			Object value = values[i];
+			
+			if (value == null) {
+				params[i] = "<null>";
+			} else if (value instanceof Class) {
+				params[i] = VMConst.getTypeName(null, (Class<?>)value);
+			} else {
+				params[i] = value;
+			}
+		}
+		
+		return String.format(text, values);
+	}
 }
