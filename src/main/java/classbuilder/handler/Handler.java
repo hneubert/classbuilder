@@ -26,6 +26,7 @@
 package classbuilder.handler;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -36,6 +37,7 @@ import java.lang.annotation.Target;
  * 
  * @see ObjectFactory
  */
+@Repeatable(Handlers.class)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Handler {

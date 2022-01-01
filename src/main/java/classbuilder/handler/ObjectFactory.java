@@ -61,9 +61,9 @@ public class ObjectFactory {
 	
 	private static class AnnotationInfo {
 		public boolean isHandler;
-		public Handler handler;
+		public Handler[] handler;
 		
-		public AnnotationInfo(boolean isHandler, Handler handler) {
+		public AnnotationInfo(boolean isHandler, Handler[] handler) {
 			this.isHandler = isHandler;
 			this.handler = handler;
 		}
@@ -164,9 +164,9 @@ public class ObjectFactory {
 		}
 		
 		public void add(Annotation annotation, Handler handlerAnnotation, Object target) throws HandlerException {
-			if (ignore == ignoreAll || ignore.contains(handlerAnnotation.value())) return;
-			DefaultHandlerContext ctx = new DefaultHandlerContext(objectFactory, subclass, annotation, handlerAnnotation.value(), handlerAnnotation.priority(), target, metadata);
 			Class<?> handlerType = handlerAnnotation.value();
+			if (ignore == ignoreAll || ignore.contains(handlerType)) return;
+			DefaultHandlerContext ctx = new DefaultHandlerContext(objectFactory, subclass, annotation, handlerType, handlerAnnotation.priority(), target, metadata);
 			
 			if (ClassHandler.class.isAssignableFrom(handlerType)) {
 				HandlerContext c = classHandlers.get(ctx);
@@ -189,7 +189,7 @@ public class ObjectFactory {
 					methods = MethodId.getMethods(ctx);
 				}
 				for (MethodId method : methods) {
-					if (ignoreMethod(method, handlerAnnotation)) continue;
+					if (ignoreMethod(method, handlerType)) continue;
 					HandlerContext c = constructorHandlers.get(method);
 					if (c == null || c.getPriority() <= ctx.getPriority()) {
 						constructorHandlers.put(method, ctx);
@@ -200,7 +200,7 @@ public class ObjectFactory {
 					methods = MethodId.getMethods(ctx);
 				}
 				for (MethodId method : methods) {
-					if (ignoreMethod(method, handlerAnnotation)) continue;
+					if (ignoreMethod(method, handlerType)) continue;
 					MethodInvocationHelper helper = methodHandlers.get(method);
 					if (helper == null) {
 						helper = new MethodInvocationHelper();
@@ -214,7 +214,7 @@ public class ObjectFactory {
 					methods = MethodId.getMethods(ctx);
 				}
 				for (MethodId method : methods) {
-					if (ignoreMethod(method, handlerAnnotation)) continue;
+					if (ignoreMethod(method, handlerType)) continue;
 					MethodInvocationHelper helper = methodHandlers.get(method);
 					if (helper == null) {
 						helper = new MethodInvocationHelper();
@@ -226,9 +226,9 @@ public class ObjectFactory {
 			}
 		}
 		
-		private boolean ignoreMethod(MethodId method, Handler handler) {
+		private boolean ignoreMethod(MethodId method, Class<?> handler) {
 			Set<Class<?>> set = methodIgnore.get(method);
-			if (set != null && set.contains(handler.value())) {
+			if (set != null && set.contains(handler)) {
 				return true;
 			} else {
 				return false;
@@ -245,7 +245,6 @@ public class ObjectFactory {
 	
 	// cache
 	private Map<Class<?>, Class<?>> typeMap;
-	//private Map<Class<?>, Object> singletonMap;
 	private Map<Class<?>, InstantiationHelper> helperMap;
 	
 	private Map<Class<?>, AnnotationInfo> annotationCache;
@@ -503,20 +502,24 @@ public class ObjectFactory {
 			}
 		}
 		for (Annotation annotation : annotations) {
-			if (annotation.annotationType() == Handler.class) {
-				//addHandler(primaryType, interfaces, annotation, (Handler)annotation, target, classHandlers, methodHandlers, constructorHandlers);
+			if (annotation.annotationType() == Handlers.class) {
+				for (Handler handler : ((Handlers)annotation).value()) {
+					data.add(annotation, handler, target);
+				}
+			} else if (annotation.annotationType() == Handler.class) {
 				data.add(annotation, (Handler)annotation, target);
 			} else {
 				AnnotationInfo info = annotationCache.get(annotation.annotationType());
 				Class<?> annotationType = annotation.annotationType();
 				if (info == null) {
-					Handler handlerAnnotation = annotationType.getAnnotation(Handler.class);
+					Handler[] handlerAnnotation = annotationType.getAnnotationsByType(Handler.class);
 					info = new AnnotationInfo(handlerAnnotation != null, handlerAnnotation);
 					annotationCache.put(annotationType, info);
 				}
 				if (info.isHandler) {
-					//addHandler(primaryType, interfaces, annotation, info.handler, target, classHandlers, methodHandlers, constructorHandlers);
-					data.add(annotation, info.handler, target);
+					for (Handler handler : info.handler) {
+						data.add(annotation, handler, target);
+					}
 				}
 			}
 		}
