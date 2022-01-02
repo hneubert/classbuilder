@@ -25,18 +25,29 @@
 
 package classbuilder.handler;
 
+import java.lang.reflect.Method;
+
 import classbuilder.BuilderException;
+import classbuilder.IMethod;
 import classbuilder.Variable;
 
 /**
  * A MethodReference represents a method handler or an original method implementation.
  */
-public interface MethodReference {
-	/**
-	 * Returns the method name.
-	 * @return method name
-	 */
-	public String getName();
+public class MethodReference {
+	private IMethod method;
+	private IMethod next;
+	private Method superMethod;
+	
+	public MethodReference(IMethod method, IMethod next) {
+		this.method = method;
+		this.next = next;
+	}
+	
+	public MethodReference(IMethod method, Method superMethod) {
+		this.method = method;
+		this.superMethod = superMethod;
+	}
 	
 	/**
 	 * Invokes the underlaying method handler or original method implementation.
@@ -45,5 +56,33 @@ public interface MethodReference {
 	 * @throws BuilderException implementation error
 	 * @throws HandlerException handler error
 	 */
-	public Variable invoke(Object ...args) throws BuilderException, HandlerException;
+	public Variable invoke(Object... args) throws BuilderException, HandlerException {
+		if (hasReturn()) {
+			if (next != null) {
+				Variable variable = method.addVar(next.getReturnType());
+				variable.set(method.invoke(next, args));
+				return variable;
+			} else if (superMethod != null) {
+				Variable variable = method.addVar(superMethod.getReturnType());
+				variable.set(method.Super().invoke(superMethod, args));
+				return variable;
+			} else {
+				throw new HandlerException(HandlerException.NO_METHOD_IMPLEMENTATION, method.getName());
+			}
+		} else {
+			if (next != null) {
+				method.invoke(next, args);
+			} else if (superMethod != null) {
+				method.Super().invoke(superMethod, args);
+			} else {
+				throw new HandlerException(HandlerException.NO_METHOD_IMPLEMENTATION, method.getName());
+			}
+			return null;
+		}
+	}
+	
+	public boolean hasReturn() {
+		Class<?> returnType = method.getReturnType();
+		return returnType != null && returnType != void.class && returnType != Void.class;
+	}
 }

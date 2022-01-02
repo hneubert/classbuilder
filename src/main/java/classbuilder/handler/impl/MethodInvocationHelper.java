@@ -27,33 +27,17 @@ package classbuilder.handler.impl;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import classbuilder.BuilderException;
-import classbuilder.IMethod;
-import classbuilder.Variable;
 import classbuilder.handler.HandlerContext;
-import classbuilder.handler.HandlerException;
-import classbuilder.handler.MethodHandler;
 import classbuilder.handler.MethodId;
-import classbuilder.handler.MethodReference;
-import classbuilder.handler.ProxyHandler;
 
-public class MethodInvocationHelper implements MethodReference {
+public class MethodInvocationHelper {
 	
 	private Method declaration;
-	private MethodId target;
 	private HandlerContext methodHandler;
-	private IMethod method;
-	private Variable[] parameters;
 	private List<HandlerContext> proxyList;
-	private Variable result;
-	
-	private MethodWrapper methodWrapper;
-	
-	private int index = 0;
 	
 	public MethodInvocationHelper() {
 		proxyList = new ArrayList<HandlerContext>();
@@ -66,7 +50,6 @@ public class MethodInvocationHelper implements MethodReference {
 	}
 	
 	public void setTarget(MethodId target) {
-		this.target = target;
 		if (target.getDeclaration() instanceof Method) {
 			declaration = (Method)target.getDeclaration();
 		}
@@ -74,6 +57,10 @@ public class MethodInvocationHelper implements MethodReference {
 	
 	public HandlerContext getMethodHandler() {
 		return methodHandler;
+	}
+	
+	public Method getDeclaration() {
+		return declaration;
 	}
 	
 	public void addProxyHandler(HandlerContext proxyHandler) {
@@ -100,72 +87,7 @@ public class MethodInvocationHelper implements MethodReference {
 		}
 	}
 	
-	public String getName() {
-		return target.getName();
+	public List<HandlerContext> getProxyList() {
+		return proxyList;
 	}
-	
-	private Variable[] getParameters() {
-		if (parameters == null) {
-			parameters = new Variable[method.getParameters().length];
-			int i = 0;
-			for (Variable var : method.getParameters()) {
-				parameters[i++] = var;
-			}
-		}
-		return parameters;
-	}
-	
-	public void handle(IMethod method) throws BuilderException, HandlerException {
-		this.method = method;
-		Collections.sort(proxyList);
-		if (method.getReturnType() != null) {
-			result = method.addVar(method.getReturnType());
-		}
-		methodWrapper = new MethodWrapper(method, result);
-		invoke((Object[])getParameters());
-		if (result != null) {
-			if (!result.isInitialized()) {
-				throw new HandlerException(HandlerException.RESULT_VALUE_NEVER_SET, method.getName());
-			}
-			method.Return(result);
-		} else {
-			method.Return();
-		}
-	}
-	
-	public Variable invoke(Object ...args) throws BuilderException, HandlerException {
-		for (int i = 0; i < args.length; i++) {
-			if (args[i] != method.getParameter(i)) {
-				method.getParameter(i).set(args[i]);
-			}
-		}
-		
-		try {
-			if (index < proxyList.size()) {
-				index++;
-				ProxyHandler handler = (ProxyHandler)proxyList.get(proxyList.size() - index).getHandler().getConstructor().newInstance();
-				handler.handle(proxyList.get(proxyList.size() - index), method.getDeclaringClass(), methodWrapper, declaration, this);
-				index--;
-				methodWrapper.writeOffsets();
-			} else if (methodHandler != null) {
-				MethodHandler handler = (MethodHandler)methodHandler.getHandler().getConstructor().newInstance();
-				handler.handle(methodHandler, method.getDeclaringClass(), methodWrapper, declaration);
-				methodWrapper.writeOffsets();
-			} else if (target != null) {
-				if (result == null) {
-					method.Super().invoke(target.getName(), (Object[])getParameters());
-				} else {
-					result.set(method.Super().invoke(target.getName(), (Object[])getParameters()));
-				}
-			}
-		} catch (BuilderException e) {
-			throw e;
-		} catch (HandlerException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new HandlerException("handler instanziation faild: ", e);
-		}
-		return result;
-	}
-	
 }

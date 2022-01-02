@@ -27,7 +27,10 @@ package classbuilder.handler;
 
 import java.lang.reflect.Method;
 
+import classbuilder.BuilderAccessException;
 import classbuilder.BuilderException;
+import classbuilder.BuilderSyntaxException;
+import classbuilder.BuilderTypeException;
 import classbuilder.IClass;
 import classbuilder.IMethod;
 import classbuilder.Variable;
@@ -36,7 +39,7 @@ import classbuilder.util.MethodDelegate;
 /**
  * This class provides a skeletal implementation of a ProxyHandler interface and wraps an IClass, an IMethod and a MethodReference object, to simplify the implementation.
  */
-public abstract class AbstractProxyHandler extends MethodDelegate implements IMethod, IClass, MethodReference, ProxyHandler {
+public abstract class AbstractProxyHandler extends MethodDelegate implements IMethod, IClass, ProxyHandler {
 	
 	private MethodReference target;
 	
@@ -67,9 +70,16 @@ public abstract class AbstractProxyHandler extends MethodDelegate implements IMe
 	 */
 	public abstract void handle(HandlerContext context) throws BuilderException, HandlerException;
 	
-	@Override
 	public Variable invoke(Object ...args) throws BuilderException, HandlerException {
 		return target.invoke(args);
 	}
 	
+	@Override
+	public void Return(Object value) throws BuilderSyntaxException, BuilderTypeException, BuilderAccessException {
+		if (target.hasReturn()) {
+			method.Return(value);
+		} else {
+			method.Return();
+		}
+	}
 }

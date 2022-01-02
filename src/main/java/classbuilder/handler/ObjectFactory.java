@@ -30,11 +30,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -437,16 +440,48 @@ public class ObjectFactory {
 			}
 		}
 		
-		for (Entry<MethodId, MethodInvocationHelper> entry : data.methodHandlers.entrySet()) {
+		for (Entry<MethodId, MethodInvocationHelper> entry : data.methodHandlers.entrySet()) {			
 			MethodId id = entry.getKey();
-			IMethod method;
-			if (id.getReturnType() != null) {
-				method = cls.addMethod(IClass.PUBLIC, id.getReturnType(), id.getName(), id.getTypes());
-			} else {
-				method = cls.addMethod(IClass.PUBLIC, id.getName(), id.getTypes());
+			MethodInvocationHelper helper = entry.getValue();
+			Collections.sort(helper.getProxyList());
+			Collections.reverse(helper.getProxyList()); // bug?
+			
+			List<HandlerContext> handlers = new ArrayList<>();
+			handlers.addAll(helper.getProxyList());
+			if (helper.getMethodHandler() != null) handlers.add(helper.getMethodHandler());
+			
+			IMethod next = null;
+			for (int i = 0; i < handlers.size(); i++) {
+				HandlerContext ctx = handlers.get(i);
+				Class<?> handlerType = ctx.getHandler();
+				Object handler;
+				try {
+					handler = handlerType.getConstructor().newInstance();
+				} catch (Exception e) {
+					throw new HandlerException("class handler instanziation faild: ", e);
+				}
+				
+				MethodReference ref;
+				IMethod m = next;
+				if (m == null) {
+					m = cls.addMethod(IClass.PUBLIC, id.getReturnType(), id.getName(), id.getTypes());
+				}
+				if (i + 1 < handlers.size()) {
+					next = cls.addMethod(IClass.PRIVATE, id.getReturnType(), id.getName() + "$" + i, id.getTypes());
+					ref = new MethodReference(m, next);
+				} else {
+					next = null;
+					ref = new MethodReference(m, helper.getDeclaration());
+				}
+				if (handler instanceof ProxyHandler) {
+					ProxyHandler proxyHandler = (ProxyHandler)handler;
+					proxyHandler.handle(ctx, cls, m, helper.getDeclaration(), ref);
+				} else if (handler instanceof MethodHandler) {
+					MethodHandler methodHandler = (MethodHandler)handler;
+					methodHandler.handle(ctx, cls, m, helper.getDeclaration());
+				}
+				m.End();
 			}
-			entry.getValue().handle(method);
-			method.End();
 		}
 		
 		for (Entry<MethodId, HandlerContext> entry : data.constructorHandlers.entrySet()) {

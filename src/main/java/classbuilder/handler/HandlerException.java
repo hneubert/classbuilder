@@ -33,7 +33,7 @@ package classbuilder.handler;
 public class HandlerException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
-	public static final int RESULT_VALUE_NEVER_SET	= 1000;
+	public static final int NO_METHOD_IMPLEMENTATION	= 1000;
 	
 	private int error;
 	
@@ -85,8 +85,8 @@ public class HandlerException extends Exception {
 	
 	private static String buildMessage(int error, String value) {
 		switch (error) {
-		case RESULT_VALUE_NEVER_SET :
-			return "result value never set" + addValue(value);
+		case NO_METHOD_IMPLEMENTATION :
+			return "there exists no method implementaion for: " + addValue(value);
 		default:
 			return "unknown error";
 		}
